@@ -25,7 +25,6 @@ This project is a backend REST API for user registration, login, JWT authenticat
 - Spring Web MVC
 - Spring JDBC
 - PostgreSQL
-- MariaDB driver for school/local testing
 - BCrypt via `spring-security-crypto`
 - JWT with JJWT
 - Maven
