@@ -1,4 +1,4 @@
-# Login API v.1
+# Login API v1
 
 Login API built with **Java**, **Spring Boot**, **JDBC** and **PostgreSQL**.
 
