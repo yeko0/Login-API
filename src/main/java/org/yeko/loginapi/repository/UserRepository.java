@@ -233,21 +233,13 @@ public class UserRepository {
     public String getUserRoleFromDB(Long userId) {
         String sql = "SELECT user_role FROM users WHERE user_id = ?";
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql)){
+        List<String> listRole = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString(1), userId);
 
-            ps.setLong(1, userId);
-
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
-                    return rs.getString("user_role");
-                }
-            }
-            return null;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if(!listRole.isEmpty() ){
+            return listRole.get(0);
         }
+
+        return null;
     }
 
 

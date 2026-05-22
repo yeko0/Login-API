@@ -82,8 +82,8 @@ public class AuthService {
         String token = getValidToken(authorizationHeader);
 
         if (token != null ){
-
-            return ur.getUserRoleFromDB(extractUserId(token));
+            Long id = extractUserId(token);
+            return ur.getUserRoleFromDB(id);
         }
 
         return null;

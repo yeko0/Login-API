@@ -5,7 +5,7 @@ GET http://localhost:8081/users
 
 ### Admin Get all users
 GET http://localhost:8081/admin/users
-Authorization: Bearer <token>
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3Nzk0ODQ2MzcsImV4cCI6MTc3OTQ4NjQzN30.iugdDgAYOJcYIRJ69LKje3OzvAs7euyhuD0q2ShOEdtHypMJ61lyZKn9Nl4iUwQZ
 
 #####################################################################
 
@@ -26,7 +26,7 @@ POST http://localhost:8081/users
 Content-Type: application/json
 
 {
-  "userName": "yekotest",
+  "userName": "yekotest22",
   "userPin": "test",
   "userId": 999,
   "role": "SELECT user_pin FROM users",
@@ -40,8 +40,8 @@ POST http://localhost:8081/auth/login
 Content-Type: application/json
 
 {
-  "userName": "yeko45",
-  "userPin": "45",
+  "userName": "yekotest",
+  "userPin": "test",
   "role": "asda",
   "hack": true
 }
