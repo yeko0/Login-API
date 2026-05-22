@@ -33,7 +33,7 @@ public class AuthService {
 
 
     public LoginResponse login(LoginRequest loginRequest){
-        User user = ur.findByUserName(loginRequest.getUserName());
+        User user = ur.findUserByName(loginRequest.getUserName());
 
         if(user == null || !authenticateUser(user, loginRequest.getUserName(), loginRequest.getUserPin()) ){
             return null;

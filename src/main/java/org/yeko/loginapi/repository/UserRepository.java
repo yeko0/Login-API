@@ -1,6 +1,7 @@
 package org.yeko.loginapi.repository;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.yeko.loginapi.entity.User;
 
@@ -14,9 +15,11 @@ import java.util.List;
 
 @Repository
 public class UserRepository {
+    private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
-    public UserRepository(DataSource dataSource) {
+    public UserRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
     }
 
@@ -26,19 +29,11 @@ public class UserRepository {
                      "WHERE user_name = ? " +
                      "LIMIT 1";
 
-        try(Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)){
+        List<Integer> list = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt(1), userName);
+        return !list.isEmpty();
 
-            ps.setString(1, userName);
-
-            try(ResultSet rs = ps.executeQuery()){
-                return rs.next();
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
+
 
     @Nullable
     private User getUser(PreparedStatement ps) throws SQLException {
@@ -58,7 +53,7 @@ public class UserRepository {
     }
 
 
-    public User findByUserName(String userName) {
+    public User findUserByName(String userName) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_name = ?";
 
@@ -88,6 +83,7 @@ public class UserRepository {
             throw new RuntimeException(e);
         }
     }
+
 
     public long countAdmins(String role){
         String sql = "SELECT COUNT(*) FROM users WHERE user_role = ?";
@@ -242,6 +238,7 @@ public class UserRepository {
 
     }
 
+
     public String getUserRoleFromDB(Long userId) {
         String sql = "SELECT user_role FROM users WHERE user_id = ?";
 
@@ -261,4 +258,6 @@ public class UserRepository {
             throw new RuntimeException(e);
         }
     }
+
+
 }

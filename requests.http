@@ -26,8 +26,8 @@ POST http://localhost:8081/users
 Content-Type: application/json
 
 {
-  "userName": "yekoAdmin",
-  "userPin": "admin",
+  "userName": "yekotest",
+  "userPin": "test",
   "userId": 999,
   "role": "SELECT user_pin FROM users",
   "hacked": true
@@ -93,13 +93,13 @@ Content-Type: application/json
 #####################################################################
 
 ### Delete user
-DELETE http://localhost:8081/users/11
+DELETE http://localhost:8081/users/14
 Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "userName": "yekoAdmin",
-  "userPin": "admin",
+  "userName": "yekotest",
+  "userPin": "test",
   "newUserPin": "jghj",
   "userId": 999,
   "role": "ADMIN",
