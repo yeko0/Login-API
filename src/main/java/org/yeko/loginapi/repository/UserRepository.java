@@ -88,22 +88,13 @@ public class UserRepository {
     public long countAdmins(String role){
         String sql = "SELECT COUNT(*) FROM users WHERE user_role = ?";
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql)){
+        List<Long> list = jdbcTemplate.query(sql, (rs ,rowNum) -> rs.getLong(1), role);
 
-            ps.setString(1, role);
-
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
-                    return rs.getLong(1);
-                }
-            }
-
-            return 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if( !list.isEmpty() ){
+            return list.get(0);
         }
+
+        return 0;
     }
 
 

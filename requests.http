@@ -62,13 +62,13 @@ Content-Type: application/json
 #####################################################################
 
 ### Update user role
-PATCH http://localhost:8081/admin/users/9/role
-Authorization: Bearer <token>
+PATCH http://localhost:8081/admin/users/13/role
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEzLCJ1c2VyTmFtZSI6Inlla29BZG1pbiIsImlhdCI6MTc3OTQ3MzI2OCwiZXhwIjoxNzc5NDc1MDY4fQ.m4th25q0vzMeInCYT1N-eLH_v2gWm7UYXOjVV6t9s8VqGzqnXmgu367fdzZxXkJB
 Content-Type: application/json
 
 {
-  "userName": "kk",
-  "newUserPin": "123",
+  "userName": "yekoAdmi",
+  "newUserPin": "admi",
   "userId": 999,
   "userRole": "user",
   "hacked": true
