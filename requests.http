@@ -77,14 +77,14 @@ Content-Type: application/json
 #####################################################################
 
 ### Update pin
-PATCH http://localhost:8081/users/13/pin
-Authorization: Bearer <token>
+PATCH http://localhost:8081/users/15/pin
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3Nzk1Mzk0NzYsImV4cCI6MTc3OTU0MTI3Nn0.-6SlnhbBQ5nTmhdye9W96RlozTU9381yYlJY7lMlYZ2mJyx8uZCEWxrxeon1CYfO
 Content-Type: application/json
 
 {
-  "userName": "yekoAdmin",
+  "userName": "yekotest",
   "userPin": "abc",
-  "newUserPin": "admin",
+  "newUserPin": "test",
   "userId": 999,
   "role": "ADMIN",
   "hacked": true

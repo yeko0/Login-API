@@ -69,7 +69,7 @@ public class UserService {
 
 
     public boolean updatePinIfAuthenticated(UpdatePinRequest update, Long id ){
-        User user = ur.findUserById(id);
+        User user = ur.findFullUserById(id);
 
         if( user == null || !as.authenticateUser(user, update.getUserName(), update.getUserPin()) ){
             return false;
@@ -82,7 +82,7 @@ public class UserService {
 
 
     public UserResponse findPublicUserById(Long id ){
-        User user = ur.getUserById(id);
+        User user = ur.findPublicUserById(id);
 
         if (user == null) {
             return null;
@@ -102,7 +102,7 @@ public class UserService {
 
 
     public boolean deleteUserIfAuthenticated(DeleteUserRequest deleteRequest, Long id ){
-        User user = ur.findUserById(id);
+        User user = ur.findFullUserById(id);
 
         if (user != null && as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
             return ur.deleteUserById(id);

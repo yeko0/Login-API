@@ -53,6 +53,20 @@ public class UserRepository {
     }
 
 
+    private User resultsetToFullUser(ResultSet rs) throws SQLException {
+
+            User user = new User();
+
+            user.setUserId(rs.getLong("user_id"));
+            user.setUserName(rs.getString("user_name"));
+            user.setUserPin(rs.getString("user_pin"));
+            user.setUserRole(rs.getString("user_role"));
+
+            return user;
+
+    }
+
+
     public User findUserByName(String userName) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_name = ?";
@@ -69,19 +83,18 @@ public class UserRepository {
     }
 
 
-    public User findUserById(Long id) {
+    public User findFullUserById(Long id) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_id = ? ";
 
-        try(Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)){
+        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToFullUser(rs), id);
 
-            ps.setLong(1, id);
-
-            return getUser(ps);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if(!users.isEmpty()){
+            return users.get(0);
         }
+
+        return null;
+
     }
 
 
@@ -113,7 +126,7 @@ public class UserRepository {
             if (rowsAffected == 1) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        return getUserById(rs.getLong(1));
+                        return findPublicUserById(rs.getLong(1));
                     }
                 }
             }
@@ -187,7 +200,8 @@ public class UserRepository {
     }
 
 
-    public User getUserById(Long id) {
+    @Nullable
+    public User findPublicUserById(Long id) {
         String sql = "SELECT user_id, user_name, user_role FROM users " +
                 "WHERE user_id = ?";
         try(Connection connection = dataSource.getConnection();
@@ -230,6 +244,7 @@ public class UserRepository {
     }
 
 
+    @Nullable
     public String getUserRoleFromDB(Long userId) {
         String sql = "SELECT user_role FROM users WHERE user_id = ?";
 
