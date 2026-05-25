@@ -5,19 +5,19 @@ GET http://localhost:8081/users
 
 ### Admin Get all users
 GET http://localhost:8081/admin/users
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3Nzk0ODQ2MzcsImV4cCI6MTc3OTQ4NjQzN30.iugdDgAYOJcYIRJ69LKje3OzvAs7euyhuD0q2ShOEdtHypMJ61lyZKn9Nl4iUwQZ
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEzLCJ1c2VyTmFtZSI6Inlla29BZG1pbiIsImlhdCI6MTc3OTc0MTQzNiwiZXhwIjoxNzc5NzQzMjM2fQ.GxGs6iWu5JJBUJdBzbjRI65QvWdqLS8bX0Ftc4H-eDJoVbpFITwy-02pYABeHhAY
 
 #####################################################################
 
 ### Admin Get user by id
-GET http://localhost:8081/users/9
-Authorization: Bearer <token>
+GET http://localhost:8081/users/15
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEzLCJ1c2VyTmFtZSI6Inlla29BZG1pbiIsImlhdCI6MTc3OTc0MTQzNiwiZXhwIjoxNzc5NzQzMjM2fQ.GxGs6iWu5JJBUJdBzbjRI65QvWdqLS8bX0Ftc4H-eDJoVbpFITwy-02pYABeHhAY
 
 #####################################################################
 
 ### Get valid Session
 GET http://localhost:8081/auth/session
-Authorization: Bearer <token>
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEzLCJ1c2VyTmFtZSI6Inlla29BZG1pbiIsImlhdCI6MTc3OTc0MTQzNiwiZXhwIjoxNzc5NzQzMjM2fQ.GxGs6iWu5JJBUJdBzbjRI65QvWdqLS8bX0Ftc4H-eDJoVbpFITwy-02pYABeHhAY
 
 #####################################################################
 
@@ -26,7 +26,7 @@ POST http://localhost:8081/users
 Content-Type: application/json
 
 {
-  "userName": "yekotest22",
+  "userName": "yekotest",
   "userPin": "test",
   "userId": 999,
   "role": "SELECT user_pin FROM users",
@@ -62,15 +62,15 @@ Content-Type: application/json
 #####################################################################
 
 ### Update user role
-PATCH http://localhost:8081/admin/users/13/role
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEzLCJ1c2VyTmFtZSI6Inlla29BZG1pbiIsImlhdCI6MTc3OTQ3MzI2OCwiZXhwIjoxNzc5NDc1MDY4fQ.m4th25q0vzMeInCYT1N-eLH_v2gWm7UYXOjVV6t9s8VqGzqnXmgu367fdzZxXkJB
+PATCH http://localhost:8081/admin/users/15/role
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEzLCJ1c2VyTmFtZSI6Inlla29BZG1pbiIsImlhdCI6MTc3OTc0MTQzNiwiZXhwIjoxNzc5NzQzMjM2fQ.GxGs6iWu5JJBUJdBzbjRI65QvWdqLS8bX0Ftc4H-eDJoVbpFITwy-02pYABeHhAY
 Content-Type: application/json
 
 {
   "userName": "yekoAdmi",
   "newUserPin": "admi",
   "userId": 999,
-  "userRole": "user",
+  "userRole": "admin",
   "hacked": true
 }
 
@@ -78,12 +78,12 @@ Content-Type: application/json
 
 ### Update pin
 PATCH http://localhost:8081/users/15/pin
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3Nzk1Mzk0NzYsImV4cCI6MTc3OTU0MTI3Nn0.-6SlnhbBQ5nTmhdye9W96RlozTU9381yYlJY7lMlYZ2mJyx8uZCEWxrxeon1CYfO
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3Nzk3NDEzNDAsImV4cCI6MTc3OTc0MzE0MH0.Umk1Bc3HDXcStM4TY7cHaDqJv7KhiJno8ObiEGmy16VEzDGrlwoHJmWd4wunhtuV
 Content-Type: application/json
 
 {
   "userName": "yekotest",
-  "userPin": "abc",
+  "userPin": "test",
   "newUserPin": "test",
   "userId": 999,
   "role": "ADMIN",
@@ -93,12 +93,12 @@ Content-Type: application/json
 #####################################################################
 
 ### Delete user
-DELETE http://localhost:8081/users/14
-Authorization: Bearer <token>
+DELETE http://localhost:8081/users/17
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdDIyIiwidXNlcklkIjoxNywidXNlck5hbWUiOiJ5ZWtvdGVzdDIyIiwiaWF0IjoxNzc5NzQxMzAwLCJleHAiOjE3Nzk3NDMxMDB9.19K5mdpxlJmAeugQIGUnGZD7vJ8OsX-51uBC008HrgxpUrTABOAsxPIM70Ah2ryU
 Content-Type: application/json
 
 {
-  "userName": "yekotest",
+  "userName": "yekotest22",
   "userPin": "test",
   "newUserPin": "jghj",
   "userId": 999,

@@ -64,12 +64,18 @@ public class UserService {
 
         user.setUserPin(ps.hash(request.getUserPin()));
 
-        return toUserResponse(ur.createUser(user) );
+        User userCreated = ur.createUser(user);
+
+        if(userCreated != null){
+            return toUserResponse(userCreated);
+        }
+
+        return null;
     }
 
 
     public boolean updatePinIfAuthenticated(UpdatePinRequest update, Long id ){
-        User user = ur.findFullUserById(id);
+        User user = ur.findUserById(id);
 
         if( user == null || !as.authenticateUser(user, update.getUserName(), update.getUserPin()) ){
             return false;
@@ -102,7 +108,7 @@ public class UserService {
 
 
     public boolean deleteUserIfAuthenticated(DeleteUserRequest deleteRequest, Long id ){
-        User user = ur.findFullUserById(id);
+        User user = ur.findUserById(id);
 
         if (user != null && as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
             return ur.deleteUserById(id);

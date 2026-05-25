@@ -5,22 +5,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.yeko.loginapi.entity.User;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final DataSource dataSource;
 
-    public UserRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataSource = dataSource;
     }
 
 
@@ -35,59 +29,53 @@ public class UserRepository {
     }
 
 
+    private User resultsetToUser(ResultSet rs) throws SQLException {
+
+        User user = new User();
+
+        user.setUserId(rs.getLong("user_id"));
+        user.setUserName(rs.getString("user_name"));
+        user.setUserPin(rs.getString("user_pin"));
+        user.setUserRole(rs.getString("user_role"));
+
+        return user;
+    }
+
+
+    private User resultsetToPublicUser(ResultSet rs) throws SQLException {
+
+        User user = new User();
+
+        user.setUserId(rs.getLong("user_id"));
+        user.setUserName(rs.getString("user_name"));
+        user.setUserRole(rs.getString("user_role"));
+
+        return user;
+    }
+
+
     @Nullable
-    private User getUser(PreparedStatement ps) throws SQLException {
-        try(ResultSet rs = ps.executeQuery()){
-            if(rs.next() ){
-                User user = new User();
-
-                user.setUserId(rs.getLong("user_id"));
-                user.setUserName(rs.getString("user_name"));
-                user.setUserPin(rs.getString("user_pin"));
-                user.setUserRole(rs.getString("user_role"));
-
-                return user;
-            }
-            return null;
-        }
-    }
-
-
-    private User resultsetToFullUser(ResultSet rs) throws SQLException {
-
-            User user = new User();
-
-            user.setUserId(rs.getLong("user_id"));
-            user.setUserName(rs.getString("user_name"));
-            user.setUserPin(rs.getString("user_pin"));
-            user.setUserRole(rs.getString("user_role"));
-
-            return user;
-
-    }
-
-
     public User findUserByName(String userName) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_name = ?";
 
-        try(Connection connection = dataSource.getConnection();
-              PreparedStatement ps = connection.prepareStatement(sql)){
+        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToUser(rs), userName);
 
-            ps.setString(1, userName);
-
-            return getUser(ps);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if(!users.isEmpty() ){
+            return users.get(0);
         }
+
+        return null;
+
     }
 
 
-    public User findFullUserById(Long id) {
+    @Nullable
+    public User findUserById(Long id) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_id = ? ";
 
-        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToFullUser(rs), id);
+        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToUser(rs), id);
 
         if(!users.isEmpty()){
             return users.get(0);
@@ -98,45 +86,58 @@ public class UserRepository {
     }
 
 
-    public long countAdmins(String role){
-        String sql = "SELECT COUNT(*) FROM users WHERE user_role = ?";
+    @Nullable
+    public User findPublicUserByName(String userName) {
+        String sql = "SELECT user_id, user_name, user_role FROM users " +
+                "WHERE user_name = ?";
 
-        List<Long> list = jdbcTemplate.query(sql, (rs ,rowNum) -> rs.getLong(1), role);
+        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs), userName);
 
-        if( !list.isEmpty() ){
-            return list.get(0);
+        if(!users.isEmpty() ){
+            return users.get(0);
         }
 
-        return 0;
+        return null;
+
     }
 
 
-    public User createUser(User user){
-        String sql = "INSERT INTO users (user_name, user_pin) " +
-                "VALUES (?, ?)";
+    @Nullable
+    public User findPublicUserById(Long id) {
+        String sql = "SELECT user_id, user_name, user_role FROM users " +
+                "WHERE user_id = ? ";
 
-        try(Connection connection = dataSource.getConnection();
-               PreparedStatement ps = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs), id);
 
-            ps.setString(1, user.getUserName());
-            ps.setString(2, user.getUserPin());
-
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected == 1) {
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return findPublicUserById(rs.getLong(1));
-                    }
-                }
-            }
-
-            throw new RuntimeException("Error on user creation!");
-
-
-        }catch(SQLException e){
-            throw new RuntimeException(e);
+        if(!users.isEmpty()){
+            return users.get(0);
         }
+
+        return null;
+
+    }
+
+
+    public Long countAdmins(String role){
+        String sql = "SELECT COUNT(*) FROM users WHERE user_role = ?";
+
+        return jdbcTemplate.queryForObject(sql, Long.class, role);
+    }
+
+
+    @Nullable
+    public User createUser(User user) {
+        String sql = "INSERT INTO users (user_name, user_pin) " +
+                "VALUES (?, ?) RETURNING user_id, user_name, user_role";
+
+        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs),
+                user.getUserName(), user.getUserPin());
+
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+
+        return null;
     }
 
 
@@ -145,42 +146,14 @@ public class UserRepository {
                 "SET user_pin = ? " +
                 "WHERE user_id = ? ";
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql)){
-
-            ps.setString(1, userPin);
-            ps.setLong(2, id);
-
-            return ps.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return  jdbcTemplate.update(sql, userPin, id) == 1;
     }
 
 
     public List<User> getAllUsers(){
         String sql = "SELECT user_id, user_name, user_role FROM users";
-        List<User> users = new ArrayList<>();
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()){
-
-            while(rs.next()){
-                User user = new User();
-                user.setUserId(rs.getLong("user_id"));
-                user.setUserName(rs.getString("user_name"));
-                user.setUserRole(rs.getString("user_role"));
-
-                users.add(user);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return users;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs));
     }
 
 
@@ -188,41 +161,7 @@ public class UserRepository {
         String sql = "DELETE FROM users " +
                      "WHERE user_id = ?";
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql)){
-
-            ps.setLong(1, id);
-            return ps.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    @Nullable
-    public User findPublicUserById(Long id) {
-        String sql = "SELECT user_id, user_name, user_role FROM users " +
-                "WHERE user_id = ?";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql)){
-
-            ps.setLong(1, id);
-
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()) {
-                    User user = new User();
-                    user.setUserId(rs.getLong("user_id"));
-                    user.setUserName(rs.getString("user_name"));
-                    user.setUserRole(rs.getString("user_role"));
-                    return user;
-                }
-                return null;
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return jdbcTemplate.update(sql, id) == 1;
     }
 
 
@@ -230,17 +169,7 @@ public class UserRepository {
         String sql ="UPDATE users SET user_role = ? " +
                 "WHERE user_id = ?";
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql)){
-
-            ps.setString(1, roleUpdate);
-            ps.setLong(2, id);
-            return ps.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
+        return jdbcTemplate.update(sql, roleUpdate, id) == 1;
     }
 
 

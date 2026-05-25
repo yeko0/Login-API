@@ -71,7 +71,11 @@ public class UserController {
         }
 
         UserResponse ur = userService.createUser(user);
-        return ResponseEntity.status(201).body(ur);
+        if(ur != null){
+            return ResponseEntity.status(201).body(ur);
+        }
+
+        return ResponseEntity.status(500).body(new ApiMessage("Error on user creation"));
 
     }
 
