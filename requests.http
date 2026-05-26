@@ -26,8 +26,8 @@ POST http://localhost:8081/users
 Content-Type: application/json
 
 {
-  "userName": "yeko22",
-  "userPin": "22",
+  "userName": "yekotest",
+  "userPin": "test",
   "userId": 999,
   "role": "SELECT user_pin FROM users",
   "hacked": true

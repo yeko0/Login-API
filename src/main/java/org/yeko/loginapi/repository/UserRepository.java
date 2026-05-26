@@ -85,19 +85,17 @@ public class UserRepository {
     }
 
 
-    @Nullable
-    public User findPublicUserByName(String userName) {
+    public Optional<User> findPublicUserByName(String userName) {
         String sql = "SELECT user_id, user_name, user_role FROM users " +
                 "WHERE user_name = ?";
 
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs), userName);
 
         if(!users.isEmpty() ){
-            return users.get(0);
+            return Optional.of(users.get(0));
         }
 
-        return null;
-
+        return Optional.empty();
     }
 
 
@@ -124,8 +122,7 @@ public class UserRepository {
     }
 
 
-    @Nullable
-    public User createUser(User user) {
+    public Optional<User> createUser(User user) {
         String sql = "INSERT INTO users (user_name, user_pin) "+
                 "VALUES (?, ?)";
 
@@ -135,7 +132,7 @@ public class UserRepository {
             return findPublicUserByName(user.getUserName());
         }
 
-        return null;
+        return Optional.empty();
     }
 
 

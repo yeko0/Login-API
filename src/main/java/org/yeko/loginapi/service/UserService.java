@@ -59,19 +59,16 @@ public class UserService {
     }
 
 
-    public UserResponse createUser(CreateUserRequest request ){
+    public Optional<UserResponse> createUser(CreateUserRequest request ){
 
         User user = toUser(request);
 
         user.setUserPin(ps.hash(request.getUserPin()));
 
-        User userCreated = ur.createUser(user);
+        Optional<User> userCreated = ur.createUser(user);
 
-        if(userCreated != null){
-            return toUserResponse(userCreated);
-        }
+        return userCreated.map(this::toUserResponse);
 
-        return null;
     }
 
 

@@ -8,6 +8,7 @@ import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -70,13 +71,12 @@ public class UserController {
             return ResponseEntity.status(400).body(new ApiMessage("User Name already taken. Try again"));
         }
 
-        UserResponse ur = userService.createUser(user);
-        if(ur != null){
-            return ResponseEntity.status(201).body(ur);
+        Optional<UserResponse> ur = userService.createUser(user);
+        if(ur.isPresent()){
+            return ResponseEntity.status(201).body(ur.get());
         }
 
         return ResponseEntity.status(500).body(new ApiMessage("Error on user creation"));
-
     }
 
 
