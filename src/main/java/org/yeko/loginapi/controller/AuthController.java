@@ -42,9 +42,9 @@ public class AuthController {
     public ResponseEntity<?> getValidSession(@RequestHeader(value="Authorization", required = false)
                                              String authorizationHeader){
 
-        UserResponse user = userService.getUserByToken(authorizationHeader);
-        if( user != null ){
-            return ResponseEntity.status(200).body(user);
+        Optional<UserResponse> user = userService.getUserByToken(authorizationHeader);
+        if( user.isPresent() ){
+            return ResponseEntity.status(200).body(user.get());
         }
         return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
     }

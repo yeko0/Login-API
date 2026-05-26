@@ -53,10 +53,10 @@ public class UserController {
 
         if( authService.isAdmin(authorizationHeader) ){
 
-            UserResponse ur = userService.findPublicUserById(id);
+            Optional<UserResponse> ur = userService.findPublicUserById(id);
 
-            if (ur != null) {
-                return ResponseEntity.ok(ur);
+            if (ur.isPresent()) {
+                return ResponseEntity.ok(ur.get());
             }
         }
 

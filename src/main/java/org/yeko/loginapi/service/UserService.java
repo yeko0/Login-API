@@ -87,23 +87,20 @@ public class UserService {
     }
 
 
-    public UserResponse findPublicUserById(Long id ){
-        User user = ur.findPublicUserById(id);
+    public Optional<UserResponse> findPublicUserById(Long id ){
+        Optional<User> userFound = ur.findPublicUserById(id);
 
-        if (user == null) {
-            return null;
-        }
+        return userFound.map(this::toUserResponse);
 
-        return toUserResponse(user);
     }
 
-    public UserResponse getUserByToken(String authorizationHeader){
-        String token = as.getValidToken(authorizationHeader);
+    public Optional<UserResponse> getUserByToken(String authorizationHeader){
+        Optional<String> token = as.getValidToken(authorizationHeader);
 
-        if( token != null ){
-            return findPublicUserById(as.extractUserId(token));
+        if( token.isPresent() ){
+            return findPublicUserById(as.extractUserId(token.get()));
         }
-        return null;
+        return Optional.empty();
     }
 
 
@@ -124,19 +121,18 @@ public class UserService {
     public boolean updateIfValidRole(Long id, UpdateRoleRequest update ){
 
         String role = update.getUserRole().trim().toUpperCase();
-        if( !isValidRole(role) ){
-            return false;
+        if( isValidRole(role) ){
+
+            Optional<UserResponse> user = findPublicUserById(id);
+
+            if( user.isPresent() ){
+                if( !(isLastAdmin() && "ADMIN".equals(user.get().getUserRole()) && "USER".equals(role)) ){
+                    return ur.updateUserRole(id, role);
+                }
+            }
         }
 
-        UserResponse user = findPublicUserById(id);
-        if( user == null ){
-            return false;
-        }
-
-        if( isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role) ){
-            return false;
-        }
-        return ur.updateUserRole(id, role);
+        return false;
     }
 
 

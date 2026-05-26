@@ -60,16 +60,16 @@ public class AuthService {
     }
 
 
-    public String getValidToken(String authorizationHeader){
+    public Optional<String> getValidToken(String authorizationHeader){
         if( isRequestHeaderValid(authorizationHeader) ){
             String token = authorizationHeader.substring(7).trim();
 
             if(isTokenValid(token)){
-                return token;
+                return Optional.of(token);
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
@@ -88,23 +88,23 @@ public class AuthService {
     }
 
 
-    public String getUserRole(String authorizationHeader){
-        String token = getValidToken(authorizationHeader);
+    public Optional<String> getUserRole(String authorizationHeader){
+        Optional<String> token = getValidToken(authorizationHeader);
 
-        if (token != null ){
-            Long id = extractUserId(token);
+        if (token.isPresent() ){
+            Long id = extractUserId(token.get());
             return ur.getUserRoleFromDB(id);
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
     public boolean isAccountOwner(String authorizationHeader, Long id){
-        String token = getValidToken(authorizationHeader);
+        Optional<String> token = getValidToken(authorizationHeader);
 
-        if (token != null ){
-            return Objects.equals(extractUserId(token), id);
+        if (token.isPresent() ){
+            return Objects.equals(extractUserId(token.get()), id);
         }
 
         return false;
@@ -112,12 +112,22 @@ public class AuthService {
 
 
     public boolean isAdmin(String authorizationHeader){
-        return Objects.equals(getUserRole(authorizationHeader), "ADMIN");
+        Optional<String> role = getUserRole(authorizationHeader);
+
+        if(role.isPresent()){
+            return Objects.equals(role.get(), "ADMIN");
+        }
+        return false;
     }
 
 
     public boolean isUser(String authorizationHeader){
-        return Objects.equals(getUserRole(authorizationHeader), "USER");
+        Optional<String> role = getUserRole(authorizationHeader);
+
+        if(role.isPresent()){
+            return Objects.equals(role.get(), "USER");
+        }
+        return false;
     }
 
 

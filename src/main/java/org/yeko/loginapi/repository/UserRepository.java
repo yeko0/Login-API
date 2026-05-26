@@ -1,6 +1,5 @@
 package org.yeko.loginapi.repository;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.yeko.loginapi.entity.User;
@@ -99,18 +98,17 @@ public class UserRepository {
     }
 
 
-    @Nullable
-    public User findPublicUserById(Long id) {
+    public Optional<User> findPublicUserById(Long id) {
         String sql = "SELECT user_id, user_name, user_role FROM users " +
                 "WHERE user_id = ? ";
 
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs), id);
 
         if(!users.isEmpty()){
-            return users.get(0);
+            return Optional.of( users.get(0) );
         }
 
-        return null;
+        return Optional.empty();
 
     }
 
@@ -168,17 +166,16 @@ public class UserRepository {
     }
 
 
-    @Nullable
-    public String getUserRoleFromDB(Long userId) {
+    public Optional<String> getUserRoleFromDB(Long userId) {
         String sql = "SELECT user_role FROM users WHERE user_id = ?";
 
         List<String> listRole = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString(1), userId);
 
         if(!listRole.isEmpty() ){
-            return listRole.get(0);
+            return Optional.of(listRole.get(0));
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
