@@ -1,8 +1,19 @@
-# Login API v.1
+# Login API v2 - JdbcTemplate Refactor
 
-Login API built with **Java**, **Spring Boot**, **JDBC** and **PostgreSQL**.
+Backend REST API built with **Java 17**, **Spring Boot 4**, **Spring JDBC / JdbcTemplate**, **JWT**, **BCrypt**, and a relational database.
 
-This project is a backend REST API for user registration, login, JWT authentication, role-based authorization and account management.
+This branch is **version 2** of the Login API.  
+The main goal of this version was to refactor the repository layer from manual JDBC code to **Spring JdbcTemplate**, while keeping the same API behavior from v1.
+
+## What changed in v2
+
+- Replaced manual JDBC code (`DataSource`, `Connection`, `PreparedStatement`, `ResultSet`) with **JdbcTemplate**
+- Removed manual connection handling from `UserRepository`
+- `SELECT` methods now use `jdbcTemplate.query(...)` or `queryForObject(...)`
+- `INSERT`, `UPDATE`, and `DELETE` methods now use `jdbcTemplate.update(...)`
+- `createUser(...)` was changed to work with both PostgreSQL and MariaDB/MySQL-style local testing
+- Repository code is shorter and easier to maintain
+- API behavior remains the same as v1
 
 ## Features
 
@@ -15,20 +26,21 @@ This project is a backend REST API for user registration, login, JWT authenticat
 - Account-owner-only endpoints
 - Role validation
 - Current session endpoint
-- PostgreSQL database connection using JDBC
 - DTO validation with `@Valid` and `@NotBlank`
+- Role checks are resolved from the database in real time
 
 ## Technologies
 
 - Java 17
 - Spring Boot 4.0.6
 - Spring Web MVC
-- Spring JDBC
+- Spring JDBC / JdbcTemplate
 - PostgreSQL
-- MariaDB driver for school/local testing
+- MariaDB
 - BCrypt via `spring-security-crypto`
 - JWT with JJWT
 - Maven
+- IntelliJ IDEA HTTP Client for endpoint testing
 
 ## Database
 
@@ -39,33 +51,68 @@ CREATE TABLE users
 (
     user_id   serial PRIMARY KEY,
     user_name varchar(100) NOT NULL UNIQUE,
-    user_pin  varchar(100) NOT NULL,
+    user_pin  varchar(255) NOT NULL,
+    user_role varchar(20) DEFAULT 'USER' NOT NULL
+);
+```
+
+For MariaDB/MySQL the table can be adapted with an auto-increment id:
+
+```sql
+CREATE TABLE users
+(
+    user_id   BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_name varchar(100) NOT NULL UNIQUE,
+    user_pin  varchar(255) NOT NULL,
     user_role varchar(20) DEFAULT 'USER' NOT NULL
 );
 ```
 
 ### Columns
 
-| Column      | Description                  |
-|-------------|------------------------------|
-| `user_id`   | Unique user id               |
-| `user_name` | Unique username              |
-| `user_pin`  | BCrypt-hashed PIN            |
-| `user_role` | User role: `USER` or `ADMIN` |
+| Column      | Description                    |
+|-------------|--------------------------------|
+| `user_id`   | Unique user id                 |
+| `user_name` | Unique username                |
+| `user_pin`  | BCrypt-hashed PIN              |
+| `user_role` | User role: `USER` or `ADMIN`   |
 
 ## Configuration
 
-Example `application.properties`:
+The real `application.properties` is ignored by Git because it contains local database credentials and JWT secrets.
+
+Use `application-example.properties` as a template and create your own local:
+
+```text
+src/main/resources/application.properties
+```
+
+Example for PostgreSQL:
 
 ```properties
 spring.application.name=login-api
-spring.datasource.url=jdbc:postgresql://localhost:5432/login_app_db
-spring.datasource.username=postgres
-spring.datasource.password=postgres
 server.port=8081
 
-jwt.secret=this-is-my-super-secret-key-for-learning-login-Jwt
+spring.datasource.url=jdbc:postgresql://localhost:5432/data_base_name
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+
+jwt.secret=secret-key
 jwt.duration-millis=1800000 (30minutes)
+```
+
+Example for MariaDB/XAMPP local testing:
+
+```properties
+spring.application.name=login-api
+server.port=8081
+
+spring.datasource.url=jdbc:mariadb://localhost:3307/data_base_name
+spring.datasource.username=root
+spring.datasource.password=
+
+jwt.secret=secret-key
+jwt.duration-millis=1800000 (30 minutes)
 ```
 
 ## Authentication
@@ -78,7 +125,8 @@ Protected endpoints require this header:
 Authorization: Bearer <token>
 ```
 
-The JWT is used to identify the user.  
+The JWT identifies the user by `userId` and `userName`.
+
 User roles are checked directly from the database, so role changes apply immediately even if an old token still exists.
 
 ## Endpoints
@@ -349,6 +397,17 @@ Most denied requests return:
 }
 ```
 
+Common status codes currently used:
+
+| Status                      | Meaning                                                  |
+|-----------------------------|----------------------------------------------------------|
+| `200 OK`                    | Successful request                                       |
+| `201 Created`               | User created successfully                                |
+| `400 Bad Request`           | Invalid request, for example username already exists     |
+| `401 Unauthorized`          | Login/session/account-owner check failed                 |
+| `403 Forbidden`             | User is authenticated but does not have admin permission |
+| `500 Internal Server Error` | Unexpected server/database error                         |
+
 Validation errors are handled by Spring validation using DTO annotations like `@NotBlank`.
 
 ## Project structure
@@ -381,14 +440,44 @@ entity
 └── User
 ```
 
+## Repository layer in v2
+
+`UserRepository` now uses `JdbcTemplate`.
+
+Examples of the current style:
+
+```text
+SELECT returning multiple rows
+→ jdbcTemplate.query(...)
+
+SELECT returning one guaranteed value
+→ jdbcTemplate.queryForObject(...)
+
+INSERT / UPDATE / DELETE
+→ jdbcTemplate.update(...)
+```
+
+The repository has separate mapping methods for:
+
+```text
+full user
+→ includes user_pin/hash for internal authentication
+
+public user
+→ excludes user_pin/hash for API responses
+```
+
+DTO conversion is handled in the service layer, not in the repository.
+
 ## Security notes
 
 - User PINs are never stored as plain text.
 - PINs are hashed with BCrypt.
-- JWT tokens are signed with a secret from `application.properties`.
+- JWT tokens are signed with a secret from local `application.properties`.
 - Admin permissions are checked against the current database role, not only against token claims.
 - Role changes take effect immediately for protected admin endpoints.
 - The token contains identity data such as `userId` and `userName`, but role permissions are resolved from the database.
+- `application.properties` is ignored by Git to avoid committing local credentials and secrets.
 
 ## Example authorization header
 
@@ -398,7 +487,7 @@ Authorization: Bearer <jwt-token>
 
 ## Current project status
 
-This is version 1 of the Login API.
+This is **version 2** of the Login API.
 
 Implemented:
 
@@ -410,14 +499,26 @@ Implemented:
 - Admin endpoints
 - Account owner endpoints
 - Session endpoint
-- JDBC-based PostgreSQL persistence
+- JdbcTemplate-based persistence
+- PostgreSQL support
+- MariaDB local testing compatibility
+- Local configuration through ignored `application.properties`
+
+Completed v2 goal:
+
+```text
+Manual JDBC repository
+→ Spring JdbcTemplate repository
+```
 
 Planned future improvements:
 
+- Optional/helper cleanup for repository methods that may return no result
+- Cleaner error response model
+- More consistent HTTP status codes
 - Spring Security filter-based authentication
 - Refresh tokens
-- Tests
+- Unit and integration tests
 - Docker setup
-- Better error response model
 - Deployment
 - Optional frontend demo
