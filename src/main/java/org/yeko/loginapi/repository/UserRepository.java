@@ -127,14 +127,13 @@ public class UserRepository {
 
     @Nullable
     public User createUser(User user) {
-        String sql = "INSERT INTO users (user_name, user_pin) " +
-                "VALUES (?, ?) RETURNING user_id, user_name, user_role";
+        String sql = "INSERT INTO users (user_name, user_pin) "+
+                "VALUES (?, ?)";
 
-        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToPublicUser(rs),
-                user.getUserName(), user.getUserPin());
+        int rowsAffected = jdbcTemplate.update(sql, user.getUserName(), user.getUserPin());
 
-        if (!users.isEmpty()) {
-            return users.get(0);
+        if (rowsAffected == 1) {
+            return findPublicUserByName(user.getUserName());
         }
 
         return null;
