@@ -77,14 +77,14 @@ Content-Type: application/json
 #####################################################################
 
 ### Update pin
-PATCH http://localhost:8081/users/15/pin
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3Nzk3NDEzNDAsImV4cCI6MTc3OTc0MzE0MH0.Umk1Bc3HDXcStM4TY7cHaDqJv7KhiJno8ObiEGmy16VEzDGrlwoHJmWd4wunhtuV
+PATCH http://localhost:8081/users/3/pin
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvVGVzdCIsInVzZXJJZCI6MywidXNlck5hbWUiOiJ5ZWtvVGVzdCIsImlhdCI6MTc3OTc5MjYyNiwiZXhwIjoxNzc5Nzk0NDI2fQ.aoAXnIbVauniNpj0xmO4WwAO0dfRBF3yF-LGPplwBM7DWpoPLc3pwbq7QA0nMtz8
 Content-Type: application/json
 
 {
-  "userName": "yekotest",
+  "userName": "yekoTest",
   "userPin": "test",
-  "newUserPin": "test",
+  "newUserPin": "abc",
   "userId": 999,
   "role": "ADMIN",
   "hacked": true
@@ -93,13 +93,13 @@ Content-Type: application/json
 #####################################################################
 
 ### Delete user
-DELETE http://localhost:8081/users/17
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdDIyIiwidXNlcklkIjoxNywidXNlck5hbWUiOiJ5ZWtvdGVzdDIyIiwiaWF0IjoxNzc5NzQxMzAwLCJleHAiOjE3Nzk3NDMxMDB9.19K5mdpxlJmAeugQIGUnGZD7vJ8OsX-51uBC008HrgxpUrTABOAsxPIM70Ah2ryU
+DELETE http://localhost:8081/users/3
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvVGVzdCIsInVzZXJJZCI6MywidXNlck5hbWUiOiJ5ZWtvVGVzdCIsImlhdCI6MTc3OTc5MjYyNiwiZXhwIjoxNzc5Nzk0NDI2fQ.aoAXnIbVauniNpj0xmO4WwAO0dfRBF3yF-LGPplwBM7DWpoPLc3pwbq7QA0nMtz8
 Content-Type: application/json
 
 {
-  "userName": "yekotest22",
-  "userPin": "test",
+  "userName": "yekoTest",
+  "userPin": "abc",
   "newUserPin": "jghj",
   "userId": 999,
   "role": "ADMIN",

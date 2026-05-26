@@ -70,18 +70,17 @@ public class UserRepository {
     }
 
 
-    @Nullable
-    public User findUserById(Long id) {
+    public Optional<User> findUserById(Long id) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_id = ? ";
 
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToUser(rs), id);
 
-        if(!users.isEmpty()){
-            return users.get(0);
+        if(users.isEmpty() ){
+            return Optional.empty();
         }
 
-        return null;
+        return Optional.of(users.get(0));
 
     }
 

@@ -7,6 +7,7 @@ import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -75,15 +76,17 @@ public class UserService {
 
 
     public boolean updatePinIfAuthenticated(UpdatePinRequest update, Long id ){
-        User user = ur.findUserById(id);
+        Optional<User> userFound = ur.findUserById(id);
 
-        if( user == null || !as.authenticateUser(user, update.getUserName(), update.getUserPin()) ){
-            return false;
+        if( userFound.isPresent() ) {
+            User user = userFound.get();
+
+            if (as.authenticateUser(user, update.getUserName(), update.getUserPin())) {
+                user.setUserPin(ps.hash(update.getNewUserPin()));
+                return ur.updateUserPin(id, user.getUserPin());
+            }
         }
-
-        user.setUserPin(ps.hash(update.getNewUserPin()));
-
-        return ur.updateUserPin(id, user.getUserPin());
+        return false;
     }
 
 
@@ -108,12 +111,15 @@ public class UserService {
 
 
     public boolean deleteUserIfAuthenticated(DeleteUserRequest deleteRequest, Long id ){
-        User user = ur.findUserById(id);
+        Optional<User> userFound = ur.findUserById(id);
 
-        if (user != null && as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
-            return ur.deleteUserById(id);
+        if (userFound.isPresent() ){
+            User user = userFound.get();
+
+            if(as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
+                return ur.deleteUserById(id);
+            }
         }
-
         return false;
     }
 
