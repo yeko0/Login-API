@@ -10,6 +10,8 @@ import org.yeko.loginapi.dto.UserResponse;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
+import java.util.Optional;
+
 
 @RestController
 public class AuthController {
@@ -26,13 +28,13 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest){
 
-        LoginResponse response = authService.login(loginRequest);
+        Optional<LoginResponse> response = authService.login(loginRequest);
 
-        if (response == null){
+        if (response.isEmpty()){
             return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
         }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response.get());
     }
 
 

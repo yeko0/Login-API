@@ -40,7 +40,7 @@ POST http://localhost:8081/auth/login
 Content-Type: application/json
 
 {
-  "userName": "yekotest",
+  "userName": "yekoTest",
   "userPin": "test",
   "role": "asda",
   "hack": true

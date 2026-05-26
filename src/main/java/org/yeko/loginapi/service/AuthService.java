@@ -7,6 +7,7 @@ import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -32,16 +33,25 @@ public class AuthService {
     }
 
 
-    public LoginResponse login(LoginRequest loginRequest){
-        User user = ur.findUserByName(loginRequest.getUserName());
+    public Optional<LoginResponse> login(LoginRequest loginRequest){
+        Optional<User> userFound = ur.findUserByName(loginRequest.getUserName());
 
-        if(user == null || !authenticateUser(user, loginRequest.getUserName(), loginRequest.getUserPin()) ){
-            return null;
+        if(userFound.isPresent() ) {
+            User user = userFound.get();
+            if (authenticateUser(user, loginRequest.getUserName(), loginRequest.getUserPin())) {
+                String token = jwtService.generateToken(user);
+
+                return Optional.of( new LoginResponse(
+                                                      token,
+                                                      user.getUserId(),
+                                                      user.getUserName(),
+                                                      user.getUserRole()
+                                                     )
+                );
+
+            }
         }
-
-        String token = jwtService.generateToken(user);
-
-        return new LoginResponse(token, user.getUserId(), user.getUserName(), user.getUserRole());
+        return Optional.empty();
     }
 
 

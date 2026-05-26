@@ -8,6 +8,7 @@ import org.yeko.loginapi.entity.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserRepository {
@@ -54,18 +55,17 @@ public class UserRepository {
     }
 
 
-    @Nullable
-    public User findUserByName(String userName) {
+    public Optional<User> findUserByName(String userName) {
         String sql = "SELECT * FROM users " +
                 "WHERE user_name = ?";
 
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> resultsetToUser(rs), userName);
 
-        if(!users.isEmpty() ){
-            return users.get(0);
+        if(users.isEmpty() ){
+            return Optional.empty();
         }
 
-        return null;
+        return Optional.of(users.get(0));
 
     }
 
