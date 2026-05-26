@@ -33,7 +33,9 @@ public class UserController {
 
 
     @GetMapping("/admin/users")
-    public ResponseEntity<?> adminGetAllUsers(@RequestHeader(value="Authorization", required=false) String authorizationHeader){
+    public ResponseEntity<?> adminGetAllUsers(@RequestHeader(value="Authorization", required=false)
+                                                                  String authorizationHeader){
+
         if(authService.isAdmin(authorizationHeader) ) {
 
             List<UserResponse> users = userService.getAllUsers();
@@ -41,8 +43,11 @@ public class UserController {
                 return ResponseEntity.status(200).body(new ApiMessage("Users Empty"));
             }
             return ResponseEntity.ok(users);
+
+        }else if (authService.isUser(authorizationHeader) ){
+            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
         }
-        return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
     }
 
 
@@ -58,6 +63,10 @@ public class UserController {
             if (ur.isPresent()) {
                 return ResponseEntity.ok(ur.get());
             }
+            return ResponseEntity.status(404).body(new ApiMessage("Not Found"));
+
+        }else if (authService.isUser(authorizationHeader) ){
+            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
         }
 
         return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
@@ -68,7 +77,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest user){
 
         if(userService.userNameExists(user.getUserName())){
-            return ResponseEntity.status(400).body(new ApiMessage("User Name already taken. Try again"));
+            return ResponseEntity.status(409).body(new ApiMessage("User data conflict. Try again"));
         }
 
         Optional<UserResponse> ur = userService.createUser(user);
@@ -84,10 +93,15 @@ public class UserController {
     public ResponseEntity<?> updateRole(@PathVariable Long id,
                                         @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                         @Valid @RequestBody UpdateRoleRequest update){
-        if(authService.isAdmin(authorizationHeader) && userService.updateIfValidRole(id, update) ){
+        if(authService.isAdmin(authorizationHeader) ){
+            if(userService.updateIfValidRole(id, update) ) {
 
-            return ResponseEntity.status(200).body(new ApiMessage("Role Updated"));
+                return ResponseEntity.status(200).body(new ApiMessage("Role Updated"));
+            }
+            return ResponseEntity.status(400).body(new ApiMessage("Invalid request"));
 
+        } else if (authService.isUser(authorizationHeader)) {
+            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
         }
 
         return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
@@ -99,9 +113,12 @@ public class UserController {
                                        @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                        @Valid @RequestBody UpdatePinRequest update){
 
-        if( authService.isAccountOwner(authorizationHeader, id)
-                && userService.updatePinIfAuthenticated(update, id) ){
-            return ResponseEntity.status(200).body(new ApiMessage("Password Updated"));
+        if( authService.isAccountOwner(authorizationHeader, id) ){
+
+            if( userService.updatePinIfAuthenticated(update, id) ){
+                return ResponseEntity.status(200).body(new ApiMessage("Password Updated"));
+            }
+            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
         }
 
         return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
@@ -113,8 +130,12 @@ public class UserController {
                                             @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                             @Valid @RequestBody DeleteUserRequest loginRequest){
 
-        if( authService.isAccountOwner(authorizationHeader, id) && userService.deleteUserIfAuthenticated(loginRequest, id) ){
-            return ResponseEntity.status(200).body(new ApiMessage("User " + loginRequest.getUserName() + " Deleted"));
+        if( authService.isAccountOwner(authorizationHeader, id) ){
+
+            if(userService.deleteUserIfAuthenticated(loginRequest, id) ){
+                return ResponseEntity.status(200).body(new ApiMessage("User Deleted"));
+            }
+            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
         }
 
         return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
