@@ -5,6 +5,12 @@ Backend REST API built with **Java 17**, **Spring Boot 4**, **Spring JDBC / Jdbc
 This branch is **version 2** of the Login API.  
 The main goal of this version was to refactor the repository layer from manual JDBC code to **Spring JdbcTemplate**, while keeping the same API behavior from v1.
 
+## Frontend UI Prototype
+
+Initial frontend prototype designed in Figma before implementing the HTML, Tailwind CSS, and JavaScript frontend.
+
+![Frontend REST API Prototype v2.3](ui/Frontend-Rest-API-Prototype-v2.3.png)
+
 ## What changed in v2
 
 - Replaced manual JDBC code (`DataSource`, `Connection`, `PreparedStatement`, `ResultSet`) with **JdbcTemplate**
