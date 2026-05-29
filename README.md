@@ -7,9 +7,9 @@ The main goal of this version was to refactor the repository layer from manual J
 
 ## Frontend UI Prototype
 
-Initial frontend prototype designed in Figma before implementing the HTML, Tailwind CSS, and JavaScript frontend.
+Initial frontend prototype designed in Figma before implementing the HTML, Tailwind Vite, and JavaScript frontend.
 
-![Frontend REST API Prototype v2.3](ui/Frontend-Rest-API-Prototype-v2.3.png)
+![Frontend REST API Prototype v2.3](frontend/public/ux-ui-prototype/auth-api-console-redesign.png)
 
 ## What changed in v2
 
