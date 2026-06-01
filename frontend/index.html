@@ -110,7 +110,58 @@
 
 
 
+  <div><!--Start Main layout -->
 
+      <!--Div=1 Start-left group cards -->
+      <div class="grid grid-cols-3 mt-2 mr-120 *:border-x-2 *:border-b-2 *:border-x-[#263449] *:border-b-[#263449] *:rounded-xl *:m-2">
+
+           <!--Start Login card -->
+          <div class="grid items-center p-5 border-t-3 border-t-cyan-400">
+              <div class="flex justify-between mb-5">
+                 <span class="bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-1">POST</span>
+                 <span class="bg-teal-950 text-xs text-teal-400 border-2 border-teal-400 rounded-full px-3 py-1">Public</span>
+              </div>
+
+              <div> <!-- Card Header -->
+                  <span class="text-2xl font-bold">Login</span>
+                  <p class="text-slate-500">Authenticate a user and receive JWT</p>
+              </div>
+
+              <div class="mt-5"> <!-- Card input user name -->
+                  <label for="login-username">User name</label> <br>
+                  <input id="login-username" placeholder="Enter user name"
+                         class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
+              </div>
+
+              <div class="mt-5"> <!-- Card input user pin -->
+                  <label for="login-userpin">User Pin</label> <br>
+                  <input id="login-userpin" type="password" placeholder="Enter user pin"
+                         class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
+              </div>
+
+              <div class="flex mt-6 gap-5">
+                  <button class="transition-colors hover:bg-cyan-900 cursor-pointer
+                                 text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-2 pt-1">Login</button>
+                  <p class="text-sm text-slate-500 pt-1">Returns JWT token if authenticated</p>
+              </div>
+
+          </div><!--End Login card -->
+
+
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+
+      </div><!--Div=1 End-left group cards -->
+
+  </div><!--End Main layout -->
 
 
 </main>
