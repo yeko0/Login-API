@@ -7,7 +7,7 @@ const statusText = document.getElementById("backend-status-text");
 setTimeout(() =>{
     checkBackendStatus();
     },
-    3000);
+    1800);
 
 
 //----------------- Functions ------------------
