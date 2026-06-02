@@ -6,7 +6,8 @@
   <title>Login API Frontend</title>
 </head>
 
-<body class="min-h-screen bg-[#0B1120] text-slate-100 font-sans">
+<body class="min-h-screen bg-[url('/background.png')] bg-cover bg-center bg-no-repeat bg-fixed
+                       text-slate-100 font-sans">
 
 <main class="min-h-screen p-6">
 
@@ -50,7 +51,7 @@
         </div>
 
         <div class="absolute right-0 bottom-0">
-          <p class="text-cyan-600">Dev. Yeko</p>
+          <p class="text-cyan-400">Dev. Yeko</p>
         </div>
 
       </div><!-- End Div=2 Right-side Group-->
@@ -88,7 +89,7 @@
 
 
           <!-- Start Div=3 Tags-Endpoints group-->
-          <div class="ml-5 font-bold ">
+          <div id="methods-badges" class="ml-5 font-bold ">
               <span class="bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5 mr-5">GET</span>
               <span class="bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-0.5 mr-5">POST</span>
               <span class="bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-600 rounded-full px-3 py-0.5 mr-5">PATCH</span>
@@ -109,16 +110,18 @@
 
 
 
+
+
     <!--Start Main layout -->
-  <div class="mt-2">
+  <div class="flex items-start mt-2">
 
       <!--Div= Start cards group -->
-      <div class="grid grid-cols-3 mr-120 *:border-x-2 *:border-b-2 *:bg-[#111827]
+      <div class="flex-1 grid grid-cols-3 *:border-x-2 *:border-b-2 *:bg-[#111827]
                      *:border-x-[#263449] *:border-b-[#263449] *:rounded-xl *:m-2">
 
            <!--Start Login card -->
-          <div class="grid items-center p-5 border-t-3 border-t-cyan-400">
-              <div class="flex justify-between mb-5">
+          <div class="grid items-center p-5 border-t-3 border-t-cyan-500">
+              <div class="flex justify-between mb-5 font-bold">
                  <span class="bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-1">POST</span>
                  <span class="bg-teal-950 text-xs text-teal-400 border-2 border-teal-400 rounded-full px-3 py-1">Public</span>
               </div>
@@ -161,6 +164,99 @@
           <div></div>
 
       </div><!--Div= End cards group -->
+
+
+
+
+      <!-- Start Control Panel right side -->
+      <div class="flex flex-col sticky top-4 border-2 bg-[#111827] border-x-[#263449] border-b-[#263449] border-t-cyan-300 rounded-xl
+                         mt-2 p-4 w-120 h-[calc(90vh-180px)]">
+
+
+          <!-- Api response Header -->
+          <h1 class="text-3xl font-bold">API Response</h1>
+          <h3 class="text-slate-500">Live feedback from the selected endpoint</h3>
+
+
+          <!-- Api response box for method and url -->
+          <div class="flex items-center gap-5 border-2 border-[#263449] rounded-lg mt-4 p-3">
+              <span id="api-response-method-badge"
+                    class="bg-cyan-950 text-xs text-cyan-300 border-2 border-cyan-300 rounded-full px-3 pt-1 pb-1.5">Loading</span>
+
+              <p id="api-response-url" class="text-sm text-cyan-300">http://localhost:8081/...</p>
+          </div>
+
+
+          <!-- START Api response info tags -->
+          <div class="flex justify-evenly items-center gap-3 mt-4 text-slate-500
+                    *:flex-1 *:border-2 *:border-[#263449] *:rounded-lg *:text-xs *:pl-2 *:py-1">
+              <div>
+                  <h5>Status</h5>
+                  <span id="api-response-infoTags-status" class="text-cyan-300">
+                              Loading...</span>
+              </div>
+
+              <div>
+                  <h5>Time</h5>
+                  <span id="api-response-infoTags-time" class="text-cyan-300">
+                              Loading...</span>
+              </div>
+
+              <div>
+                  <h5>Items</h5>
+                  <span id="api-response-infoTags-items" class="text-cyan-300">
+                              Loading...</span>
+              </div>
+          </div><!-- END Api response info tags -->
+
+
+
+          <!-- START Api response panel-control-pill with buttons -->
+          <div class="flex *:flex items-center justify-between border-2 border-[#263449] rounded-lg mt-4 p-2 text-xs text-slate-500">
+
+              <!-- Left group -->
+              <div class="gap-3 *:border-2 *:rounded-full *:px-3 *:pt-1 *:pb-1.5
+                                *:hover:text-cyan-300 *:hover:border-cyan-300">
+                  <button id="api-res-pcp-body-btn" class="border-cyan-300 text-cyan-300">Body</button>
+                  <button id="api-res-pcp-headers-btn" class="border-[#263449] text-slate-500">Headers</button>
+                  <button id="api-res-pcp-request-btn" class="border-[#263449] text-slate-500">Request</button>
+              </div>
+
+              <!-- right group -->
+              <div class="gap-3 *:border-2 *:rounded-full *:px-3 *:pt-1 *:pb-1.5
+                                *:hover:text-cyan-300 *:hover:border-cyan-300">
+                  <button id="api-res-pcp-copy-btn" class="border-[#263449] text-slate-500">Copy</button>
+                  <button id="api-res-pcp-clear-btn" class="border-[#263449] text-slate-500">Clear</button>
+              </div>
+          </div><!-- END Api response panel-control-pill with buttons -->
+
+
+
+          <div class="flex-1 overflow-auto custom-scrollbar border-2 border-[#263449] rounded-lg
+                                    mt-4 p-2 text-xs text-slate-500">
+              <pre class="text-base">
+[
+  {
+    "userId": 10,
+    "userName": "yeko33",
+    "userRole": "USER"
+  },
+  {
+    "userId": 9,
+    "userName": "yeko45",
+    "userRole": "USER"
+  },
+  {
+    "userId": 13,
+    "userName": "yekoAdmin",
+    "userRole": "ADMIN"
+  }
+]
+              </pre>
+          </div>
+
+
+      </div><!-- End Control Panel right side -->
 
   </div><!--End Main layout -->
 
