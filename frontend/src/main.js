@@ -209,6 +209,15 @@ apiResPayloadBtn.addEventListener("click", function(){
     renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
 });
 
+apiResCopyBtn.addEventListener("click", async function(){
+    await navigator.clipboard.writeText(apiResShowTextArea.textContent);
+
+});
+
+apiResClearBtn.addEventListener("click", function(){
+    apiResShowTextArea.textContent = "";
+});
+
 //----------------- Functions ------------------
 
 async function checkBackendStatus(){
