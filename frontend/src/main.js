@@ -25,6 +25,10 @@ const statusStyles = {
         text: "Not Found",
         classes: "text-slate-400 border-slate-400"
     },
+    409: {
+        text: "Invalid data",
+        classes: "text-yellow-400 border-yellow-400"
+    },
     500: {
         text: "Server Error",
         classes: "text-red-400 border-red-400"
@@ -34,9 +38,13 @@ const statusStyles = {
 const statusDot = document.getElementById("backend-status-dot");
 const statusText = document.getElementById("backend-status-text");
 
-const inputUserName = document.getElementById("login-userName");
-const inputUserPin = document.getElementById("login-userPin");
+const loginUserName = document.getElementById("login-userName");
+const loginUserPin = document.getElementById("login-userPin");
 const loginBtn = document.getElementById("login-btn");
+
+const registerUserName = document.getElementById("register-userName");
+const registerUserPin = document.getElementById("register-userPin");
+const registerBtn = document.getElementById("register-btn");
 
 const subHeaderTokenDot = document.getElementById("sub-header-token-dot");
 const subHeaderTokenText = document.getElementById("sub-header-token-text");
@@ -70,8 +78,8 @@ setTimeout(() =>{
 
 loginBtn.addEventListener("click", async function(){
     const loginRequest = {
-        userName: inputUserName.value,
-        userPin: inputUserPin.value
+        userName: loginUserName.value,
+        userPin: loginUserPin.value
     }
     const requestMethod = "POST";
     const requestHeaders = {"Content-Type": "application/json"}
@@ -100,7 +108,8 @@ loginBtn.addEventListener("click", async function(){
         lastRequest = {
             userName: loginRequest.userName,
             userPin: "*********",
-        }
+        };
+
         selectedApiResBtn = apiResBodyBtn;
         paintApiResBtn(selectedApiResBtn);
         renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
@@ -177,6 +186,95 @@ loginBtn.addEventListener("click", async function(){
 });
 
 
+registerBtn.addEventListener("click", async function(){
+    const registerRequest = {
+        userName: registerUserName.value,
+        userPin: registerUserPin.value
+    }
+    const requestMethod = "POST";
+    const requestHeaders = {"Content-Type": "application/json"}
+
+    apiResInfoTagAccessLvl.textContent = "Login to get";
+    apiResInfoTagAccessLvl.className = "text-cyan-400";
+    subHeaderTokenDot.className = "text-cyan-400";
+    subHeaderTokenText.className = "text-cyan-400";
+    subHeaderTokenText.textContent = "Login to get valid";
+
+    try{
+        const startTime = performance.now();
+        const response = await fetch("http://localhost:8081/users",
+            {
+                method: requestMethod,
+                headers: requestHeaders,
+                body: JSON.stringify(registerRequest),
+            },
+        );
+        const endTime = performance.now();
+        const responseTime = Math.round(endTime - startTime);
+        const data = await response.json();
+        lastApiResponse ={
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: {"Content-Type": response.headers.get("content-type")}
+            }
+        };
+
+        lastRequest = {
+            userName: registerRequest.userName,
+            userPin: "*********",
+        };
+
+        selectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(selectedApiResBtn);
+        renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
+
+        apiResMethBadge.textContent = requestMethod;
+        apiResMethBadge.className = "bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 pt-1 pb-1.5";
+
+        apiResUrl.textContent = response.url;
+        apiResUrl.className = "text-cyan-400";
+
+        const statusStyle = statusStyles[response.status];
+
+        if (statusStyle) {
+            apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
+            apiResInfoTagStatus.className = statusStyle.classes;
+        } else {
+            apiResInfoTagStatus.textContent = "Unknown Status";
+        }
+
+        if(responseTime < 300){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-green-400";
+        }else if(responseTime >= 300 && responseTime < 1000){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-yellow-400";
+        }else{
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-red-400";
+        }
+
+        console.log(response);
+        console.log(data);
+
+    } catch (error) {
+
+        apiResInfoTagStatus.textContent = "Connection failed";
+        apiResInfoTagStatus.className = "text-red-400 border-red-400"
+
+        apiResInfoTagTime.textContent = "None";
+        apiResInfoTagTime.className = "text-red-400";
+
+        apiResInfoTagAccessLvl.textContent = "None";
+        apiResInfoTagAccessLvl.className = "text-red-400";
+
+        console.log(error);
+    }
+});
+
+
 subHeaderTokenBtn.addEventListener("click", async function(){
 
     if (!currentToken) {
@@ -209,10 +307,11 @@ apiResPayloadBtn.addEventListener("click", function(){
     renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
 });
 
+
 apiResCopyBtn.addEventListener("click", async function(){
     await navigator.clipboard.writeText(apiResShowTextArea.textContent);
-
 });
+
 
 apiResClearBtn.addEventListener("click", function(){
     apiResShowTextArea.textContent = "";

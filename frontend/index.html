@@ -157,15 +157,50 @@
                                  text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-2 pt-1">Login</button>
                   <p class="text-sm text-slate-500 pt-1">Returns JWT token if authenticated</p>
               </div>
-
           </div><!--End Login card -->
 
 
+
+          <!--Start Register card -->
+          <div class="grid items-center p-5 border-t-3 border-t-cyan-500">
+              <div class="flex justify-between mb-5 font-bold">
+                  <span class="bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-1">POST</span>
+                  <span class="bg-teal-950 text-xs text-teal-400 border-2 border-teal-400 rounded-full px-3 py-1">Public</span>
+              </div>
+
+              <div> <!-- Card Header -->
+                  <span class="text-2xl font-bold">Register User</span>
+                  <p class="text-slate-500">Create a user with the default USER role</p>
+              </div>
+
+              <div class="mt-5"> <!-- Card input userName -->
+                  <label for="register-userName">User name</label> <br>
+                  <input id="register-userName" placeholder="Enter user name"
+                         class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
+              </div>
+
+              <div class="mt-5"> <!-- Card input user pin -->
+                  <label for="register-userPin">User Pin</label> <br>
+                  <input id="register-userPin" type="password" placeholder="Enter user pin"
+                         class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
+              </div>
+
+              <div class="flex mt-6 gap-5">
+                  <button id="register-btn" class="transition-colors hover:bg-cyan-900 cursor-pointer
+                                 text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-2 pt-1">Register</button>
+                  <p class="text-sm text-slate-500 pt-1">Creates a user in the database </p>
+              </div>
+          </div><!--End Register card -->
+
+
+          <div></div>
+
           <div></div>
           <div></div>
           <div></div>
-          <div></div>
-          <div></div>
+
           <div></div>
           <div></div>
           <div></div>
