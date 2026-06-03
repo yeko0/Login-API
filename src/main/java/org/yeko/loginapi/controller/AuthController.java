@@ -13,6 +13,7 @@ import org.yeko.loginapi.service.UserService;
 import java.util.Optional;
 
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class AuthController {
     private final AuthService authService;
