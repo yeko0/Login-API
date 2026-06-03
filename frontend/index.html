@@ -199,19 +199,19 @@
                     *:flex-1 *:border-2 *:border-[#263449] *:rounded-lg *:text-xs *:pl-2 *:py-1">
               <div>
                   <h5>Status</h5>
-                  <span id="api-response-infoTags-status" class="text-cyan-300">
+                  <span id="api-response-info-tag-status" class="text-cyan-300">
                               Loading...</span>
               </div>
 
               <div>
                   <h5>Time</h5>
-                  <span id="api-response-infoTags-time" class="text-cyan-300">
+                  <span id="api-response-info-tag-time" class="text-cyan-300">
                               Loading...</span>
               </div>
 
               <div>
-                  <h5>Items</h5>
-                  <span id="api-response-infoTags-items" class="text-cyan-300">
+                  <h5>Access-level</h5>
+                  <span id="api-response-info-tag-access-level" class="text-cyan-300">
                               Loading...</span>
               </div>
           </div><!-- END Api response info tags -->
@@ -224,16 +224,16 @@
               <!-- Left group -->
               <div class="gap-3 *:border-2 *:rounded-full *:px-3 *:pt-1 *:pb-1.5
                                 *:hover:text-cyan-300 *:hover:border-cyan-300">
-                  <button id="api-res-pcp-body-btn" class="border-cyan-300 text-cyan-300">Body</button>
-                  <button id="api-res-pcp-headers-btn" class="border-[#263449] text-slate-500">Headers</button>
-                  <button id="api-res-pcp-request-btn" class="border-[#263449] text-slate-500">Request</button>
+                  <button id="api-response-body-btn" class="border-[#263449] text-slate-500">Body</button>
+                  <button id="api-response-headers-btn" class="border-[#263449] text-slate-500">Headers</button>
+                  <button id="api-response-payload-btn" class="border-[#263449] text-slate-500">Payload</button>
               </div>
 
               <!-- right group -->
               <div class="gap-3 *:border-2 *:rounded-full *:px-3 *:pt-1 *:pb-1.5
                                 *:hover:text-cyan-300 *:hover:border-cyan-300">
-                  <button id="api-res-pcp-copy-btn" class="border-[#263449] text-slate-500">Copy</button>
-                  <button id="api-res-pcp-clear-btn" class="border-[#263449] text-slate-500">Clear</button>
+                  <button id="api-response-copy-btn" class="border-[#263449] text-slate-500">Copy</button>
+                  <button id="api-response-clear-btn" class="border-[#263449] text-slate-500">Clear</button>
               </div>
           </div><!-- END Api response panel-control-pill with buttons -->
 
@@ -241,7 +241,8 @@
 
           <div class="flex-1 overflow-auto custom-scrollbar border-2 border-[#263449] rounded-lg
                                     mt-4 p-2 text-xs text-slate-500">
-              <pre class="text-base">
+              <pre id="api-response-show-text-area" class="text-base">
+Example response:
 [
   {
     "userId": 10,
@@ -252,11 +253,6 @@
     "userId": 9,
     "userName": "yeko45",
     "userRole": "USER"
-  },
-  {
-    "userId": 13,
-    "userName": "yekoAdmin",
-    "userRole": "ADMIN"
   }
 ]
               </pre>
