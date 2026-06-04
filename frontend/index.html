@@ -93,7 +93,7 @@
           <div id="methods-badges" class="ml-5 font-bold ">
               <span class="bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5 mr-5">GET</span>
               <span class="bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-0.5 mr-5">POST</span>
-              <span class="bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-600 rounded-full px-3 py-0.5 mr-5">PATCH</span>
+              <span class="bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-400 rounded-full px-3 py-0.5 mr-5">PATCH</span>
               <span class="bg-red-950 text-xs text-red-400 border-2 border-red-400 rounded-full px-3 py-0.5 mr-5">DELETE</span>
           </div><!-- End Div=3 Tags-endpoints group-->
 
@@ -140,21 +140,21 @@
 
               <div class="mt-5"> <!-- Card input userName -->
                   <label for="login-userName">User name</label> <br>
-                  <input id="login-userName" placeholder="Enter user name"
+                  <input id="login-userName" autocomplete="off" placeholder="Enter user name"
                          class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
                          border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
               </div>
 
               <div class="mt-5"> <!-- Card input user pin -->
                   <label for="login-userPin">User Pin</label> <br>
-                  <input id="login-userPin" type="password" placeholder="Enter user pin"
+                  <input id="login-userPin" type="password" autocomplete="off" placeholder="Enter user pin"
                          class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
                          border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
               </div>
 
               <div class="flex mt-6 gap-5">
                   <button id="login-btn" class="transition-colors hover:bg-cyan-900 cursor-pointer
-                                 text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-2 pt-1">Login</button>
+                                 text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-1.5 pt-1">Login</button>
                   <p class="text-sm text-slate-500 pt-1">Returns JWT token if authenticated</p>
               </div>
           </div><!--End Login card -->
@@ -175,27 +175,66 @@
 
               <div class="mt-5"> <!-- Card input userName -->
                   <label for="register-userName">User name</label> <br>
-                  <input id="register-userName" placeholder="Enter user name"
+                  <input id="register-userName" autocomplete="off" placeholder="Enter user name"
                          class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
                          border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
               </div>
 
               <div class="mt-5"> <!-- Card input user pin -->
                   <label for="register-userPin">User Pin</label> <br>
-                  <input id="register-userPin" type="password" placeholder="Enter user pin"
+                  <input id="register-userPin" type="password" autocomplete="off" placeholder="Enter user pin"
                          class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
                          border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
               </div>
 
               <div class="flex mt-6 gap-5">
                   <button id="register-btn" class="transition-colors hover:bg-cyan-900 cursor-pointer
-                                 text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-2 pt-1">Register</button>
+                                 text-sm font-bold bg-cyan-600 rounded-lg px-5 pb-1.5 pt-1">Register</button>
                   <p class="text-sm text-slate-500 pt-1">Creates a user in the database </p>
               </div>
           </div><!--End Register card -->
 
 
-          <div></div>
+          <!--Start Change Pin card -->
+          <div class="grid items-center p-5 border-t-3 border-t-cyan-500">
+              <div class="flex justify-between mb-5 font-bold">
+                  <span class="bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-400 rounded-full px-3 py-0.5">PATCH</span>
+                  <span class="bg-sky-950 text-xs text-sky-400 border-2 border-sky-400 rounded-full px-3 py-0.5">Owner</span>
+              </div>
+
+              <div> <!-- Card Header -->
+                  <span class="text-2xl font-bold">Change Pin</span>
+                  <p class="text-slate-500">Requires valid token & access level</p>
+              </div>
+
+              <div class="mt-5"> <!-- Card input userName -->
+                  <label for="change-pin-userName">Confirm User name</label> <br>
+                  <input id="change-pin-userName" autocomplete="off" placeholder="Enter user name"
+                         class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
+              </div>
+
+              <div class="mt-5"> <!-- Card input user pin -->
+                  <label for="change-pin-userPin">Confirm User Pin</label> <br>
+                  <input id="change-pin-userPin" type="password" autocomplete="off" placeholder="Enter current pin"
+                         class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-30 py-1 mt-2">
+              </div>
+
+              <div class="flex justify-between mt-5">
+                  <div> <!-- Card input user pin -->
+                      <label for="change-pin-newUserPin">New User Pin</label> <br>
+                      <input id="change-pin-newUserPin" type="password" autocomplete="off" placeholder="Enter new pin"
+                             class="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
+                         border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 pr-5 py-1 mt-2">
+                  </div>
+
+                  <div class="mt-8 mr-10">
+                      <button id="change-pin-btn" class="transition-colors hover:bg-yellow-900 cursor-pointer
+                                 text-sm font-bold bg-yellow-600 rounded-lg px-5 pb-2 pt-1">Change</button>
+                  </div>
+              </div>
+          </div><!--End Change Pin card -->
 
           <div></div>
           <div></div>
