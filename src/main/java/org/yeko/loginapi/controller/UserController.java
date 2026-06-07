@@ -1,6 +1,7 @@
 package org.yeko.loginapi.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yeko.loginapi.dto.*;
@@ -53,7 +54,7 @@ public class UserController {
 
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<?> adminGetUserById(@PathVariable Long id,
+    public ResponseEntity<?> adminGetUserById(@PathVariable @Positive Long id,
                                               @RequestHeader(value="Authorization", required=false)
                                                                     String authorizationHeader){
 
@@ -91,7 +92,7 @@ public class UserController {
 
 
     @PatchMapping("/admin/users/{id}/role")
-    public ResponseEntity<?> updateRole(@PathVariable Long id,
+    public ResponseEntity<?> updateRole(@PathVariable @Positive Long id,
                                         @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                         @Valid @RequestBody UpdateRoleRequest update){
         if(authService.isAdmin(authorizationHeader) ){
@@ -110,7 +111,7 @@ public class UserController {
 
 
     @PatchMapping("/users/{id}/pin")
-    public ResponseEntity<?> updatePin(@PathVariable Long id,
+    public ResponseEntity<?> updatePin(@PathVariable @Positive Long id,
                                        @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                        @Valid @RequestBody UpdatePinRequest update){
 
@@ -127,7 +128,7 @@ public class UserController {
 
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id,
+    public ResponseEntity<?> deleteUserById(@PathVariable @Positive Long id,
                                             @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                             @Valid @RequestBody DeleteUserRequest loginRequest){
 

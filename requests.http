@@ -10,8 +10,8 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiO
 #####################################################################
 
 ### Admin Get user by id
-GET http://localhost:8081/users/8
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiOjEsInVzZXJOYW1lIjoieWVrb0FkbWluIiwiaWF0IjoxNzc5ODAxNjc0LCJleHAiOjE3Nzk4MDM0NzR9.ccmomqlj_EettAnETpIS0g93vJSlKfxc8zCzhrsD-Hb_zsA8fFQFJ3mfHZT90rzN
+GET http://localhost:8081/users/
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3ODA4MzA4NzksImV4cCI6MTc4MDgzMjY3OX0.LNXDexoYd2MIwrHAfHPryVmQrXfEjoM-Ry6HqBkNQmE1lHeGiY4Bc9-DSOERp3-X
 
 #####################################################################
 
@@ -53,8 +53,8 @@ POST http://localhost:8081/auth/login
 Content-Type: application/json
 
 {
-  "userName": "yekoAdmin",
-  "userPin": "admin",
+  "userName": "yekotest",
+  "userPin": "test",
   "role": "asda",
   "hack": true
 }

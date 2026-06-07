@@ -54,6 +54,9 @@ const changePinBtn = document.getElementById("change-pin-btn");
 
 const showUsersAdminBtn = document.getElementById("show-users-admin-btn");
 
+const searchUserByIdUserId = document.getElementById("search-user-by-id-userId");
+const searchUserByIdBtn = document.getElementById("search-user-by-id-btn");
+
 const subHeaderTokenDot = document.getElementById("sub-header-token-dot");
 const subHeaderTokenText = document.getElementById("sub-header-token-text");
 const subHeaderTokenBtn = document.getElementById("sub-header-token-btn");
@@ -438,13 +441,13 @@ changePinBtn.addEventListener("click", async function(){
         console.log(response);
         console.log(data);
 
-    }catch( error) {
+    }catch(error) {
         currentToken = null;
         currentUserId = null;
         currentUserRole = null;
 
         apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
+        apiResInfoTagStatus.className = "text-red-400 border-red-400";
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-red-400";
@@ -610,6 +613,183 @@ showUsersAdminBtn.addEventListener("click", async function(){
         console.log(error);
     }
 
+});
+
+
+
+searchUserByIdBtn.addEventListener("click", async function(){
+    if(currentToken === null){
+        subHeaderTokenDot.className = "text-orange-400";
+        subHeaderTokenText.className = "text-orange-400";
+        subHeaderTokenText.textContent = "Login to get valid";
+
+        apiResInfoTagStatus.textContent = "401 Unauthorized";
+        apiResInfoTagStatus.className = "text-orange-400";
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-cyan-400";
+
+        apiResInfoTagAccessLvl.textContent = "Login to get";
+        apiResInfoTagAccessLvl.className = "text-orange-400";
+
+        lastApiResponse = {
+            data: {
+                message: [
+                    "Successful Admin-login is required",
+                    "before searching a user in data base",
+                    "Please login as ADMIN and try again"
+                ]
+            },
+            response: {
+                status: 401
+            },
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: "Empty"
+            }
+        };
+
+        lastRequest = "Empty";
+
+        selectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(selectedApiResBtn);
+        renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
+        return;
+    }
+
+    if(currentUserRole !== "ADMIN"){
+        apiResInfoTagStatus.textContent = "403 Forbidden";
+        apiResInfoTagStatus.className = "text-red-400";
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-cyan-400";
+        lastApiResponse = {
+            data: {
+                message: [
+                    "Admin Access level is required",
+                    "before searching a user in data base",
+                    "Please login as ADMIN and try again"
+                ]
+            },
+            response: {
+                status: 403
+            },
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: "Empty"
+            }
+        };
+
+        lastRequest = "Empty";
+
+        selectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(selectedApiResBtn);
+        renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
+        return;
+    }
+
+    if(searchUserByIdUserId.value === "" || searchUserByIdUserId.value === null){
+        apiResInfoTagStatus.textContent = "400 Bad Request";
+        apiResInfoTagStatus.className = "text-yellow-400";
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-yellow-400";
+        lastApiResponse = {
+            data: {
+                message: [
+                    "User ID to search is required",
+                    "Input area cant be empty",
+                    "Please enter a user ID in the input area"
+                ]
+            },
+            response: {
+                status: 400
+            },
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: "Empty"
+            }
+        };
+
+        lastRequest = "Empty";
+
+        selectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(selectedApiResBtn);
+        renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
+        return;
+    }
+
+    const requestMethod = "GET";
+    const requestHeaders ={"Authorization": "Bearer "+ currentToken};
+    try{
+        const startTime = performance.now();
+        const response = await fetch("http://localhost:8081/users/"+ searchUserByIdUserId.value,
+            {
+                method: requestMethod,
+                headers: requestHeaders
+            }
+        );
+        const endTime = performance.now();
+        const responseTime = Math.round(endTime - startTime);
+        const data = await response.json();
+
+        lastApiResponse ={
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+
+        lastRequest = "Empty";
+
+        selectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(selectedApiResBtn);
+        renderResponsePanel(selectedApiResBtn, lastApiResponse, lastRequest);
+
+        apiResMethBadge.textContent = requestMethod;
+        apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5";
+
+        apiResUrl.textContent = response.url;
+
+        const statusStyle = statusStyles[response.status];
+
+        if (statusStyle) {
+            apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
+            apiResInfoTagStatus.className = statusStyle.classes;
+        } else {
+            apiResInfoTagStatus.textContent = "Unknown Status";
+        }
+
+        if(responseTime < 300){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-green-400";
+        }else if(responseTime >= 300 && responseTime < 1000){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-yellow-400";
+        }else{
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-red-400";
+        }
+
+    }catch(error){
+
+        apiResInfoTagStatus.textContent = "Connection failed";
+        apiResInfoTagStatus.className = "text-red-400 border-red-400"
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-red-400";
+
+        apiResInfoTagAccessLvl.textContent = "--";
+        apiResInfoTagAccessLvl.className = "text-red-400";
+
+        subHeaderTokenDot.className = "text-red-400";
+        subHeaderTokenText.className = "text-red-400";
+        subHeaderTokenText.textContent = "no valid";
+
+        console.log(error);
+    }
 });
 
 
