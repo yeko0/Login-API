@@ -61,6 +61,11 @@ const changeUserRoleUserId = document.getElementById("change-user-role-userId");
 const changeUserRoleUserRole = document.getElementById("change-user-role-userRole");
 const changeUserRoleBtn = document.getElementById("change-user-role-btn");
 
+const deleteUserByIdUserId = document.getElementById("delete-user-by-id-userId");
+const deleteUserByIdUserName = document.getElementById("delete-user-by-id-userName");
+const deleteUserByIdUserPin = document.getElementById("delete-user-by-id-userPin");
+const deleteUserByIdBtn = document.getElementById("delete-user-btn");
+
 const subHeaderTokenDot = document.getElementById("sub-header-token-dot");
 const subHeaderTokenText = document.getElementById("sub-header-token-text");
 const subHeaderTokenBtn = document.getElementById("sub-header-token-btn");
@@ -989,6 +994,194 @@ changeUserRoleBtn.addEventListener("click", async function() {
         }else{
             apiResInfoTagTime.textContent = `${responseTime} ms`;
             apiResInfoTagTime.className = "text-red-400";
+        }
+
+    }catch(error){
+
+        apiResInfoTagStatus.textContent = "Connection failed";
+        apiResInfoTagStatus.className = "text-red-400 border-red-400"
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-red-400";
+
+        apiResInfoTagAccessLvl.textContent = "--";
+        apiResInfoTagAccessLvl.className = "text-red-400";
+
+        subHeaderTokenDot.className = "text-red-400";
+        subHeaderTokenText.className = "text-red-400";
+        subHeaderTokenText.textContent = "no valid";
+
+        console.log(error);
+    }
+
+});
+
+
+
+deleteUserByIdBtn.addEventListener("click", async function() {
+    apiResMethBadge.textContent = "DELETE";
+    apiResMethBadge.className = "bg-red-950 text-xs text-red-500 border-2 border-red-500 rounded-full px-3 pt-1 pb-1.5";
+
+    apiResUrl.textContent = "http://localhost:8081/users/"+ deleteUserByIdUserId.value;
+
+    if (currentToken === null) {
+        subHeaderTokenDot.className = "text-orange-400";
+        subHeaderTokenText.className = "text-orange-400";
+        subHeaderTokenText.textContent = "Login to get valid";
+
+        apiResInfoTagStatus.textContent = "401 Unauthorized";
+        apiResInfoTagStatus.className = "text-orange-400";
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-cyan-400";
+
+        apiResInfoTagAccessLvl.textContent = "Login to get";
+        apiResInfoTagAccessLvl.className = "text-orange-400";
+
+        lastApiResponse = {
+            data: {
+                message: [
+                    "Successful login is required",
+                    "before deleting a user in data base",
+                    "Please login and try again"
+                ]
+            },
+            response: {
+                status: 401
+            },
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: "Empty"
+            }
+        };
+
+        lastRequest = "Empty";
+
+        currentSelectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        return;
+    }
+
+
+    if (deleteUserByIdUserId.value === "" || deleteUserByIdUserId.value === null ||
+        deleteUserByIdUserName.value === "" || deleteUserByIdUserName.value === null ||
+        deleteUserByIdUserPin.value === "" || deleteUserByIdUserPin.value === null ){
+
+        apiResInfoTagStatus.textContent = "400 Bad Request";
+        apiResInfoTagStatus.className = "text-yellow-400";
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-yellow-400";
+        lastApiResponse = {
+            data: {
+                message: [
+                    "All User data is required",
+                    "Inputs areas cant be empty",
+                    "Please confirm all data and try again"
+                ]
+            },
+            response: {
+                status: 400
+            },
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: "Empty"
+            }
+        };
+
+        lastRequest = "Empty";
+
+        currentSelectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        return;
+    }
+
+    const requestMethod = "DELETE";
+    const requestHeaders ={
+        "Authorization": "Bearer " + currentToken,
+        "Content-Type": "application/json"
+    };
+    const deleteRequest ={
+        "userName": deleteUserByIdUserName.value,
+        "userPin": deleteUserByIdUserPin.value
+    };
+
+    const confirmDelete = confirm("Delete your account permanently?");
+    if(!confirmDelete){
+        return;
+    }
+
+    try {
+        const startTime = performance.now();
+        const response = await fetch("http://localhost:8081/users/"+ deleteUserByIdUserId.value,
+            {
+                method: requestMethod,
+                headers: requestHeaders,
+                body: JSON.stringify(deleteRequest)
+            }
+        );
+
+        const endTime = performance.now();
+        const responseTime = Math.round(endTime - startTime);
+        const data = await response.json();
+
+        lastApiResponse ={
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+
+        lastRequest = {
+            userId: deleteUserByIdUserId.value,
+            userName: deleteRequest.userName,
+            userPin: "*********"
+        };
+
+        currentSelectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+
+        apiResMethBadge.textContent = requestMethod;
+        apiResMethBadge.className = "bg-red-950 text-xs text-red-500 border-2 border-red-500 rounded-full px-3 py-0.5";
+
+        apiResUrl.textContent = response.url;
+
+        const statusStyle = statusStyles[response.status];
+
+        if (statusStyle) {
+            apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
+            apiResInfoTagStatus.className = statusStyle.classes;
+        } else {
+            apiResInfoTagStatus.textContent = "Unknown Status";
+        }
+
+        if(responseTime < 300){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-green-400";
+        }else if(responseTime >= 300 && responseTime < 1000){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-yellow-400";
+        }else{
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-red-400";
+        }
+
+        if(response.ok){
+            currentToken = null;
+            currentUserId = null;
+            currentUserRole = null;
+
+            subHeaderTokenDot.className = "text-red-500";
+            subHeaderTokenText.className = "text-red-500";
+            subHeaderTokenText.textContent = "Login to get valid";
+
+            apiResInfoTagAccessLvl.textContent = "Login to get";
+            apiResInfoTagAccessLvl.className = "text-red-500";
         }
 
     }catch(error){
