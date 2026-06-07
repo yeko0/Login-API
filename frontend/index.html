@@ -294,12 +294,57 @@
                   <p class="text-sm text-slate-500 pt-1">Returns public user profile in database</p>
 
               </div>
-
-
           </div><!--END Search User by id Admin card -->
 
 
-          <div></div>
+
+          <!--Start Change user role Admin card -->
+          <div class="grid items-center p-5 border-t-3 border-t-yellow-500">
+              <div class="flex justify-between font-bold">
+                  <span class="bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-400 rounded-full px-3 py-0.5">PATCH</span>
+                  <span class="bg-orange-950 text-xs text-orange-400 border-2 border-orange-400 rounded-full px-3 py-0.5">Admin</span>
+              </div>
+
+              <div class="mt-5"> <!-- Card Header -->
+                  <span class="text-2xl font-bold">Change User Role</span>
+                  <p class="text-slate-500">Give a new Access-level to existing user</p>
+              </div>
+
+
+              <div class="flex gap-5 mt-5">
+
+                  <div class="w-60"> <!-- Card input user id -->
+                      <label for="change-user-role-userId">User ID</label> <br>
+                      <input id="change-user-role-userId" autocomplete="off" placeholder="Enter user id (only integer number)"
+                             class="placeholder:text-slate-500 focus:outline-0 focus:border-yellow-400
+                            border text-sm text-yellow-400 border-orange-400 rounded-lg w-full px-2 py-1 mt-2">
+                  </div>
+
+
+                  <div class="w-25"> <!-- Card scroll-down role selection -->
+                      <label for="change-user-role-userRole">User Role</label> <br>
+                      <select id="change-user-role-userRole" autocomplete="off"
+                             class="bg-[#111827] focus:outline-0 focus:border-yellow-400 focus:text-yellow-400
+                            border text-sm text-orange-400 border-orange-400 rounded-lg px-2 w-full py-1 mt-2">
+                          <option class="text-yellow-400 border-yellow-400" value="" disabled selected>Select role</option>
+                          <option class="text-yellow-400 border-yellow-400" value="USER">USER</option>
+                          <option class="text-yellow-400 border-yellow-400" value="ADMIN">ADMIN</option>
+                      </select>
+                  </div>
+
+              </div>
+
+              <div class="flex mt-6 gap-5">
+
+                  <button id="change-user-role-btn" class="transition-colors hover:bg-yellow-900 cursor-pointer
+                                 text-sm font-bold bg-yellow-600 rounded-lg px-5 pb-2 pt-1">Change</button>
+
+                  <p class="text-sm text-slate-500 pt-1">Change role of the user</p>
+
+              </div>
+          </div><!--END change user role Admin card -->
+
+
 
           <div></div>
           <div></div>
