@@ -221,11 +221,7 @@ loginBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -297,11 +293,7 @@ registerUserBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -440,11 +432,7 @@ changePinBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -576,11 +564,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -744,11 +728,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -918,11 +898,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -1091,11 +1067,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -1216,11 +1188,7 @@ currentSessionBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
@@ -1281,16 +1249,12 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
 
     } catch (error) {
 
-        apiResInfoTagStatus.textContent = "Connection failed";
-        apiResInfoTagStatus.className = "text-red-400 border-red-400"
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
+        updateConnectionErrorInfoTags();
 
         console.log(error);
     }
-
 });
+
 
 
 subHeaderTokenBtn.addEventListener("click", async function () {
@@ -1304,11 +1268,13 @@ subHeaderTokenBtn.addEventListener("click", async function () {
 });
 
 
+
 apiResBodyBtn.addEventListener("click", function () {
     currentSelectedApiResBtn = apiResBodyBtn;
     paintApiResBtn(currentSelectedApiResBtn);
     renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 });
+
 
 
 apiResHeadersBtn.addEventListener("click", function () {
@@ -1318,6 +1284,7 @@ apiResHeadersBtn.addEventListener("click", function () {
 });
 
 
+
 apiResPayloadBtn.addEventListener("click", function () {
     currentSelectedApiResBtn = apiResPayloadBtn;
     paintApiResBtn(currentSelectedApiResBtn);
@@ -1325,9 +1292,11 @@ apiResPayloadBtn.addEventListener("click", function () {
 });
 
 
+
 apiResCopyBtn.addEventListener("click", async function () {
     await navigator.clipboard.writeText(apiResShowTextArea.textContent);
 });
+
 
 
 apiResClearBtn.addEventListener("click", function () {
@@ -1335,7 +1304,9 @@ apiResClearBtn.addEventListener("click", function () {
 });
 
 
-//----------------- Functions ------------------
+
+//------------------------------------ Functions ------------------------------------------
+
 
 
 async function checkBackendStatus() {
@@ -1354,6 +1325,7 @@ async function checkBackendStatus() {
         statusText.textContent = "localhost:8081 offline";
     }
 }
+
 
 
 function renderResponsePanel(selectedApiResBtn, lastApiResponse, request) {
@@ -1397,6 +1369,7 @@ function renderResponsePanel(selectedApiResBtn, lastApiResponse, request) {
 }
 
 
+
 function paintApiResBtn(button) {
     switch (button) {
         case apiResBodyBtn:
@@ -1418,6 +1391,7 @@ function paintApiResBtn(button) {
 }
 
 
+
 function updateResponseTime(responseTime) {
     if (responseTime < 300) {
         apiResInfoTagTime.textContent = `${responseTime} ms`;
@@ -1429,4 +1403,14 @@ function updateResponseTime(responseTime) {
         apiResInfoTagTime.textContent = `${responseTime} ms`;
         apiResInfoTagTime.className = "text-red-400";
     }
+}
+
+
+
+function updateConnectionErrorInfoTags() {
+    apiResInfoTagStatus.textContent = "Connection failed";
+    apiResInfoTagStatus.className = "text-red-400 border-red-400";
+
+    apiResInfoTagTime.textContent = "--";
+    apiResInfoTagTime.className = "text-red-400";
 }
