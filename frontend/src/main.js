@@ -162,16 +162,6 @@ loginBtn.addEventListener("click", async function () {
         const endTime = performance.now();
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
-            }
-        };
-
-        lastRequest = requestBodyResponse;
 
         if (response.ok) {
             currentToken = data.token;
@@ -189,23 +179,26 @@ loginBtn.addEventListener("click", async function () {
             }
         }
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
         if (data.token != null) {
             subHeaderTokenDot.className = "text-green-400";
             subHeaderTokenText.className = "text-green-400";
             subHeaderTokenText.textContent = "Valid";
         }
 
-        const statusStyle = statusStyles[response.status];
+        lastApiResponse = {
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+        lastRequest = requestBodyResponse;
+        currentSelectedApiResBtn = apiResBodyBtn;
 
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        }
-
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
         console.log(response);
@@ -246,6 +239,7 @@ registerUserBtn.addEventListener("click", async function () {
         const endTime = performance.now();
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
+
         lastApiResponse = {
             data: data,
             response: response,
@@ -254,20 +248,12 @@ registerUserBtn.addEventListener("click", async function () {
                 responseHeaders: Object.fromEntries(response.headers.entries())
             }
         };
-
         lastRequest = requestBodyResponse;
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
         console.log(response);
@@ -334,8 +320,8 @@ changePinBtn.addEventListener("click", async function () {
         };
 
         lastRequest = requestBodyResponse;
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -352,17 +338,6 @@ changePinBtn.addEventListener("click", async function () {
         const endTime = performance.now();
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
-
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
-            }
-        };
-
-        lastRequest = requestBodyResponse;
 
         if (response.ok) {
             currentToken = null;
@@ -386,19 +361,20 @@ changePinBtn.addEventListener("click", async function () {
             ];
         }
 
+        lastApiResponse = {
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+        lastRequest = requestBodyResponse;
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
         console.log(response);
@@ -452,8 +428,8 @@ showUsersAdminBtn.addEventListener("click", async function () {
         };
 
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -483,8 +459,8 @@ showUsersAdminBtn.addEventListener("click", async function () {
         };
 
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -510,22 +486,12 @@ showUsersAdminBtn.addEventListener("click", async function () {
                 responseHeaders: Object.fromEntries(response.headers.entries())
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
     } catch (error) {
@@ -577,8 +543,8 @@ searchUserByIdBtn.addEventListener("click", async function () {
         };
 
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -608,8 +574,8 @@ searchUserByIdBtn.addEventListener("click", async function () {
         };
 
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -621,6 +587,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
+
         lastApiResponse = {
             data: {
                 message: [
@@ -637,10 +604,9 @@ searchUserByIdBtn.addEventListener("click", async function () {
                 responseHeaders: "Empty"
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -666,22 +632,12 @@ searchUserByIdBtn.addEventListener("click", async function () {
                 responseHeaders: Object.fromEntries(response.headers.entries())
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
     } catch (error) {
@@ -734,10 +690,9 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 responseHeaders: "Empty"
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -749,6 +704,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-red-400";
+
         lastApiResponse = {
             data: {
                 message: [
@@ -765,22 +721,22 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 responseHeaders: "Empty"
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
     }
 
-    if (changeUserRoleUserRole.value === "" || changeUserRoleUserRole.value === null ||
-        changeUserRoleUserId.value === "" || changeUserRoleUserId.value === null) {
+    if( changeUserRoleUserRole.value === "" || changeUserRoleUserRole.value === null ||
+        changeUserRoleUserId.value === "" || changeUserRoleUserId.value === null ){
         apiResInfoTagStatus.textContent = "400 Bad Request";
         apiResInfoTagStatus.className = "text-yellow-400";
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
+
         lastApiResponse = {
             data: {
                 message: [
@@ -798,10 +754,9 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 responseHeaders: "Empty"
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -828,22 +783,12 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 responseHeaders: Object.fromEntries(response.headers.entries())
             }
         };
-
         lastRequest = requestBody;
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
     } catch (error) {
@@ -905,24 +850,24 @@ deleteUserByIdBtn.addEventListener("click", async function () {
                 responseHeaders: "Empty"
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
     }
 
-    if (deleteUserByIdUserId.value === "" || deleteUserByIdUserId.value === null ||
+    if( deleteUserByIdUserId.value === "" || deleteUserByIdUserId.value === null ||
         deleteUserByIdUserName.value === "" || deleteUserByIdUserName.value === null ||
-        deleteUserByIdUserPin.value === "" || deleteUserByIdUserPin.value === null) {
+        deleteUserByIdUserPin.value === "" || deleteUserByIdUserPin.value === null ){
 
         apiResInfoTagStatus.textContent = "400 Bad Request";
         apiResInfoTagStatus.className = "text-yellow-400";
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
+
         lastApiResponse = {
             data: {
                 message: [
@@ -939,10 +884,9 @@ deleteUserByIdBtn.addEventListener("click", async function () {
                 responseHeaders: "Empty"
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -967,32 +911,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
-            }
-        };
-
-        lastRequest = requestBodyResponse;
-
-        currentSelectedApiResBtn = apiResBodyBtn;
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
-        updateResponseTime(responseTime);
-
         if (response.ok) {
             currentToken = null;
             currentUserId = null;
@@ -1005,6 +923,23 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             apiResInfoTagAccessLvl.textContent = "Login to get";
             apiResInfoTagAccessLvl.className = "text-red-500";
         }
+
+        lastApiResponse = {
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+        lastRequest = requestBodyResponse;
+        currentSelectedApiResBtn = apiResBodyBtn;
+
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        updateInfoTagStatus(response);
+        updateResponseTime(responseTime);
+
 
     } catch (error) {
 
@@ -1054,8 +989,8 @@ currentSessionBtn.addEventListener("click", async function () {
         };
 
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -1103,20 +1038,11 @@ currentSessionBtn.addEventListener("click", async function () {
         };
 
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
     } catch (error) {
@@ -1141,7 +1067,6 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
                 method: requestMethod
             }
         );
-
         const endTime = performance.now();
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
@@ -1154,22 +1079,12 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
                 responseHeaders: Object.fromEntries(response.headers.entries())
             }
         };
-
         lastRequest = "Empty";
-
         currentSelectedApiResBtn = apiResBodyBtn;
+
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        const statusStyle = statusStyles[response.status];
-
-        if (statusStyle) {
-            apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
-            apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
-        }
-
+        updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
     } catch (error) {
@@ -1230,7 +1145,7 @@ apiResClearBtn.addEventListener("click", function () {
 
 
 
-//------------------------------------ Functions ------------------------------------------
+//------------------------------------ Functions ------------------------------------------//
 
 
 
@@ -1313,6 +1228,20 @@ function paintApiResBtn(button) {
             break;
     }
     button.className = "border-cyan-300 text-cyan-300";
+}
+
+
+
+function updateInfoTagStatus(response) {
+   const statusStyle = statusStyles[response.status];
+
+    if (statusStyle) {
+        apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
+        apiResInfoTagStatus.className = statusStyle.classes;
+    }else {
+        apiResInfoTagStatus.textContent = response.status + " Unknown";
+        apiResInfoTagStatus.className = "text-slate-400 border-slate-400";
+    }
 }
 
 
