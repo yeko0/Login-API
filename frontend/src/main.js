@@ -214,16 +214,7 @@ loginBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.className = statusStyle.classes;
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
         console.log(response);
         console.log(data);
@@ -299,16 +290,7 @@ registerUserBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
         console.log(response);
         console.log(data);
@@ -451,16 +433,7 @@ changePinBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
         console.log(response);
         console.log(data);
@@ -599,16 +572,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
     } catch (error) {
 
@@ -776,16 +740,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
     } catch (error) {
 
@@ -959,16 +914,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
     } catch (error) {
 
@@ -1128,16 +1074,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
         if (response.ok) {
             currentToken = null;
@@ -1275,16 +1212,7 @@ currentSessionBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
     } catch (error) {
 
@@ -1349,16 +1277,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
             apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
-        if (responseTime < 300) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-green-400";
-        } else if (responseTime >= 300 && responseTime < 1000) {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-yellow-400";
-        } else {
-            apiResInfoTagTime.textContent = `${responseTime} ms`;
-            apiResInfoTagTime.className = "text-red-400";
-        }
+        updateResponseTime(responseTime);
 
     } catch (error) {
 
@@ -1496,4 +1415,18 @@ function paintApiResBtn(button) {
             break;
     }
     button.className = "border-cyan-300 text-cyan-300";
+}
+
+
+function updateResponseTime(responseTime) {
+    if (responseTime < 300) {
+        apiResInfoTagTime.textContent = `${responseTime} ms`;
+        apiResInfoTagTime.className = "text-green-400";
+    } else if (responseTime >= 300 && responseTime < 1000) {
+        apiResInfoTagTime.textContent = `${responseTime} ms`;
+        apiResInfoTagTime.className = "text-yellow-400";
+    } else {
+        apiResInfoTagTime.textContent = `${responseTime} ms`;
+        apiResInfoTagTime.className = "text-red-400";
+    }
 }
