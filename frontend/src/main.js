@@ -66,7 +66,9 @@ const deleteUserByIdUserName = document.getElementById("delete-user-by-id-userNa
 const deleteUserByIdUserPin = document.getElementById("delete-user-by-id-userPin");
 const deleteUserByIdBtn = document.getElementById("delete-user-btn");
 
-const currentSessionBtn = document.getElementById("current-session-btn")
+const currentSessionBtn = document.getElementById("current-session-btn");
+
+const showAllUsersPublicBtn = document.getElementById("show-all-users-public-btn");
 
 const subHeaderTokenDot = document.getElementById("sub-header-token-dot");
 const subHeaderTokenText = document.getElementById("sub-header-token-text");
@@ -1317,6 +1319,88 @@ currentSessionBtn.addEventListener("click", async function(){
 
             apiResInfoTagAccessLvl.textContent = "Login to get";
             apiResInfoTagAccessLvl.className = "text-red-500";
+        }
+
+    }catch(error){
+
+        apiResInfoTagStatus.textContent = "Connection failed";
+        apiResInfoTagStatus.className = "text-red-400 border-red-400"
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-red-400";
+
+        apiResInfoTagAccessLvl.textContent = "--";
+        apiResInfoTagAccessLvl.className = "text-red-400";
+
+        subHeaderTokenDot.className = "text-red-400";
+        subHeaderTokenText.className = "text-red-400";
+        subHeaderTokenText.textContent = "no valid";
+
+        console.log(error);
+    }
+
+});
+
+
+
+showAllUsersPublicBtn.addEventListener("click", async function(){
+    apiResMethBadge.textContent = "GET";
+    apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-500 border-2 border-emerald-400 rounded-full px-3 pt-1 pb-1.5";
+
+    apiResUrl.textContent = "http://localhost:8081/users";
+
+    const requestMethod = "GET";
+
+    try {
+        const startTime = performance.now();
+        const response = await fetch("http://localhost:8081/users",
+            {
+                method: requestMethod,
+            }
+        );
+
+        const endTime = performance.now();
+        const responseTime = Math.round(endTime - startTime);
+        const data = await response.json();
+
+        lastApiResponse ={
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+
+        lastRequest = "Empty";
+
+        currentSelectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+
+        apiResMethBadge.textContent = requestMethod;
+        apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5";
+
+        apiResUrl.textContent = response.url;
+
+        const statusStyle = statusStyles[response.status];
+
+        if (statusStyle) {
+            apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
+            apiResInfoTagStatus.className = statusStyle.classes;
+        } else {
+            apiResInfoTagStatus.textContent = "Unknown Status";
+        }
+
+        if(responseTime < 300){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-green-400";
+        }else if(responseTime >= 300 && responseTime < 1000){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-yellow-400";
+        }else{
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-red-400";
         }
 
     }catch(error){
