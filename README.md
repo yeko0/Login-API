@@ -1,27 +1,70 @@
-# Login API v2 - JdbcTemplate Refactor
+# Login API v2.3 - Mini Frontend Console
 
 Backend REST API built with **Java 17**, **Spring Boot 4**, **Spring JDBC / JdbcTemplate**, **JWT**, **BCrypt**, and a relational database.
 
-This branch is **version 2** of the Login API.  
-The main goal of this version was to refactor the repository layer from manual JDBC code to **Spring JdbcTemplate**, while keeping the same API behavior from v1.
+This branch is **v2.3-mini-frontend** of the Login API project.
 
-## Frontend UI Prototype
+The goal of this version is to keep the backend from v2 stable and add a small but functional frontend console for testing the REST API from the browser.
 
-Initial frontend prototype designed in Figma before implementing the HTML, Tailwind Vite, and JavaScript frontend.
+---
 
-![Frontend REST API Prototype v2.3](frontend/public/ux-ui-prototype/auth-api-console-redesign.png)
+## Project overview
 
-## What changed in v2
+This project is a learning-focused authentication API with a browser frontend.
 
-- Replaced manual JDBC code (`DataSource`, `Connection`, `PreparedStatement`, `ResultSet`) with **JdbcTemplate**
-- Removed manual connection handling from `UserRepository`
-- `SELECT` methods now use `jdbcTemplate.query(...)` or `queryForObject(...)`
-- `INSERT`, `UPDATE`, and `DELETE` methods now use `jdbcTemplate.update(...)`
-- `createUser(...)` was changed to work with both PostgreSQL and MariaDB/MySQL-style local testing
-- Repository code is shorter and easier to maintain
-- API behavior remains the same as v1
+It includes:
 
-## Features
+- A Spring Boot backend with JWT authentication
+- BCrypt PIN hashing
+- Role-based access control with `USER` and `ADMIN`
+- Owner-only account actions
+- Admin-only user management actions
+- A Vite + Tailwind + JavaScript frontend console
+- A response panel that shows live API feedback
+
+The frontend is not meant to be a production UI yet. It is a practical API console used to test and understand the request flow.
+
+---
+
+## Frontend preview
+
+Frontend UI prototype / console layout:
+
+![Auth API Console Frontend](frontend/public/ux-ui-prototype/auth-api-console-redesign.png)
+
+The frontend contains cards for:
+
+- Login
+- Register user
+- Change PIN
+- Show all users as admin
+- Search user by ID
+- Change user role
+- Delete user
+- Current session
+- Public users debug endpoint
+
+Each card represents one backend request: input, action, request, and response.
+
+---
+
+## What changed in v2.3
+
+- Added a browser-based frontend API console
+- Added Tailwind styling through Vite
+- Added a backend status indicator for `localhost:8081`
+- Added current token status in the sub-header
+- Added cards for public, owner, admin, and token-based endpoints
+- Added a right-side API response panel
+- Added response status, response time, current access-level display, and response body preview
+- Added Body / Headers / Request tabs for inspecting requests and responses
+- Added copy and clear controls for the response panel
+- Added public `/users` debug card for development testing
+- Kept the backend behavior from v2 stable
+
+---
+
+## Backend features
 
 - User registration
 - Login with JWT
@@ -30,27 +73,68 @@ Initial frontend prototype designed in Figma before implementing the HTML, Tailw
 - `USER` and `ADMIN` roles
 - Admin-only endpoints
 - Account-owner-only endpoints
-- Role validation
 - Current session endpoint
 - DTO validation with `@Valid` and `@NotBlank`
-- Role checks are resolved from the database in real time
+- Role checks resolved from the database in real time
+- JdbcTemplate-based persistence
+- PostgreSQL support
+- MariaDB/XAMPP local testing compatibility
+
+---
+
+## Frontend features
+
+- Vite frontend running separately from the backend
+- Tailwind-based dark UI
+- API request cards grouped by endpoint type
+- Backend online/offline indicator
+- Current token indicator
+- API response panel with:
+    - HTTP method
+    - Request URL
+    - HTTP status
+    - Response time
+    - Current logged-in access level
+    - Response body
+    - Request payload preview
+    - Request/response headers preview
+- Local JavaScript state for:
+    - `currentToken`
+    - `currentUserId`
+    - `currentUserRole`
+    - last API response
+    - last request
+
+Important note: the frontend stores session information only in JavaScript variables for this version. It is enough for learning and testing, but not a final production session strategy.
+
+---
 
 ## Technologies
+
+### Backend
 
 - Java 17
 - Spring Boot 4.0.6
 - Spring Web MVC
 - Spring JDBC / JdbcTemplate
 - PostgreSQL
-- MariaDB
 - BCrypt via `spring-security-crypto`
 - JWT with JJWT
 - Maven
-- IntelliJ IDEA HTTP Client for endpoint testing
+- IntelliJ IDEA HTTP Client
+
+### Frontend
+
+- HTML
+- JavaScript
+- Vite
+- Tailwind CSS
+
+---
 
 ## Database
 
-Main table:
+Main PostgreSQL table:
 
 ```sql
 CREATE TABLE users
@@ -62,7 +146,7 @@ CREATE TABLE users
 );
 ```
 
-For MariaDB/MySQL the table can be adapted with an auto-increment id:
+MariaDB/MySQL version for local school/XAMPP testing:
 
 ```sql
 CREATE TABLE users
@@ -76,18 +160,20 @@ CREATE TABLE users
 
 ### Columns
 
-| Column      | Description                    |
-|-------------|--------------------------------|
-| `user_id`   | Unique user id                 |
-| `user_name` | Unique username                |
-| `user_pin`  | BCrypt-hashed PIN              |
-| `user_role` | User role: `USER` or `ADMIN`   |
+| Column      | Description                  |
+|-------------|------------------------------|
+| `user_id`   | Unique user id               |
+| `user_name` | Unique username              |
+| `user_pin`  | BCrypt-hashed PIN            |
+| `user_role` | User role: `USER` or `ADMIN` |
+
+---
 
 ## Configuration
 
 The real `application.properties` is ignored by Git because it contains local database credentials and JWT secrets.
 
-Use `application-example.properties` as a template and create your own local:
+Use `application-example.properties` as a template and create your own local file:
 
 ```text
 src/main/resources/application.properties
@@ -104,7 +190,7 @@ spring.datasource.username=postgres
 spring.datasource.password=postgres
 
 jwt.secret=secret-key
-jwt.duration-millis=1800000 (30minutes)
+jwt.duration-millis=1800000
 ```
 
 Example for MariaDB/XAMPP local testing:
@@ -118,14 +204,47 @@ spring.datasource.username=root
 spring.datasource.password=
 
 jwt.secret=secret-key
-jwt.duration-millis=1800000 (30 minutes)
+jwt.duration-millis=1800000
 ```
 
-## Authentication
+---
 
-After login, the API returns a JWT token.
+## How to run
 
-Protected endpoints require this header:
+### 1. Start the backend
+
+Run the Spring Boot application from IntelliJ or Maven.
+
+Expected backend URL:
+
+```text
+http://localhost:8081
+```
+
+The frontend status pill checks the backend on `localhost:8081`.
+
+### 2. Start the frontend
+
+Go to the frontend folder and run Vite:
+
+```bash
+npm install
+npm run dev
+```
+
+Expected frontend URL:
+
+```text
+http://localhost:5173
+```
+
+---
+
+## Authentication flow
+
+After login, the backend returns a JWT token.
+
+Protected requests use this header:
 
 ```http
 Authorization: Bearer <token>
@@ -134,6 +253,8 @@ Authorization: Bearer <token>
 The JWT identifies the user by `userId` and `userName`.
 
 User roles are checked directly from the database, so role changes apply immediately even if an old token still exists.
+
+---
 
 ## Endpoints
 
@@ -198,7 +319,19 @@ Response example:
 
 ---
 
-### Authenticated endpoints
+#### Public debug users
+
+```http
+GET /users
+```
+
+This endpoint is currently public for development/debugging.
+
+It can be used to quickly verify that the frontend, backend, and database connection are working.
+
+---
+
+### Authenticated endpoint
 
 #### Get current session
 
@@ -207,7 +340,7 @@ GET /auth/session
 Authorization: Bearer <token>
 ```
 
-Returns the current user based on the token.
+Returns the current user based on the active token.
 
 Response example:
 
@@ -223,7 +356,7 @@ Response example:
 
 ### Admin endpoints
 
-#### Get all users
+#### Get all users as admin
 
 ```http
 GET /admin/users
@@ -381,18 +514,6 @@ Response example:
 
 ---
 
-### Debug endpoint
-
-#### Get all users without authentication
-
-```http
-GET /users
-```
-
-This endpoint is currently public for development/debugging.
-
-It can be used to quickly verify that the application is connected to the database.
-
 ## Error response
 
 Most denied requests return:
@@ -412,11 +533,17 @@ Common status codes currently used:
 | `400 Bad Request`           | Invalid request, for example username already exists     |
 | `401 Unauthorized`          | Login/session/account-owner check failed                 |
 | `403 Forbidden`             | User is authenticated but does not have admin permission |
+| `404 Not Found`             | Requested resource was not found                         |
+| `409 Conflict`              | Invalid/conflicting data                                 |
 | `500 Internal Server Error` | Unexpected server/database error                         |
 
 Validation errors are handled by Spring validation using DTO annotations like `@NotBlank`.
 
+---
+
 ## Project structure
+
+Backend structure:
 
 ```text
 controller
@@ -444,11 +571,31 @@ dto
 
 entity
 └── User
+
+exception
+└── GlobalExceptionHandler
 ```
+
+Frontend structure:
+
+```text
+frontend
+├── index.html
+├── package.json
+├── public
+│   ├── background.png
+│   └── ux-ui-prototype
+│       └── auth-api-console-redesign.png
+└── src
+    ├── main.js
+    └── style.css
+```
+
+---
 
 ## Repository layer in v2
 
-`UserRepository` now uses `JdbcTemplate`.
+`UserRepository` uses `JdbcTemplate`.
 
 Examples of the current style:
 
@@ -475,6 +622,8 @@ public user
 
 DTO conversion is handled in the service layer, not in the repository.
 
+---
+
 ## Security notes
 
 - User PINs are never stored as plain text.
@@ -484,47 +633,43 @@ DTO conversion is handled in the service layer, not in the repository.
 - Role changes take effect immediately for protected admin endpoints.
 - The token contains identity data such as `userId` and `userName`, but role permissions are resolved from the database.
 - `application.properties` is ignored by Git to avoid committing local credentials and secrets.
+- The current frontend is a development/testing console, not a production authentication frontend.
 
-## Example authorization header
-
-```http
-Authorization: Bearer <jwt-token>
-```
+---
 
 ## Current project status
 
-This is **version 2** of the Login API.
+This is **v2.3-mini-frontend**.
 
-Implemented:
+Completed:
 
-- User registration
-- Login
-- JWT generation and validation
-- BCrypt PIN hashing
-- Role-based authorization
-- Admin endpoints
-- Account owner endpoints
-- Session endpoint
-- JdbcTemplate-based persistence
-- PostgreSQL support
-- MariaDB local testing compatibility
-- Local configuration through ignored `application.properties`
+- Backend v2 JdbcTemplate refactor
+- JWT login/session flow
+- Admin and owner endpoint testing
+- Public debug endpoint testing
+- Mini frontend API console
+- Tailwind/Vite frontend setup
+- Live backend status indicator
+- Current token indicator
+- API response panel
+- Basic request/response inspection in the browser
 
-Completed v2 goal:
+Completed v2.3 goal:
 
 ```text
-Manual JDBC repository
-→ Spring JdbcTemplate repository
+Backend API only
+→ Backend API + functional mini frontend console
 ```
 
 Planned future improvements:
 
-- Optional/helper cleanup for repository methods that may return no result
-- Cleaner error response model
-- More consistent HTTP status codes
-- Spring Security filter-based authentication
-- Refresh tokens
-- Unit and integration tests
-- Docker setup
-- Deployment
-- Optional frontend demo
+- Refactor repeated frontend JavaScript into reusable helper functions
+- Improve responsive layout for smaller screens
+- Add better loading states during requests
+- Improve form validation before sending requests
+- Add more consistent frontend error messages
+- Add localStorage/sessionStorage support if needed
+- Add unit and integration tests
+- Add Docker setup
+- Add deployment setup
+- Later: Spring Security filter-based authentication
