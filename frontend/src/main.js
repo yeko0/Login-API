@@ -128,12 +128,12 @@ setTimeout(() => {
     checkBackendStatus();
 }, 500);
 
-
 apiResInfoTagAccessLvl.textContent = "Login to get";
 apiResInfoTagAccessLvl.className = "text-cyan-400";
 subHeaderTokenDot.className = "text-cyan-400";
 subHeaderTokenText.className = "text-cyan-400";
 subHeaderTokenText.textContent = "Login to get valid";
+
 
 
 loginBtn.addEventListener("click", async function () {
@@ -148,10 +148,7 @@ loginBtn.addEventListener("click", async function () {
         userPin: "*********"
     };
 
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.POST;
-
-    apiResUrl.textContent = endPointsURL.login;
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.POST, endPointsURL.login);
 
     try {
         const startTime = performance.now();
@@ -202,11 +199,6 @@ loginBtn.addEventListener("click", async function () {
             subHeaderTokenText.textContent = "Valid";
         }
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.POST;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -240,10 +232,7 @@ registerUserBtn.addEventListener("click", async function () {
         userPin: "*********"
     };
 
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.POST;
-
-    apiResUrl.textContent = endPointsURL.registerUser;
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.POST, endPointsURL.registerUser);
 
     try {
         const startTime = performance.now();
@@ -272,18 +261,11 @@ registerUserBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.POST;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
             apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
             apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
         updateResponseTime(responseTime);
@@ -316,12 +298,9 @@ changePinBtn.addEventListener("click", async function () {
         userPin: "*********",
         newUserPin: "*********"
     };
-
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.PATCH;
-
     const changePinURLrequest = endPointsURL.changePin(currentUserId);
-    apiResUrl.textContent = changePinURLrequest;
+
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
 
     if (currentToken === null || currentUserId === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -411,11 +390,6 @@ changePinBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.PATCH;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -444,10 +418,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
     const requestMethod = "GET";
     const requestHeaders = {"Authorization": "Bearer " + currentToken};
 
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.GET;
-
-    apiResUrl.textContent = endPointsURL.showAllUsersAdmin;
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -546,11 +517,6 @@ showUsersAdminBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.GET;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -575,12 +541,9 @@ showUsersAdminBtn.addEventListener("click", async function () {
 searchUserByIdBtn.addEventListener("click", async function () {
     const requestMethod = "GET";
     const requestHeaders = {"Authorization": "Bearer " + currentToken};
-
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.GET;
-
     const searchUserByIdURLrequest = endPointsURL.searchUserById(searchUserByIdUserId.value)
-    apiResUrl.textContent = searchUserByIdURLrequest;
+
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -710,11 +673,6 @@ searchUserByIdBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.GET;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -742,12 +700,9 @@ changeUserRoleBtn.addEventListener("click", async function () {
         "Content-Type": "application/json"
     };
     const requestBody = {"userRole": changeUserRoleUserRole.value};
-
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.PATCH;
-
     const changeUserRoleURLrequest = endPointsURL.changeUserRole(changeUserRoleUserId.value);
-    apiResUrl.textContent = changeUserRoleURLrequest;
+
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changeUserRoleURLrequest);
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -880,11 +835,6 @@ changeUserRoleBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.PATCH;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -921,12 +871,9 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         userName: requestBody.userName,
         userPin: "*********"
     };
-
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.DELETE;
-
     const deleteUserByIdURLrequest = endPointsURL.deleteUser(deleteUserByIdUserId.value);
-    apiResUrl.textContent = deleteUserByIdURLrequest;
+
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.DELETE, deleteUserByIdURLrequest);
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -966,7 +913,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
     }
-
 
     if (deleteUserByIdUserId.value === "" || deleteUserByIdUserId.value === null ||
         deleteUserByIdUserName.value === "" || deleteUserByIdUserName.value === null ||
@@ -1036,11 +982,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.DELETE;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -1079,10 +1020,7 @@ currentSessionBtn.addEventListener("click", async function () {
     const requestMethod = "GET";
     const requestHeaders = {"Authorization": "Bearer " + currentToken};
 
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.GET;
-
-    apiResUrl.textContent = endPointsURL.currentSession;
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.currentSession);
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -1170,11 +1108,6 @@ currentSessionBtn.addEventListener("click", async function () {
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
 
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.GET;
-
-        apiResUrl.textContent = response.url;
-
         const statusStyle = statusStyles[response.status];
 
         if (statusStyle) {
@@ -1199,10 +1132,7 @@ currentSessionBtn.addEventListener("click", async function () {
 showAllUsersPublicBtn.addEventListener("click", async function () {
     const requestMethod = "GET";
 
-    apiResMethBadge.textContent = requestMethod;
-    apiResMethBadge.className = badgeClassesStyles.GET;
-
-    apiResUrl.textContent = endPointsURL.showAllUsersPublic;
+    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersPublic);
 
     try {
         const startTime = performance.now();
@@ -1230,11 +1160,6 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
         currentSelectedApiResBtn = apiResBodyBtn;
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
-
-        apiResMethBadge.textContent = requestMethod;
-        apiResMethBadge.className = badgeClassesStyles.GET;
-
-        apiResUrl.textContent = response.url;
 
         const statusStyle = statusStyles[response.status];
 
@@ -1413,4 +1338,13 @@ function updateConnectionErrorInfoTags() {
 
     apiResInfoTagTime.textContent = "--";
     apiResInfoTagTime.className = "text-red-400";
+}
+
+
+
+function updateApiResponseSubHeader(method, styleClass, url) {
+    apiResMethBadge.textContent = method;
+    apiResMethBadge.className = styleClass;
+
+    apiResUrl.textContent = url;
 }
