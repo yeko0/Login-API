@@ -66,6 +66,8 @@ const deleteUserByIdUserName = document.getElementById("delete-user-by-id-userNa
 const deleteUserByIdUserPin = document.getElementById("delete-user-by-id-userPin");
 const deleteUserByIdBtn = document.getElementById("delete-user-btn");
 
+const currentSessionBtn = document.getElementById("current-session-btn")
+
 const subHeaderTokenDot = document.getElementById("sub-header-token-dot");
 const subHeaderTokenText = document.getElementById("sub-header-token-text");
 const subHeaderTokenBtn = document.getElementById("sub-header-token-btn");
@@ -99,6 +101,11 @@ setTimeout(() =>{
     }, 500);
 
 
+apiResInfoTagAccessLvl.textContent = "Login to get";
+apiResInfoTagAccessLvl.className = "text-cyan-400";
+subHeaderTokenDot.className = "text-cyan-400";
+subHeaderTokenText.className = "text-cyan-400";
+subHeaderTokenText.textContent = "Login to get valid";
 
 
 loginBtn.addEventListener("click", async function(){
@@ -242,12 +249,6 @@ registerBtn.addEventListener("click", async function(){
     }
     const requestMethod = "POST";
     const requestHeaders = {"Content-Type": "application/json"};
-
-    apiResInfoTagAccessLvl.textContent = "Login to get";
-    apiResInfoTagAccessLvl.className = "text-cyan-400";
-    subHeaderTokenDot.className = "text-cyan-400";
-    subHeaderTokenText.className = "text-cyan-400";
-    subHeaderTokenText.textContent = "Login to get valid";
 
     try{
         const startTime = performance.now();
@@ -1172,6 +1173,140 @@ deleteUserByIdBtn.addEventListener("click", async function() {
         }
 
         if(response.ok){
+            currentToken = null;
+            currentUserId = null;
+            currentUserRole = null;
+
+            subHeaderTokenDot.className = "text-red-500";
+            subHeaderTokenText.className = "text-red-500";
+            subHeaderTokenText.textContent = "Login to get valid";
+
+            apiResInfoTagAccessLvl.textContent = "Login to get";
+            apiResInfoTagAccessLvl.className = "text-red-500";
+        }
+
+    }catch(error){
+
+        apiResInfoTagStatus.textContent = "Connection failed";
+        apiResInfoTagStatus.className = "text-red-400 border-red-400"
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-red-400";
+
+        apiResInfoTagAccessLvl.textContent = "--";
+        apiResInfoTagAccessLvl.className = "text-red-400";
+
+        subHeaderTokenDot.className = "text-red-400";
+        subHeaderTokenText.className = "text-red-400";
+        subHeaderTokenText.textContent = "no valid";
+
+        console.log(error);
+    }
+
+});
+
+currentSessionBtn.addEventListener("click", async function(){
+    apiResMethBadge.textContent = "GET";
+    apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-500 border-2 border-emerald-400 rounded-full px-3 pt-1 pb-1.5";
+
+    apiResUrl.textContent = "http://localhost:8081/auth/session";
+
+    if (currentToken === null) {
+        subHeaderTokenDot.className = "text-orange-400";
+        subHeaderTokenText.className = "text-orange-400";
+        subHeaderTokenText.textContent = "Login to get valid";
+
+        apiResInfoTagStatus.textContent = "401 Unauthorized";
+        apiResInfoTagStatus.className = "text-orange-400";
+
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-cyan-400";
+
+        apiResInfoTagAccessLvl.textContent = "Login to get";
+        apiResInfoTagAccessLvl.className = "text-orange-400";
+
+        lastApiResponse = {
+            data: {
+                message: [
+                    "Successful login is required",
+                    "before checking Token",
+                    "Please login and try again"
+                ]
+            },
+            response: {
+                status: 401
+            },
+            headers: {
+                requestHeaders: "Empty",
+                responseHeaders: "Empty"
+            }
+        };
+
+        lastRequest = "Empty";
+
+        currentSelectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        return;
+    }
+
+    const requestMethod = "GET";
+    const requestHeaders ={"Authorization": "Bearer " + currentToken};
+
+    try {
+        const startTime = performance.now();
+        const response = await fetch("http://localhost:8081/auth/session",
+            {
+                method: requestMethod,
+                headers: requestHeaders
+            }
+        );
+
+        const endTime = performance.now();
+        const responseTime = Math.round(endTime - startTime);
+        const data = await response.json();
+
+        lastApiResponse ={
+            data: data,
+            response: response,
+            headers: {
+                requestHeaders: requestHeaders,
+                responseHeaders: Object.fromEntries(response.headers.entries())
+            }
+        };
+
+        lastRequest = "Empty";
+
+        currentSelectedApiResBtn = apiResBodyBtn;
+        paintApiResBtn(currentSelectedApiResBtn);
+        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+
+        apiResMethBadge.textContent = requestMethod;
+        apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5";
+
+        apiResUrl.textContent = response.url;
+
+        const statusStyle = statusStyles[response.status];
+
+        if (statusStyle) {
+            apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
+            apiResInfoTagStatus.className = statusStyle.classes;
+        } else {
+            apiResInfoTagStatus.textContent = "Unknown Status";
+        }
+
+        if(responseTime < 300){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-green-400";
+        }else if(responseTime >= 300 && responseTime < 1000){
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-yellow-400";
+        }else{
+            apiResInfoTagTime.textContent = `${responseTime} ms`;
+            apiResInfoTagTime.className = "text-red-400";
+        }
+
+        if(!response.ok){
             currentToken = null;
             currentUserId = null;
             currentUserRole = null;

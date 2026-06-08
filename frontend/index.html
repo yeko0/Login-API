@@ -120,10 +120,10 @@
 
 
     <!--Start Main layout -->
-  <div class="flex items-start mt-2">
+  <div class="flex items-start mt-2 gap-2">
 
       <!--Div= Start cards group -->
-      <div class="flex-1 grid grid-cols-3 *:border-x-2 *:border-b-2 *:bg-[#111827]
+      <div class="flex-1 items-start grid grid-cols-3 *:border-x-2 *:border-b-2 *:bg-[#111827]
                      *:border-x-[#263449] *:border-b-[#263449] *:rounded-xl *:m-2">
 
            <!--Start Login card -->
@@ -238,7 +238,7 @@
 
 
 
-          <!--Start Show-user Admin card -->
+          <!--Start Show-all-user Admin card -->
           <div class="grid items-center p-5 border-t-3 border-t-emerald-500">
               <div class="flex justify-between font-bold">
                   <span class="bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5">GET</span>
@@ -252,7 +252,7 @@
 
               <div class="mt-5"> <!-- Card info area -->
                   <span class="hover:text-emerald-400 hover:border-emerald-400
-                         border text-sm text-orange-400 border-orange-400 rounded-lg pl-2 pr-15 py-1">Admin users review</span>
+                         border text-sm text-orange-400 border-orange-400 rounded-lg pl-2 pr-25 py-1">Admin users review</span>
               </div>
 
               <div class="flex mt-6 gap-5">
@@ -263,7 +263,7 @@
                   <p class="text-sm text-slate-500 pt-1">Returns public user profiles in database</p>
 
               </div>
-          </div><!--Show-user Admin card -->
+          </div><!--Show-all-user Admin card -->
 
 
 
@@ -395,7 +395,34 @@
 
 
 
-          <div></div>
+          <!--Start Current session card -->
+          <div class="grid items-center p-5 border-t-3 border-t-emerald-500">
+              <div class="flex justify-between font-bold">
+                  <span class="bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-0.5">GET</span>
+                  <span class="bg-violet-950 text-xs text-violet-400 border-2 border-violet-400 rounded-full px-3 py-0.5">Token</span>
+              </div>
+
+              <div class="mt-5"> <!-- Card Header -->
+                  <span class="text-2xl font-bold">Current Session</span>
+                  <p class="text-slate-500">Validate current token and show active user</p>
+              </div>
+
+              <div class="mt-5"> <!-- Card info area -->
+                  <span class="hover:text-emerald-400 hover:border-emerald-400
+                         border text-sm text-violet-400 border-violet-400 rounded-lg pl-2 pr-25 py-1">Token status</span>
+              </div>
+
+              <div class="flex mt-6 gap-5">
+
+                  <button id="current-session-btn" class="transition-colors hover:bg-emerald-900 cursor-pointer
+                                 text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Check</button>
+
+                  <p class="text-sm text-slate-500 pt-1">Returns logged-in user from current token</p>
+
+              </div>
+          </div><!--END current session card -->
+
+
           <div></div>
 
       </div><!--Div= End cards group -->
