@@ -92,9 +92,9 @@ public class UserController {
 
 
     @PatchMapping("/admin/users/{id}/role")
-    public ResponseEntity<?> updateRole(@PathVariable @Positive Long id,
-                                        @RequestHeader(value="Authorization", required=false) String authorizationHeader,
-                                        @Valid @RequestBody UpdateRoleRequest update){
+    public ResponseEntity<?> updateUserRole(@PathVariable @Positive Long id,
+                                            @RequestHeader(value="Authorization", required=false) String authorizationHeader,
+                                            @Valid @RequestBody UpdateRoleRequest update){
         if(authService.isAdmin(authorizationHeader) ){
             if(userService.updateIfValidRole(id, update) ) {
 

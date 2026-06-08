@@ -43,9 +43,9 @@ const loginUserName = document.getElementById("login-userName");
 const loginUserPin = document.getElementById("login-userPin");
 const loginBtn = document.getElementById("login-btn");
 
-const registerUserName = document.getElementById("register-userName");
-const registerUserPin = document.getElementById("register-userPin");
-const registerBtn = document.getElementById("register-btn");
+const registerUserUserName = document.getElementById("register-user-userName");
+const registerUserUserPin = document.getElementById("register-user-userPin");
+const registerUserBtn = document.getElementById("register-user-btn");
 
 const changePinUserName = document.getElementById("change-pin-userName");
 const changePinUserPin = document.getElementById("change-pin-userPin");
@@ -89,12 +89,27 @@ const apiResClearBtn = document.getElementById("api-response-clear-btn");
 
 const apiResShowTextArea = document.getElementById("api-response-show-text-area");
 
+const apiBaseURL = "http://localhost:8081";
+
 let currentToken = null;
 let currentUserId = null;
 let currentUserRole = null;
 let currentSelectedApiResBtn = apiResBodyBtn;
 let lastApiResponse = null;
 let lastRequest = null;
+
+const endPointsURL = {
+    login: `${apiBaseURL}/auth/login`,
+    registerUser: `${apiBaseURL}/users`,
+    showAllUsersAdmin: `${apiBaseURL}/admin/users`,
+    currentSession: `${apiBaseURL}/auth/session`,
+    showAllUsersPublic: `${apiBaseURL}/users`,
+
+    changePin: (userId) => `${apiBaseURL}/users/${userId}/pin`,
+    searchUserById: (userId) => `${apiBaseURL}/users/${userId}`,
+    changeUserRole: (userId) => `${apiBaseURL}/admin/users/${userId}/role`,
+    deleteUser: (userId) => `${apiBaseURL}/users/${userId}`
+};
 
 paintApiResBtn(currentSelectedApiResBtn);
 
@@ -114,7 +129,7 @@ loginBtn.addEventListener("click", async function(){
     apiResMethBadge.textContent = "POST";
     apiResMethBadge.className = "bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/auth/login";
+    apiResUrl.textContent = endPointsURL.login;
 
     const loginRequest = {
         userName: loginUserName.value,
@@ -125,7 +140,7 @@ loginBtn.addEventListener("click", async function(){
 
     try{
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/auth/login",
+        const response = await fetch(endPointsURL.login,
                                                  {
                                                          method: requestMethod,
                                                          headers: requestHeaders,
@@ -239,22 +254,23 @@ loginBtn.addEventListener("click", async function(){
 
 
 
-registerBtn.addEventListener("click", async function(){
+registerUserBtn.addEventListener("click", async function(){
+
     apiResMethBadge.textContent = "POST";
     apiResMethBadge.className = "bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/users";
+    apiResUrl.textContent = endPointsURL.registerUser;
 
     const registerRequest = {
-        userName: registerUserName.value,
-        userPin: registerUserPin.value
+        userName: registerUserUserName.value,
+        userPin: registerUserUserPin.value
     }
     const requestMethod = "POST";
     const requestHeaders = {"Content-Type": "application/json"};
 
     try{
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/users",
+        const response = await fetch(endPointsURL.registerUser,
             {
                 method: requestMethod,
                 headers: requestHeaders,
@@ -331,7 +347,8 @@ changePinBtn.addEventListener("click", async function(){
     apiResMethBadge.textContent = "PATCH";
     apiResMethBadge.className = "bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/users/"+currentUserId+"/pin";
+    const changePinURLrequest = endPointsURL.changePin(currentUserId);
+    apiResUrl.textContent = changePinURLrequest;
 
     const changePinRequest = {
         userName: changePinUserName.value,
@@ -390,7 +407,7 @@ changePinBtn.addEventListener("click", async function(){
 
     try{
         const startTime = performance.now()
-        const response = await fetch("http://localhost:8081/users/"+currentUserId+"/pin",
+        const response = await fetch(changePinURLrequest,
             {
                 method: requestMethod,
                 headers: requestHeaders,
@@ -497,7 +514,7 @@ showUsersAdminBtn.addEventListener("click", async function(){
     apiResMethBadge.textContent = "GET";
     apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/admin/users";
+    apiResUrl.textContent = endPointsURL.showAllUsersAdmin;
 
     if(currentToken === null){
         subHeaderTokenDot.className = "text-orange-400";
@@ -574,7 +591,7 @@ showUsersAdminBtn.addEventListener("click", async function(){
 
     try{
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/admin/users",
+        const response = await fetch(endPointsURL.showAllUsersAdmin,
                                                     {
                                                          method: requestMethod,
                                                          headers: requestHeaders
@@ -653,7 +670,8 @@ searchUserByIdBtn.addEventListener("click", async function(){
     apiResMethBadge.textContent = "GET";
     apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/users/"+ searchUserByIdUserId.value;
+    const searchUserByIdURLrequest = endPointsURL.searchUserById(searchUserByIdUserId.value)
+    apiResUrl.textContent = searchUserByIdURLrequest;
 
     if(currentToken === null){
         subHeaderTokenDot.className = "text-orange-400";
@@ -760,7 +778,7 @@ searchUserByIdBtn.addEventListener("click", async function(){
     const requestHeaders ={"Authorization": "Bearer "+ currentToken};
     try{
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/users/"+ searchUserByIdUserId.value,
+        const response = await fetch(searchUserByIdURLrequest,
             {
                 method: requestMethod,
                 headers: requestHeaders
@@ -835,7 +853,8 @@ changeUserRoleBtn.addEventListener("click", async function() {
     apiResMethBadge.textContent = "PATCH";
     apiResMethBadge.className = "bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/users/"+ changeUserRoleUserId.value +"/role";
+    const changeUserRoleURLrequest = endPointsURL.changeUserRole(changeUserRoleUserId.value);
+    apiResUrl.textContent = changeUserRoleURLrequest;
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -948,7 +967,7 @@ changeUserRoleBtn.addEventListener("click", async function() {
     const changeRoleRequest ={ "userRole": changeUserRoleUserRole.value };
     try {
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/admin/users/"+ changeUserRoleUserId.value +"/role",
+        const response = await fetch(changeUserRoleURLrequest,
             {
                 method: requestMethod,
                 headers: requestHeaders,
@@ -1025,7 +1044,8 @@ deleteUserByIdBtn.addEventListener("click", async function() {
     apiResMethBadge.textContent = "DELETE";
     apiResMethBadge.className = "bg-red-950 text-xs text-red-500 border-2 border-red-500 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/users/"+ deleteUserByIdUserId.value;
+    const deleteUserByIdURLrequest = endPointsURL.deleteUser(deleteUserByIdUserId.value);
+    apiResUrl.textContent = deleteUserByIdURLrequest;
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -1118,7 +1138,7 @@ deleteUserByIdBtn.addEventListener("click", async function() {
 
     try {
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/users/"+ deleteUserByIdUserId.value,
+        const response = await fetch(deleteUserByIdURLrequest,
             {
                 method: requestMethod,
                 headers: requestHeaders,
@@ -1207,11 +1227,13 @@ deleteUserByIdBtn.addEventListener("click", async function() {
 
 });
 
+
+
 currentSessionBtn.addEventListener("click", async function(){
     apiResMethBadge.textContent = "GET";
     apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-500 border-2 border-emerald-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/auth/session";
+    apiResUrl.textContent = endPointsURL.currentSession;
 
     if (currentToken === null) {
         subHeaderTokenDot.className = "text-orange-400";
@@ -1257,7 +1279,7 @@ currentSessionBtn.addEventListener("click", async function(){
 
     try {
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/auth/session",
+        const response = await fetch(endPointsURL.currentSession,
             {
                 method: requestMethod,
                 headers: requestHeaders
@@ -1347,15 +1369,15 @@ showAllUsersPublicBtn.addEventListener("click", async function(){
     apiResMethBadge.textContent = "GET";
     apiResMethBadge.className = "bg-emerald-950 text-xs text-emerald-500 border-2 border-emerald-400 rounded-full px-3 pt-1 pb-1.5";
 
-    apiResUrl.textContent = "http://localhost:8081/users";
+    apiResUrl.textContent = endPointsURL.showAllUsersPublic;
 
     const requestMethod = "GET";
 
     try {
         const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/users",
+        const response = await fetch(endPointsURL.showAllUsersPublic,
             {
-                method: requestMethod,
+                method: requestMethod
             }
         );
 
@@ -1472,7 +1494,7 @@ apiResClearBtn.addEventListener("click", function(){
 
 async function checkBackendStatus(){
     try {
-        const response = await fetch("http://localhost:8081/users");
+        const response = await fetch(endPointsURL.showAllUsersPublic);
 
         if (response.ok) {
             statusDot.className = "text-green-400";
