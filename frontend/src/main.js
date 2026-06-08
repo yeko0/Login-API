@@ -180,10 +180,16 @@ loginBtn.addEventListener("click", async function () {
             currentToken = data.token;
             currentUserId = data.userId;
             currentUserRole = data.userRole;
-        } else {
-            currentToken = null;
-            currentUserId = null;
-            currentUserRole = null;
+
+            if (data.userRole === "ADMIN") {
+                apiResInfoTagAccessLvl.textContent = "Admin";
+                apiResInfoTagAccessLvl.className = "text-amber-400";
+                currentUserRole = "ADMIN";
+            } else if (data.userRole === "USER") {
+                apiResInfoTagAccessLvl.textContent = "User";
+                apiResInfoTagAccessLvl.className = "text-sky-400";
+                currentUserRole = "USER";
+            }
         }
 
         currentSelectedApiResBtn = apiResBodyBtn;
@@ -194,10 +200,6 @@ loginBtn.addEventListener("click", async function () {
             subHeaderTokenDot.className = "text-green-400";
             subHeaderTokenText.className = "text-green-400";
             subHeaderTokenText.textContent = "Valid";
-        } else {
-            subHeaderTokenDot.className = "text-red-400";
-            subHeaderTokenText.className = "text-red-400";
-            subHeaderTokenText.textContent = "no valid";
         }
 
         apiResMethBadge.textContent = requestMethod;
@@ -210,8 +212,6 @@ loginBtn.addEventListener("click", async function () {
         if (statusStyle) {
             apiResInfoTagStatus.textContent = response.status + " " + statusStyle.text;
             apiResInfoTagStatus.className = statusStyle.classes;
-        } else {
-            apiResInfoTagStatus.textContent = "Unknown Status";
         }
 
         if (responseTime < 300) {
@@ -225,40 +225,16 @@ loginBtn.addEventListener("click", async function () {
             apiResInfoTagTime.className = "text-red-400";
         }
 
-        if (data.userRole === "ADMIN") {
-            apiResInfoTagAccessLvl.textContent = "Admin";
-            apiResInfoTagAccessLvl.className = "text-amber-400";
-            currentUserRole = "ADMIN";
-        } else if (data.userRole === "USER") {
-            apiResInfoTagAccessLvl.textContent = "User";
-            apiResInfoTagAccessLvl.className = "text-sky-400";
-            currentUserRole = "USER";
-        } else {
-            apiResInfoTagAccessLvl.textContent = "Unknown";
-            apiResInfoTagAccessLvl.className = "text-cyan-400";
-            currentUserRole = null;
-        }
-
         console.log(response);
         console.log(data);
 
     } catch (error) {
-        currentToken = null;
-        currentUserId = null;
-        currentUserRole = null;
 
         apiResInfoTagStatus.textContent = "Connection failed";
         apiResInfoTagStatus.className = "text-red-400 border-red-400"
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-red-400";
-
-        apiResInfoTagAccessLvl.textContent = "--";
-        apiResInfoTagAccessLvl.className = "text-red-400";
-
-        subHeaderTokenDot.className = "text-red-400";
-        subHeaderTokenText.className = "text-red-400";
-        subHeaderTokenText.textContent = "no valid";
 
         console.log(error);
     }
@@ -521,7 +497,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
         apiResInfoTagStatus.className = "text-orange-400";
 
         apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-cyan-400";
+        apiResInfoTagTime.className = "text-orange-400";
 
         apiResInfoTagAccessLvl.textContent = "Login to get";
         apiResInfoTagAccessLvl.className = "text-orange-400";
@@ -1039,7 +1015,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         apiResInfoTagStatus.className = "text-orange-400";
 
         apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text_orange-400";
+        apiResInfoTagTime.className = "text-orange-400";
 
         apiResInfoTagAccessLvl.textContent = "Login to get";
         apiResInfoTagAccessLvl.className = "text-orange-400";
@@ -1251,6 +1227,25 @@ currentSessionBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
+        if (!response.ok) {
+            data.message = [
+                "Current Session is not valid",
+                "Please login again",
+                "Token expired or invalid"
+            ];
+
+            currentToken = null;
+            currentUserId = null;
+            currentUserRole = null;
+
+            subHeaderTokenDot.className = "text-red-500";
+            subHeaderTokenText.className = "text-red-500";
+            subHeaderTokenText.textContent = "Login to get valid";
+
+            apiResInfoTagAccessLvl.textContent = "Login to get";
+            apiResInfoTagAccessLvl.className = "text-red-500";
+        }
+
         lastApiResponse = {
             data: data,
             response: response,
@@ -1289,19 +1284,6 @@ currentSessionBtn.addEventListener("click", async function () {
         } else {
             apiResInfoTagTime.textContent = `${responseTime} ms`;
             apiResInfoTagTime.className = "text-red-400";
-        }
-
-        if (!response.ok) {
-            currentToken = null;
-            currentUserId = null;
-            currentUserRole = null;
-
-            subHeaderTokenDot.className = "text-red-500";
-            subHeaderTokenText.className = "text-red-500";
-            subHeaderTokenText.textContent = "Login to get valid";
-
-            apiResInfoTagAccessLvl.textContent = "Login to get";
-            apiResInfoTagAccessLvl.className = "text-red-500";
         }
 
     } catch (error) {
