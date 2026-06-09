@@ -163,8 +163,6 @@ loginBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-
         if (response.ok) {
             currentToken = data.token;
             currentUserId = data.userId;
@@ -241,8 +239,6 @@ registerUserBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-
         saveApiResponse(data, {
             status: response.status,
             headers: {
@@ -291,7 +287,6 @@ changePinBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
 
     if (currentToken === null || currentUserId === null) {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         saveApiResponse(
             {
@@ -325,12 +320,8 @@ changePinBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-
         if (response.ok) {
-            currentToken = null;
-            currentUserId = null;
-            currentUserRole = null;
+            resetSession();
 
             subHeaderTokenDot.className = "text-red-400";
             subHeaderTokenText.textContent = "Login again for valid";
@@ -338,16 +329,11 @@ changePinBtn.addEventListener("click", async function () {
             apiResInfoTagAccessLvl.textContent = "Login again";
             apiResInfoTagAccessLvl.className = "text-red-400";
 
-            lastApiResponse.data = [
-                lastApiResponse.data,
-                {
-                    message: [
-                        "After changing pin login is required",
-                        "login again for new (token & Access Level)",
-                        "login again with new password/pin"
-                    ]
-                }
-            ];
+            addFrontendMessages(data, [
+                "After changing pin login is required",
+                "Login again for new token and access level",
+                "Login again with new password/pin"
+            ]);
         }
 
         saveApiResponse(data, {
@@ -385,7 +371,6 @@ showUsersAdminBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
 
     if (currentToken === null) {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         saveApiResponse(
             {
@@ -404,7 +389,6 @@ showUsersAdminBtn.addEventListener("click", async function () {
     }
 
     if (currentUserRole !== "ADMIN") {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         apiResInfoTagStatus.textContent = "403 Forbidden";
         apiResInfoTagStatus.className = "text-red-400";
@@ -429,7 +413,6 @@ showUsersAdminBtn.addEventListener("click", async function () {
     }
 
     try {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         const startTime = performance.now();
         const response = await fetch(endPointsURL.showAllUsersAdmin,
@@ -476,7 +459,6 @@ searchUserByIdBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
 
     if (currentToken === null) {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         saveApiResponse(
             {
@@ -495,7 +477,6 @@ searchUserByIdBtn.addEventListener("click", async function () {
     }
 
     if (currentUserRole !== "ADMIN") {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         apiResInfoTagStatus.textContent = "403 Forbidden";
         apiResInfoTagStatus.className = "text-red-400";
@@ -522,7 +503,6 @@ searchUserByIdBtn.addEventListener("click", async function () {
     }
 
     if (searchUserByIdUserId.value === "" || searchUserByIdUserId.value === null) {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         apiResInfoTagStatus.textContent = "400 Bad Request";
         apiResInfoTagStatus.className = "text-yellow-400";
@@ -549,7 +529,6 @@ searchUserByIdBtn.addEventListener("click", async function () {
     }
 
     try {
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         const startTime = performance.now();
         const response = await fetch(searchUserByIdURLrequest,
@@ -614,8 +593,6 @@ changeUserRoleBtn.addEventListener("click", async function () {
             }
         );
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -640,8 +617,6 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 status: 403,
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -669,8 +644,6 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 status: 400,
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -700,8 +673,6 @@ changeUserRoleBtn.addEventListener("click", async function () {
                 request: requestBody
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -751,8 +722,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -780,8 +749,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
                 status: 400
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -827,8 +794,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        currentSelectedApiResBtn = apiResBodyBtn;
-
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         updateInfoTagStatus(response);
@@ -864,8 +829,6 @@ currentSessionBtn.addEventListener("click", async function () {
                 ]
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -904,8 +867,6 @@ currentSessionBtn.addEventListener("click", async function () {
                 }
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -947,8 +908,6 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
                 }
             }
         );
-
-        currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
