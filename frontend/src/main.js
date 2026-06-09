@@ -265,24 +265,7 @@ changePinBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
 
-    if (currentToken === null || currentUserId === null) {
-
-        saveApiResponse(
-            {
-                message: [
-                    "Successful login is required",
-                    "before changing pin",
-                    "Please login and try again"
-                ]
-            },
-            {
-                headers: {requestHeaders: requestHeaders},
-                request: requestBodyResponse
-            }
-        );
-
-        showLoginRequiredState();
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotLoggedInAs("ADMIN")) {
         return;
     }
 
@@ -341,20 +324,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
 
-    if (currentToken === null) {
-
-        saveApiResponse(
-            {
-                message: [
-                    "Successful Admin-login is required",
-                    "before checking users in database",
-                    "Please login as ADMIN and try again"
-                ]
-            }
-        );
-
-        showLoginRequiredState();
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotLoggedInAs("ADMIN")) {
         return;
     }
 
@@ -425,20 +395,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
 
-    if (currentToken === null) {
-
-        saveApiResponse(
-            {
-                message: [
-                    "Successful Admin-login is required",
-                    "before searching a user in database",
-                    "Please login as ADMIN and try again"
-                ]
-            }
-        );
-
-        showLoginRequiredState();
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotLoggedInAs("ADMIN")) {
         return;
     }
 
@@ -519,20 +476,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changeUserRoleURLrequest);
 
-    if (currentToken === null) {
-        showLoginRequiredState();
-
-        saveApiResponse(
-            {
-                message: [
-                    "Successful Admin-login is required",
-                    "before changing user role",
-                    "Please login as ADMIN and try again"
-                ]
-            }
-        );
-
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotLoggedInAs("ADMIN")) {
         return;
     }
 
@@ -624,20 +568,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.DELETE, deleteUserByIdURLrequest);
 
-    if (currentToken === null) {
-        showLoginRequiredState();
-
-        saveApiResponse(
-            {
-                message: [
-                    "Successful login is required",
-                    "before deleting a user in database",
-                    "Please login and try again"
-                ]
-            }
-        );
-
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotLoggedInAs("ADMIN")) {
         return;
     }
 
@@ -729,20 +660,7 @@ currentSessionBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.currentSession);
 
-    if (currentToken === null) {
-        showLoginRequiredState();
-
-        saveApiResponse(
-            {
-                message: [
-                    "Successful login is required",
-                    "before checking Token",
-                    "Please login and try again"
-                ]
-            }
-        );
-
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotLoggedInAs()) {
         return;
     }
 
@@ -1128,5 +1046,25 @@ function blockIfNotAdmin() {
     );
 
     showResponsePanel(apiResBodyBtn);
+    return true;
+}
+
+
+
+function blockIfNotLoggedInAs(requiredRole = "USER") {
+    if (currentToken !== null) {
+        return false;
+    }
+
+    saveApiResponse({
+        message: [
+            `Successful ${requiredRole}-login is required`,
+            `Please login as ${requiredRole} and try again`
+        ]
+    });
+
+    showLoginRequiredState();
+    showResponsePanel(apiResBodyBtn);
+
     return true;
 }
