@@ -163,25 +163,7 @@ loginBtn.addEventListener("click", async function () {
         const data = await response.json();
 
         if (response.ok) {
-            currentToken = data.token;
-            currentUserId = data.userId;
-            currentUserRole = data.userRole;
-
-            if (data.userRole === "ADMIN") {
-                apiResInfoTagAccessLvl.textContent = "Admin";
-                apiResInfoTagAccessLvl.className = "text-amber-400";
-                currentUserRole = "ADMIN";
-            } else if (data.userRole === "USER") {
-                apiResInfoTagAccessLvl.textContent = "User";
-                apiResInfoTagAccessLvl.className = "text-sky-400";
-                currentUserRole = "USER";
-            }
-        }
-
-        if (data.token != null) {
-            subHeaderTokenDot.className = "text-green-400";
-            subHeaderTokenText.className = "text-green-400";
-            subHeaderTokenText.textContent = "Valid";
+            setSession(data);
         }
 
         saveApiResponse(data, {
@@ -400,7 +382,6 @@ showUsersAdminBtn.addEventListener("click", async function () {
     }
 
     try {
-
         const startTime = performance.now();
         const response = await fetch(endPointsURL.showAllUsersAdmin,
             {
@@ -1081,6 +1062,26 @@ function resetSession() {
 
     apiResInfoTagAccessLvl.textContent = "Login to get";
     apiResInfoTagAccessLvl.className = "text-red-500";
+}
+
+
+
+function setSession(data) {
+    currentToken = data.token;
+    currentUserId = data.userId;
+    currentUserRole = data.userRole;
+
+    subHeaderTokenDot.className = "text-green-400";
+    subHeaderTokenText.className = "text-green-400";
+    subHeaderTokenText.textContent = "Valid";
+
+    if (data.userRole === "ADMIN") {
+        apiResInfoTagAccessLvl.textContent = "Admin";
+        apiResInfoTagAccessLvl.className = "text-amber-400";
+    } else if (data.userRole === "USER") {
+        apiResInfoTagAccessLvl.textContent = "User";
+        apiResInfoTagAccessLvl.className = "text-sky-400";
+    }
 }
 
 
