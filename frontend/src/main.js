@@ -442,28 +442,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
         return;
     }
 
-    if (currentUserRole !== "ADMIN") {
-
-        apiResInfoTagStatus.textContent = "403 Forbidden";
-        apiResInfoTagStatus.className = "text-red-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
-
-        saveApiResponse(
-            {
-                message: [
-                    "Admin Access level is required",
-                    "before searching a user in database",
-                    "Please login as ADMIN and try again"
-                ]
-            },
-            {
-                status: 403
-            }
-        );
-
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotAdmin()) {
         return;
     }
 
@@ -557,27 +536,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
         return;
     }
 
-    if (currentUserRole !== "ADMIN") {
-        apiResInfoTagStatus.textContent = "403 Forbidden";
-        apiResInfoTagStatus.className = "text-red-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
-
-        saveApiResponse(
-            {
-                message: [
-                    "Admin Access level is required",
-                    "before searching a user in database",
-                    "Please login as ADMIN and try again"
-                ]
-            },
-            {
-                status: 403,
-            }
-        );
-
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotAdmin()) {
         return;
     }
 
@@ -1141,4 +1100,33 @@ function saveApiResponse(data, options = {} ){
 function showResponsePanel(button) {
     paintApiResBtn(button);
     renderResponsePanel(button, lastApiResponse, lastRequest);
+}
+
+
+
+function blockIfNotAdmin() {
+    if (currentUserRole === "ADMIN") {
+        return false;
+    }
+
+    apiResInfoTagStatus.textContent = "403 Forbidden";
+    apiResInfoTagStatus.className = "text-red-400";
+
+    apiResInfoTagTime.textContent = "--";
+    apiResInfoTagTime.className = "text-red-400";
+
+    saveApiResponse(
+        {
+            message: [
+                "Admin access level is required",
+                "Please login as ADMIN and try again"
+            ]
+        },
+        {
+            status: 403
+        }
+    );
+
+    showResponsePanel(apiResBodyBtn);
+    return true;
 }
