@@ -265,7 +265,7 @@ changePinBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
 
-    if (blockIfNotLoggedInAs("ADMIN")) {
+    if (blockIfNotLoggedIn()) {
         return;
     }
 
@@ -324,30 +324,11 @@ showUsersAdminBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
 
-    if (blockIfNotLoggedInAs("ADMIN")) {
+    if (blockIfNotLoggedIn("ADMIN")) {
         return;
     }
 
-    if (currentUserRole !== "ADMIN") {
-
-        apiResInfoTagStatus.textContent = "403 Forbidden";
-        apiResInfoTagStatus.className = "text-red-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-red-400";
-
-        saveApiResponse(
-            {
-                message: [
-                    "Admin Access level is required",
-                    "before checking users in database",
-                    "Please login as ADMIN and try again"
-                ]
-            },
-            {status: 403}
-        );
-
-        showResponsePanel(apiResBodyBtn);
+    if (blockIfNotAdmin()) {
         return;
     }
 
@@ -395,7 +376,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
 
-    if (blockIfNotLoggedInAs("ADMIN")) {
+    if (blockIfNotLoggedIn("ADMIN")) {
         return;
     }
 
@@ -476,7 +457,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changeUserRoleURLrequest);
 
-    if (blockIfNotLoggedInAs("ADMIN")) {
+    if (blockIfNotLoggedIn("ADMIN")) {
         return;
     }
 
@@ -568,7 +549,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.DELETE, deleteUserByIdURLrequest);
 
-    if (blockIfNotLoggedInAs("ADMIN")) {
+    if (blockIfNotLoggedIn()) {
         return;
     }
 
@@ -660,7 +641,7 @@ currentSessionBtn.addEventListener("click", async function () {
 
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.currentSession);
 
-    if (blockIfNotLoggedInAs()) {
+    if (blockIfNotLoggedIn()) {
         return;
     }
 
@@ -989,7 +970,7 @@ function showLoginRequiredState() {
 
 
 
-function saveApiResponse(data, options = {} ){
+function saveApiResponse(data, options = {}) {
     const {
         status = 401,
         headers = {},
@@ -1051,7 +1032,7 @@ function blockIfNotAdmin() {
 
 
 
-function blockIfNotLoggedInAs(requiredRole = "USER") {
+function blockIfNotLoggedIn(requiredRole = "USER") {
     if (currentToken !== null) {
         return false;
     }
@@ -1065,6 +1046,5 @@ function blockIfNotLoggedInAs(requiredRole = "USER") {
 
     showLoginRequiredState();
     showResponsePanel(apiResBodyBtn);
-
     return true;
 }
