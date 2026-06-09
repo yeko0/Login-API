@@ -816,7 +816,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             resetSession();
         }
 
-
         saveApiResponse(data,
             {
                 status: response.status,
@@ -824,7 +823,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
                     requestHeaders: requestHeaders,
                     responseHeaders: Object.fromEntries(response.headers.entries())
                 },
-                request: requestBody
+                request: requestBodyResponse
             }
         );
 
