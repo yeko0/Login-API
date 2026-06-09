@@ -213,6 +213,7 @@ loginBtn.addEventListener("click", async function () {
 });
 
 
+
 registerUserBtn.addEventListener("click", async function () {
     const requestMethod = "POST";
     const requestHeaders = {"Content-Type": "application/json"};
@@ -266,6 +267,7 @@ registerUserBtn.addEventListener("click", async function () {
         console.log(error);
     }
 });
+
 
 
 changePinBtn.addEventListener("click", async function () {
@@ -390,6 +392,7 @@ changePinBtn.addEventListener("click", async function () {
 });
 
 
+
 showUsersAdminBtn.addEventListener("click", async function () {
     const requestMethod = "GET";
     const requestHeaders = {"Authorization": "Bearer " + currentToken};
@@ -502,6 +505,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
     }
 
 });
+
 
 
 searchUserByIdBtn.addEventListener("click", async function () {
@@ -647,6 +651,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
         console.log(error);
     }
 });
+
 
 
 changeUserRoleBtn.addEventListener("click", async function () {
@@ -801,6 +806,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
 });
 
 
+
 deleteUserByIdBtn.addEventListener("click", async function () {
     const requestMethod = "DELETE";
     const requestHeaders = {
@@ -912,16 +918,12 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         const data = await response.json();
 
         if (response.ok) {
-            currentToken = null;
-            currentUserId = null;
-            currentUserRole = null;
+            addFrontendMessages(data, [
+                "Session has been cleared",
+                "Please login again"
+            ]);
 
-            subHeaderTokenDot.className = "text-red-500";
-            subHeaderTokenText.className = "text-red-500";
-            subHeaderTokenText.textContent = "Login to get valid";
-
-            apiResInfoTagAccessLvl.textContent = "Login to get";
-            apiResInfoTagAccessLvl.className = "text-red-500";
+            resetSession();
         }
 
         lastApiResponse = {
@@ -949,6 +951,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
     }
 
 });
+
 
 
 currentSessionBtn.addEventListener("click", async function () {
@@ -1010,22 +1013,13 @@ currentSessionBtn.addEventListener("click", async function () {
         const data = await response.json();
 
         if (!response.ok) {
-            data.message = [
+            addFrontendMessages(data, [
                 "Current Session is not valid",
                 "Please login again",
                 "Token expired or invalid"
-            ];
+            ]);
 
-            currentToken = null;
-            currentUserId = null;
-            currentUserRole = null;
-
-            subHeaderTokenDot.className = "text-red-500";
-            subHeaderTokenText.className = "text-red-500";
-            subHeaderTokenText.textContent = "Login to get valid";
-
-            apiResInfoTagAccessLvl.textContent = "Login to get";
-            apiResInfoTagAccessLvl.className = "text-red-500";
+            resetSession();
         }
 
         lastApiResponse = {
@@ -1053,6 +1047,7 @@ currentSessionBtn.addEventListener("click", async function () {
     }
 
 });
+
 
 
 showAllUsersPublicBtn.addEventListener("click", async function () {
@@ -1276,4 +1271,28 @@ function updateApiResponseSubHeader(method, styleClass, url) {
     apiResMethBadge.className = styleClass;
 
     apiResUrl.textContent = url;
+}
+
+
+
+function resetSession() {
+    currentToken = null;
+    currentUserId = null;
+    currentUserRole = null;
+
+    subHeaderTokenDot.className = "text-red-500";
+    subHeaderTokenText.className = "text-red-500";
+    subHeaderTokenText.textContent = "Login to get valid";
+
+    apiResInfoTagAccessLvl.textContent = "Login to get";
+    apiResInfoTagAccessLvl.className = "text-red-500";
+}
+
+
+
+function addFrontendMessages(data, messages) {
+    data.message = [
+        data.message ?? "No backend message",
+        ...messages
+    ];
 }
