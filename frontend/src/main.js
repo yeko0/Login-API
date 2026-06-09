@@ -118,11 +118,10 @@ const badgeClassesStyles = {
 let currentToken = null;
 let currentUserId = null;
 let currentUserRole = null;
-let currentSelectedApiResBtn = apiResBodyBtn;
 let lastApiResponse = null;
 let lastRequest = null;
 
-paintApiResBtn(currentSelectedApiResBtn);
+paintApiResBtn(apiResBodyBtn);
 
 setTimeout(() => {
     checkBackendStatus();
@@ -194,8 +193,7 @@ loginBtn.addEventListener("click", async function () {
             request: requestBodyResponse
         });
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -248,8 +246,7 @@ registerUserBtn.addEventListener("click", async function () {
             request: requestBodyResponse
         });
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -303,8 +300,7 @@ changePinBtn.addEventListener("click", async function () {
         );
 
         showLoginRequiredState();
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -321,19 +317,13 @@ changePinBtn.addEventListener("click", async function () {
         const data = await response.json();
 
         if (response.ok) {
-            resetSession();
-
-            subHeaderTokenDot.className = "text-red-400";
-            subHeaderTokenText.textContent = "Login again for valid";
-            subHeaderTokenText.className = "text-red-400";
-            apiResInfoTagAccessLvl.textContent = "Login again";
-            apiResInfoTagAccessLvl.className = "text-red-400";
-
             addFrontendMessages(data, [
                 "After changing pin login is required",
                 "Login again for new token and access level",
                 "Login again with new password/pin"
             ]);
+
+            resetSession();
         }
 
         saveApiResponse(data, {
@@ -345,8 +335,7 @@ changePinBtn.addEventListener("click", async function () {
             request: requestBodyResponse
         });
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -376,15 +365,14 @@ showUsersAdminBtn.addEventListener("click", async function () {
             {
                 message: [
                     "Successful Admin-login is required",
-                    "before checking users in data base",
+                    "before checking users in database",
                     "Please login as ADMIN and try again"
                 ]
             }
         );
 
         showLoginRequiredState();
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -400,15 +388,14 @@ showUsersAdminBtn.addEventListener("click", async function () {
             {
                 message: [
                     "Admin Access level is required",
-                    "before checking users in data base",
+                    "before checking users in database",
                     "Please login as ADMIN and try again"
                 ]
             },
             {status: 403}
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -435,8 +422,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -464,15 +450,14 @@ searchUserByIdBtn.addEventListener("click", async function () {
             {
                 message: [
                     "Successful Admin-login is required",
-                    "before searching a user in data base",
+                    "before searching a user in database",
                     "Please login as ADMIN and try again"
                 ]
             }
         );
 
         showLoginRequiredState();
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -488,7 +473,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             {
                 message: [
                     "Admin Access level is required",
-                    "before searching a user in data base",
+                    "before searching a user in database",
                     "Please login as ADMIN and try again"
                 ]
             },
@@ -497,8 +482,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -514,7 +498,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             {
                 message: [
                     "User ID to search is required",
-                    "Input area cant be empty",
+                    "Input area can't be empty",
                     "Please enter a user ID in the input area"
                 ]
             },
@@ -523,8 +507,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -551,8 +534,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -587,14 +569,10 @@ changeUserRoleBtn.addEventListener("click", async function () {
                     "before changing user role",
                     "Please login as ADMIN and try again"
                 ]
-            },
-            {
-                status: 401,
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -609,7 +587,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             {
                 message: [
                     "Admin Access level is required",
-                    "before searching a user in data base",
+                    "before searching a user in database",
                     "Please login as ADMIN and try again"
                 ]
             },
@@ -618,8 +596,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -635,9 +612,9 @@ changeUserRoleBtn.addEventListener("click", async function () {
             {
                 message: [
                     "User ID and User role are required",
-                    "Input areas cant be empty",
+                    "Input areas can't be empty",
                     "Please enter a user ID in the input area",
-                    "and Select a user role in the dropdown menu"
+                    "and select a user role in the dropdown menu"
                 ]
             },
             {
@@ -645,8 +622,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -674,8 +650,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -716,14 +691,13 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             {
                 message: [
                     "Successful login is required",
-                    "before deleting a user in data base",
+                    "before deleting a user in database",
                     "Please login and try again"
                 ]
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -740,9 +714,9 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         saveApiResponse(
             {
                 message: [
-                    "Successful login is required",
-                    "before deleting a user in data base",
-                    "Please login and try again"
+                    "Confirmation of ID, name and PIN are required",
+                    "Input areas can't be empty",
+                    "Please fill all fields and try again"
                 ]
             },
             {
@@ -750,8 +724,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -794,8 +767,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -830,8 +802,7 @@ currentSessionBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         return;
     }
 
@@ -868,8 +839,7 @@ currentSessionBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -909,8 +879,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
             }
         );
 
-        paintApiResBtn(currentSelectedApiResBtn);
-        renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+        showResponsePanel(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -937,25 +906,19 @@ subHeaderTokenBtn.addEventListener("click", async function () {
 
 
 apiResBodyBtn.addEventListener("click", function () {
-    currentSelectedApiResBtn = apiResBodyBtn;
-    paintApiResBtn(currentSelectedApiResBtn);
-    renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+    showResponsePanel(apiResBodyBtn);
 });
 
 
 
 apiResHeadersBtn.addEventListener("click", function () {
-    currentSelectedApiResBtn = apiResHeadersBtn;
-    paintApiResBtn(currentSelectedApiResBtn);
-    renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+    showResponsePanel(apiResHeadersBtn);
 });
 
 
 
 apiResPayloadBtn.addEventListener("click", function () {
-    currentSelectedApiResBtn = apiResPayloadBtn;
-    paintApiResBtn(currentSelectedApiResBtn);
-    renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
+    showResponsePanel(apiResPayloadBtn);
 });
 
 
@@ -1170,4 +1133,11 @@ function saveApiResponse(data, options = {} ){
     };
 
     lastRequest = request;
+}
+
+
+
+function showResponsePanel(button) {
+    paintApiResBtn(button);
+    renderResponsePanel(button, lastApiResponse, lastRequest);
 }
