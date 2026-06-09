@@ -163,6 +163,8 @@ loginBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         if (response.ok) {
             currentToken = data.token;
             currentUserId = data.userId;
@@ -185,16 +187,14 @@ loginBtn.addEventListener("click", async function () {
             subHeaderTokenText.textContent = "Valid";
         }
 
-        lastApiResponse = {
-            data: data,
-            response: response,
+        saveApiResponse(data, {
+            status: response.status,
             headers: {
                 requestHeaders: requestHeaders,
                 responseHeaders: Object.fromEntries(response.headers.entries())
-            }
-        };
-        lastRequest = requestBodyResponse;
-        currentSelectedApiResBtn = apiResBodyBtn;
+            },
+            request: requestBodyResponse
+        });
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -241,16 +241,16 @@ registerUserBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        lastApiResponse = {
-            data: data,
-            response: response,
+        currentSelectedApiResBtn = apiResBodyBtn;
+
+        saveApiResponse(data, {
+            status: response.status,
             headers: {
                 requestHeaders: requestHeaders,
                 responseHeaders: Object.fromEntries(response.headers.entries())
-            }
-        };
-        lastRequest = requestBodyResponse;
-        currentSelectedApiResBtn = apiResBodyBtn;
+            },
+            request: requestBodyResponse
+        });
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -291,28 +291,23 @@ changePinBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
 
     if (currentToken === null || currentUserId === null) {
-        showLoginRequiredState();
+        currentSelectedApiResBtn = apiResBodyBtn;
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Successful login is required",
                     "before changing pin",
                     "Please login and try again"
                 ]
             },
-            response: {
-                status: 401
-            },
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: {}
+            {
+                headers: {requestHeaders: requestHeaders},
+                request: requestBodyResponse
             }
-        };
+        );
 
-        lastRequest = requestBodyResponse;
-        currentSelectedApiResBtn = apiResBodyBtn;
-
+        showLoginRequiredState();
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
@@ -330,6 +325,8 @@ changePinBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         if (response.ok) {
             currentToken = null;
             currentUserId = null;
@@ -340,6 +337,7 @@ changePinBtn.addEventListener("click", async function () {
             subHeaderTokenText.className = "text-red-400";
             apiResInfoTagAccessLvl.textContent = "Login again";
             apiResInfoTagAccessLvl.className = "text-red-400";
+
             lastApiResponse.data = [
                 lastApiResponse.data,
                 {
@@ -352,16 +350,14 @@ changePinBtn.addEventListener("click", async function () {
             ];
         }
 
-        lastApiResponse = {
-            data: data,
-            response: response,
+        saveApiResponse(data, {
+            status: response.status,
             headers: {
                 requestHeaders: requestHeaders,
                 responseHeaders: Object.fromEntries(response.headers.entries())
-            }
-        };
-        lastRequest = requestBodyResponse;
-        currentSelectedApiResBtn = apiResBodyBtn;
+            },
+            request: requestBodyResponse
+        });
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -389,58 +385,43 @@ showUsersAdminBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
 
     if (currentToken === null) {
-        showLoginRequiredState();
+        currentSelectedApiResBtn = apiResBodyBtn;
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Successful Admin-login is required",
                     "before checking users in data base",
                     "Please login as ADMIN and try again"
                 ]
-            },
-            response: {
-                status: 401
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
+        );
 
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
-
+        showLoginRequiredState();
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
     }
 
     if (currentUserRole !== "ADMIN") {
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         apiResInfoTagStatus.textContent = "403 Forbidden";
         apiResInfoTagStatus.className = "text-red-400";
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-red-400";
-        lastApiResponse = {
-            data: {
+
+        saveApiResponse(
+            {
                 message: [
                     "Admin Access level is required",
                     "before checking users in data base",
                     "Please login as ADMIN and try again"
                 ]
             },
-            response: {
-                status: 403
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
-            }
-        };
-
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
+            {status: 403}
+        );
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -448,6 +429,8 @@ showUsersAdminBtn.addEventListener("click", async function () {
     }
 
     try {
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         const startTime = performance.now();
         const response = await fetch(endPointsURL.showAllUsersAdmin,
             {
@@ -459,16 +442,15 @@ showUsersAdminBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
+        saveApiResponse(data,
+            {
+                status: response.status,
+                headers: {
+                    requestHeaders: requestHeaders,
+                    responseHeaders: Object.fromEntries(response.headers.entries())
+                }
             }
-        };
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
+        );
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -494,58 +476,45 @@ searchUserByIdBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
 
     if (currentToken === null) {
-        showLoginRequiredState();
+        currentSelectedApiResBtn = apiResBodyBtn;
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Successful Admin-login is required",
                     "before searching a user in data base",
                     "Please login as ADMIN and try again"
                 ]
-            },
-            response: {
-                status: 401
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
+        );
 
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
-
+        showLoginRequiredState();
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
         return;
     }
 
     if (currentUserRole !== "ADMIN") {
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         apiResInfoTagStatus.textContent = "403 Forbidden";
         apiResInfoTagStatus.className = "text-red-400";
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-red-400";
-        lastApiResponse = {
-            data: {
+
+        saveApiResponse(
+            {
                 message: [
                     "Admin Access level is required",
                     "before searching a user in data base",
                     "Please login as ADMIN and try again"
                 ]
             },
-            response: {
+            {
                 status: 403
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
-
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
+        );
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -553,30 +522,26 @@ searchUserByIdBtn.addEventListener("click", async function () {
     }
 
     if (searchUserByIdUserId.value === "" || searchUserByIdUserId.value === null) {
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         apiResInfoTagStatus.textContent = "400 Bad Request";
         apiResInfoTagStatus.className = "text-yellow-400";
 
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "User ID to search is required",
                     "Input area cant be empty",
                     "Please enter a user ID in the input area"
                 ]
             },
-            response: {
+            {
                 status: 400
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
+        );
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -584,6 +549,8 @@ searchUserByIdBtn.addEventListener("click", async function () {
     }
 
     try {
+        currentSelectedApiResBtn = apiResBodyBtn;
+
         const startTime = performance.now();
         const response = await fetch(searchUserByIdURLrequest,
             {
@@ -595,16 +562,15 @@ searchUserByIdBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
+        saveApiResponse(data,
+            {
+                status: response.status,
+                headers: {
+                    requestHeaders: requestHeaders,
+                    responseHeaders: Object.fromEntries(response.headers.entries())
+                }
             }
-        };
-        lastRequest = "Empty";
-        currentSelectedApiResBtn = apiResBodyBtn;
+        );
 
         paintApiResBtn(currentSelectedApiResBtn);
         renderResponsePanel(currentSelectedApiResBtn, lastApiResponse, lastRequest);
@@ -635,23 +601,19 @@ changeUserRoleBtn.addEventListener("click", async function () {
     if (currentToken === null) {
         showLoginRequiredState();
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Successful Admin-login is required",
-                    "before searching a user in data base",
+                    "before changing user role",
                     "Please login as ADMIN and try again"
                 ]
             },
-            response: {
-                status: 401
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
+            {
+                status: 401,
             }
-        };
-        lastRequest = "Empty";
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -666,23 +628,19 @@ changeUserRoleBtn.addEventListener("click", async function () {
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-red-400";
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Admin Access level is required",
                     "before searching a user in data base",
                     "Please login as ADMIN and try again"
                 ]
             },
-            response: {
-                status: 403
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
+            {
+                status: 403,
             }
-        };
-        lastRequest = "Empty";
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -698,8 +656,8 @@ changeUserRoleBtn.addEventListener("click", async function () {
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "User ID and User role are required",
                     "Input areas cant be empty",
@@ -707,15 +665,11 @@ changeUserRoleBtn.addEventListener("click", async function () {
                     "and Select a user role in the dropdown menu"
                 ]
             },
-            response: {
-                status: 400
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
+            {
+                status: 400,
             }
-        };
-        lastRequest = "Empty";
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -736,15 +690,17 @@ changeUserRoleBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
+        saveApiResponse(data,
+            {
+                status: response.status,
+                headers: {
+                    requestHeaders: requestHeaders,
+                    responseHeaders: Object.fromEntries(response.headers.entries())
+                },
+                request: requestBody
             }
-        };
-        lastRequest = requestBody;
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -785,23 +741,16 @@ deleteUserByIdBtn.addEventListener("click", async function () {
     if (currentToken === null) {
         showLoginRequiredState();
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Successful login is required",
                     "before deleting a user in data base",
                     "Please login and try again"
                 ]
-            },
-            response: {
-                status: 401
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
-        lastRequest = "Empty";
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -819,23 +768,19 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
-                    "All User data is required",
-                    "Inputs areas cant be empty",
-                    "Please confirm all data and try again"
+                    "Successful login is required",
+                    "before deleting a user in data base",
+                    "Please login and try again"
                 ]
             },
-            response: {
+            {
                 status: 400
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
-        lastRequest = "Empty";
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -871,15 +816,18 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             resetSession();
         }
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
+
+        saveApiResponse(data,
+            {
+                status: response.status,
+                headers: {
+                    requestHeaders: requestHeaders,
+                    responseHeaders: Object.fromEntries(response.headers.entries())
+                },
+                request: requestBody
             }
-        };
-        lastRequest = requestBodyResponse;
+        );
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -908,24 +856,16 @@ currentSessionBtn.addEventListener("click", async function () {
     if (currentToken === null) {
         showLoginRequiredState();
 
-        lastApiResponse = {
-            data: {
+        saveApiResponse(
+            {
                 message: [
                     "Successful login is required",
                     "before checking Token",
                     "Please login and try again"
                 ]
-            },
-            response: {
-                status: 401
-            },
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: "Empty"
             }
-        };
+        );
 
-        lastRequest = "Empty";
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -956,16 +896,16 @@ currentSessionBtn.addEventListener("click", async function () {
             resetSession();
         }
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
+        saveApiResponse(data,
+            {
+                status: response.status,
+                headers: {
+                    requestHeaders: requestHeaders,
+                    responseHeaders: Object.fromEntries(response.headers.entries())
+                }
             }
-        };
+        );
 
-        lastRequest = "Empty";
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -1000,15 +940,14 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        lastApiResponse = {
-            data: data,
-            response: response,
-            headers: {
-                requestHeaders: "Empty",
-                responseHeaders: Object.fromEntries(response.headers.entries())
+        saveApiResponse(data,
+            {
+                status: response.status,
+                headers: {
+                    responseHeaders: Object.fromEntries(response.headers.entries())
+                }
             }
-        };
-        lastRequest = "Empty";
+        );
 
         currentSelectedApiResBtn = apiResBodyBtn;
 
@@ -1247,4 +1186,30 @@ function showLoginRequiredState() {
 
     apiResInfoTagAccessLvl.textContent = "Login to get";
     apiResInfoTagAccessLvl.className = "text-orange-400";
+}
+
+
+
+function saveApiResponse(data, options = {} ){
+    const {
+        status = 401,
+        headers = {},
+        request = "Empty"
+    } = options;
+
+    const finalHeaders = {
+        requestHeaders: "Empty",
+        responseHeaders: "Empty",
+        ...headers
+    };
+
+    lastApiResponse = {
+        data: data,
+        response: {
+            status: status
+        },
+        headers: finalHeaders
+    };
+
+    lastRequest = request;
 }
