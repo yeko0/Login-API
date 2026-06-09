@@ -291,18 +291,7 @@ changePinBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
 
     if (currentToken === null || currentUserId === null) {
-        subHeaderTokenDot.className = "text-orange-400";
-        subHeaderTokenText.className = "text-orange-400";
-        subHeaderTokenText.textContent = "Login to get valid";
-
-        apiResInfoTagStatus.textContent = "401 Unauthorized";
-        apiResInfoTagStatus.className = "text-orange-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-orange-400";
-
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-orange-400";
+        showLoginRequiredState();
 
         lastApiResponse = {
             data: {
@@ -400,18 +389,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
 
     if (currentToken === null) {
-        subHeaderTokenDot.className = "text-orange-400";
-        subHeaderTokenText.className = "text-orange-400";
-        subHeaderTokenText.textContent = "Login to get valid";
-
-        apiResInfoTagStatus.textContent = "401 Unauthorized";
-        apiResInfoTagStatus.className = "text-orange-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-orange-400";
-
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-orange-400";
+        showLoginRequiredState();
 
         lastApiResponse = {
             data: {
@@ -516,18 +494,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
 
     if (currentToken === null) {
-        subHeaderTokenDot.className = "text-orange-400";
-        subHeaderTokenText.className = "text-orange-400";
-        subHeaderTokenText.textContent = "Login to get valid";
-
-        apiResInfoTagStatus.textContent = "401 Unauthorized";
-        apiResInfoTagStatus.className = "text-orange-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-orange-400";
-
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-orange-400";
+        showLoginRequiredState();
 
         lastApiResponse = {
             data: {
@@ -666,18 +633,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changeUserRoleURLrequest);
 
     if (currentToken === null) {
-        subHeaderTokenDot.className = "text-orange-400";
-        subHeaderTokenText.className = "text-orange-400";
-        subHeaderTokenText.textContent = "Login to get valid";
-
-        apiResInfoTagStatus.textContent = "401 Unauthorized";
-        apiResInfoTagStatus.className = "text-orange-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-orange-400";
-
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-orange-400";
+        showLoginRequiredState();
 
         lastApiResponse = {
             data: {
@@ -827,18 +783,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.DELETE, deleteUserByIdURLrequest);
 
     if (currentToken === null) {
-        subHeaderTokenDot.className = "text-orange-400";
-        subHeaderTokenText.className = "text-orange-400";
-        subHeaderTokenText.textContent = "Login to get valid";
-
-        apiResInfoTagStatus.textContent = "401 Unauthorized";
-        apiResInfoTagStatus.className = "text-orange-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-orange-400";
-
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-orange-400";
+        showLoginRequiredState();
 
         lastApiResponse = {
             data: {
@@ -961,18 +906,7 @@ currentSessionBtn.addEventListener("click", async function () {
     updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.currentSession);
 
     if (currentToken === null) {
-        subHeaderTokenDot.className = "text-orange-400";
-        subHeaderTokenText.className = "text-orange-400";
-        subHeaderTokenText.textContent = "Login to get valid";
-
-        apiResInfoTagStatus.textContent = "401 Unauthorized";
-        apiResInfoTagStatus.className = "text-orange-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-orange-400";
-
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-orange-400";
+        showLoginRequiredState();
 
         lastApiResponse = {
             data: {
@@ -1075,6 +1009,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
             }
         };
         lastRequest = "Empty";
+
         currentSelectedApiResBtn = apiResBodyBtn;
 
         paintApiResBtn(currentSelectedApiResBtn);
@@ -1295,4 +1230,21 @@ function addFrontendMessages(data, messages) {
         data.message ?? "No backend message",
         ...messages
     ];
+}
+
+
+
+function showLoginRequiredState() {
+    subHeaderTokenDot.className = "text-orange-400";
+    subHeaderTokenText.className = "text-orange-400";
+    subHeaderTokenText.textContent = "Login to get valid";
+
+    apiResInfoTagStatus.textContent = "401 Unauthorized";
+    apiResInfoTagStatus.className = "text-orange-400";
+
+    apiResInfoTagTime.textContent = "--";
+    apiResInfoTagTime.className = "text-orange-400";
+
+    apiResInfoTagAccessLvl.textContent = "Login to get";
+    apiResInfoTagAccessLvl.className = "text-orange-400";
 }
