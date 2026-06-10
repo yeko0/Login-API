@@ -36,8 +36,8 @@ const statusStyles = {
     }
 };
 
-const statusDot = document.getElementById("backend-status-dot");
-const statusText = document.getElementById("backend-status-text");
+const backendStatusDot = document.getElementById("backend-status-dot");
+const backendStatusText = document.getElementById("backend-status-text");
 
 const loginUserName = document.getElementById("login-userName");
 const loginUserPin = document.getElementById("login-userPin");
@@ -87,7 +87,7 @@ const apiResPayloadBtn = document.getElementById("api-response-payload-btn");
 const apiResCopyBtn = document.getElementById("api-response-copy-btn");
 const apiResClearBtn = document.getElementById("api-response-clear-btn");
 
-const apiResShowTextArea = document.getElementById("api-response-show-text-area");
+const apiResPanelScreen = document.getElementById("api-response-show-text-area");
 
 const apiBaseURL = "http://localhost:8081";
 
@@ -118,69 +118,77 @@ const badgeClassesStyles = {
 let currentToken = null;
 let currentUserId = null;
 let currentUserRole = null;
-let lastApiResponse = null;
-let lastRequest = null;
 
-paintApiResBtn(apiResBodyBtn);
+let apiResPanelState = {
+    request: {
+        method: "GET",
+        url: apiBaseURL,
+        headers: "Empty",
+        body: "Empty",
+        bodyResponse: "Empty"
+    },
+
+    response: {
+        raw: null,
+        status: 401,
+        headers: "Empty",
+        body: {
+            backendMessage: "Empty"
+        }
+    },
+
+    fetchSpeed: {
+        startTime: 0,
+        endTime: 0,
+        get responseTime() {
+            return Math.round(this.endTime - this.startTime);
+        }
+    },
+
+    selectedButton: apiResBodyBtn
+};
+
 
 setTimeout(() => {
     checkBackendStatus();
 }, 500);
 
-apiResInfoTagAccessLvl.textContent = "Login to get";
-apiResInfoTagAccessLvl.className = "text-cyan-400";
-subHeaderTokenDot.className = "text-cyan-400";
-subHeaderTokenText.className = "text-cyan-400";
-subHeaderTokenText.textContent = "Login to get valid";
-
-
+updatePillApiResBtns();
 
 loginBtn.addEventListener("click", async function () {
-    const requestMethod = "POST"
-    const requestHeaders = {"Content-Type": "application/json"}
-    const requestBody = {
+    apiResPanelState.request.url = endPointsURL.login;
+    apiResPanelState.request.method = "POST";
+    apiResPanelState.request.headers = {"Content-Type": "application/json"};
+    apiResPanelState.request.body = {
         userName: loginUserName.value,
         userPin: loginUserPin.value
-    }
-    const requestBodyResponse = {
-        userName: requestBody.userName,
+    };
+    apiResPanelState.request.bodyResponse = {
+        userName: apiResPanelState.request.body.userName,
         userPin: "*********"
     };
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.POST, endPointsURL.login);
-
     try {
-        const startTime = performance.now();
-        const response = await fetch(endPointsURL.login,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders,
-                body: JSON.stringify(requestBody),
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers,
+                body: JSON.stringify(apiResPanelState.request.body)
             },
         );
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        if (response.ok) {
-            setSession(data);
+        updateApiResPanelState();
+
+        if (apiResPanelState.response.raw.ok) {
+            setSession(apiResPanelState.response.body);
+            updatePillTokenArea();
+            updateInfoTagAccessLevel();
         }
 
-        saveApiResponse(data, {
-            status: response.status,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
-            },
-            request: requestBodyResponse
-        });
-
-        showResponsePanel(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
-
-        console.log(response);
-        console.log(data);
+        renderApiResponse();
 
     } catch (error) {
 
@@ -219,7 +227,7 @@ registerUserBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        saveApiResponse(data, {
+        updateApiResPanelState(data, {
             status: response.status,
             headers: {
                 requestHeaders: requestHeaders,
@@ -228,7 +236,7 @@ registerUserBtn.addEventListener("click", async function () {
             request: requestBodyResponse
         });
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -291,7 +299,7 @@ changePinBtn.addEventListener("click", async function () {
             resetSession();
         }
 
-        saveApiResponse(data, {
+        updateApiResPanelState(data, {
             status: response.status,
             headers: {
                 requestHeaders: requestHeaders,
@@ -300,7 +308,7 @@ changePinBtn.addEventListener("click", async function () {
             request: requestBodyResponse
         });
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -344,7 +352,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        saveApiResponse(data,
+        updateApiResPanelState(data,
             {
                 status: response.status,
                 headers: {
@@ -354,7 +362,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -392,9 +400,9 @@ searchUserByIdBtn.addEventListener("click", async function () {
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
 
-        saveApiResponse(
+        updateApiResPanelState(
             {
-                message: [
+                backendMessage: [
                     "User ID to search is required",
                     "Input area can't be empty",
                     "Please enter a user ID in the input area"
@@ -405,7 +413,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         return;
     }
 
@@ -422,7 +430,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        saveApiResponse(data,
+        updateApiResPanelState(data,
             {
                 status: response.status,
                 headers: {
@@ -432,7 +440,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -473,9 +481,9 @@ changeUserRoleBtn.addEventListener("click", async function () {
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
 
-        saveApiResponse(
+        updateApiResPanelState(
             {
-                message: [
+                backendMessage: [
                     "User ID and User role are required",
                     "Input areas can't be empty",
                     "Please enter a user ID in the input area",
@@ -487,7 +495,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         return;
     }
 
@@ -504,7 +512,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        saveApiResponse(data,
+        updateApiResPanelState(data,
             {
                 status: response.status,
                 headers: {
@@ -515,7 +523,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -563,9 +571,9 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         apiResInfoTagTime.textContent = "--";
         apiResInfoTagTime.className = "text-yellow-400";
 
-        saveApiResponse(
+        updateApiResPanelState(
             {
-                message: [
+                backendMessage: [
                     "Confirmation of ID, name and PIN are required",
                     "Input areas can't be empty",
                     "Please fill all fields and try again"
@@ -576,7 +584,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         return;
     }
 
@@ -608,7 +616,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             resetSession();
         }
 
-        saveApiResponse(data,
+        updateApiResPanelState(data,
             {
                 status: response.status,
                 headers: {
@@ -619,7 +627,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -668,7 +676,7 @@ currentSessionBtn.addEventListener("click", async function () {
             resetSession();
         }
 
-        saveApiResponse(data,
+        updateApiResPanelState(data,
             {
                 status: response.status,
                 headers: {
@@ -678,7 +686,7 @@ currentSessionBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -709,7 +717,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
         const responseTime = Math.round(endTime - startTime);
         const data = await response.json();
 
-        saveApiResponse(data,
+        updateApiResPanelState(data,
             {
                 status: response.status,
                 headers: {
@@ -718,7 +726,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
             }
         );
 
-        showResponsePanel(apiResBodyBtn);
+        updatePillApiResBtns(apiResBodyBtn);
         updateInfoTagStatus(response);
         updateResponseTime(responseTime);
 
@@ -745,31 +753,37 @@ subHeaderTokenBtn.addEventListener("click", async function () {
 
 
 apiResBodyBtn.addEventListener("click", function () {
-    showResponsePanel(apiResBodyBtn);
+    apiResPanelState.selectedButton = apiResBodyBtn;
+    updatePillApiResBtns();
+    showContentInApiResScreen();
 });
 
 
 
 apiResHeadersBtn.addEventListener("click", function () {
-    showResponsePanel(apiResHeadersBtn);
+    apiResPanelState.selectedButton = apiResHeadersBtn;
+    updatePillApiResBtns();
+    showContentInApiResScreen();
 });
 
 
 
 apiResPayloadBtn.addEventListener("click", function () {
-    showResponsePanel(apiResPayloadBtn);
+    apiResPanelState.selectedButton = apiResPayloadBtn;
+    updatePillApiResBtns();
+    showContentInApiResScreen();
 });
 
 
 
 apiResCopyBtn.addEventListener("click", async function () {
-    await navigator.clipboard.writeText(apiResShowTextArea.textContent);
+    updateTokenPillBtn();
 });
 
 
 
 apiResClearBtn.addEventListener("click", function () {
-    apiResShowTextArea.textContent = "";
+    apiResPanelScreen.textContent = "";
 });
 
 
@@ -783,77 +797,65 @@ async function checkBackendStatus() {
         const response = await fetch(endPointsURL.showAllUsersPublic);
 
         if (response.ok) {
-            statusDot.className = "text-green-400";
-            statusText.textContent = "localhost:8081 online";
+            backendStatusDot.className = "text-green-400";
+            backendStatusText.textContent = "localhost:8081 online";
         } else {
-            statusDot.className = "text-yellow-400";
-            statusText.textContent = "localhost:8081 error";
+            backendStatusDot.className = "text-yellow-400";
+            backendStatusText.textContent = "localhost:8081 error";
         }
     } catch (error) {
-        statusDot.className = "text-red-400";
-        statusText.textContent = "localhost:8081 offline";
+        backendStatusDot.className = "text-red-400";
+        backendStatusText.textContent = "localhost:8081 offline";
     }
 }
 
 
 
-function renderResponsePanel(selectedApiResBtn, lastApiResponse, request) {
-    if (lastApiResponse == null) {
-        apiResShowTextArea.textContent =
-            "Example response:\n" +
-            "[\n" +
-            "  {\n" +
-            "    \"userId\": 10,\n" +
-            "    \"userName\": \"yeko33\",\n" +
-            "    \"userRole\": \"USER\"\n" +
-            "  },\n" +
-            "  {\n" +
-            "    \"userId\": 9,\n" +
-            "    \"userName\": \"yeko45\",\n" +
-            "    \"userRole\": \"USER\"\n" +
-            "  }\n" +
-            "]";
-        return;
-    }
+function showContentInApiResScreen() {
+    const textColorAndSize = getStyle(apiResPanelState.response.status).classes + " text-base";
 
-    const statusStyle = statusStyles[lastApiResponse.response.status] || {
-        classes: "text-slate-400 border-slate-400"
-    };
-    switch (selectedApiResBtn) {
+    switch (apiResPanelState.selectedButton) {
         case apiResBodyBtn:
-            apiResShowTextArea.textContent = JSON.stringify(lastApiResponse.data, null, 2);
-            apiResShowTextArea.className = statusStyle.classes + " text-base";
+            apiResPanelScreen.textContent = JSON.stringify(apiResPanelState.response.body,
+                                                                      null, 2);
+            apiResPanelScreen.className = textColorAndSize
             break;
 
         case apiResHeadersBtn:
-            apiResShowTextArea.textContent = JSON.stringify(lastApiResponse.headers, null, 2);
-            apiResShowTextArea.className = statusStyle.classes + " text-base";
+            apiResPanelScreen.textContent = JSON.stringify({
+                frontendHeaders: apiResPanelState.request.headers,
+                backendHeaders: apiResPanelState.response.headers
+            }, null, 2);
+
+            apiResPanelScreen.className = textColorAndSize
             break;
 
         case apiResPayloadBtn:
-            apiResShowTextArea.textContent = JSON.stringify(request, null, 2);
-            apiResShowTextArea.className = statusStyle.classes + " text-base";
+            apiResPanelScreen.textContent = JSON.stringify(apiResPanelState.request.bodyResponse,
+                                                                  null, 2);
+            apiResPanelScreen.className = textColorAndSize
             break;
     }
 }
 
 
 
-function paintApiResBtn(button) {
+function paintSelectedBtn(button) {
+    const defaultStyle = "border-[#263449] text-slate-600";
     switch (button) {
         case apiResBodyBtn:
-            apiResHeadersBtn.className = "border-[#263449] text-slate-500";
-            apiResPayloadBtn.className = "border-[#263449] text-slate-500";
+            apiResHeadersBtn.className = defaultStyle;
+            apiResPayloadBtn.className = defaultStyle;
             break;
 
         case apiResHeadersBtn:
-            apiResBodyBtn.className = "border-[#263449] text-slate-500";
-            apiResPayloadBtn.className = "border-[#263449] text-slate-500";
+            apiResBodyBtn.className = defaultStyle;
+            apiResPayloadBtn.className = defaultStyle;
             break;
 
         case apiResPayloadBtn:
-            apiResBodyBtn.className = "border-[#263449] text-slate-500";
-            apiResHeadersBtn.className = "border-[#263449] text-slate-500";
+            apiResBodyBtn.className = defaultStyle;
+            apiResHeadersBtn.className = defaultStyle;
             break;
     }
     button.className = "border-cyan-300 text-cyan-300";
@@ -861,30 +863,19 @@ function paintApiResBtn(button) {
 
 
 
-function updateInfoTagStatus(response) {
-   const statusStyle = statusStyles[response.status];
-
-    if (statusStyle) {
-        apiResInfoTagStatus.textContent = response.status +" "+ statusStyle.text;
-        apiResInfoTagStatus.className = statusStyle.classes;
-    }else {
-        apiResInfoTagStatus.textContent = response.status + " Unknown";
-        apiResInfoTagStatus.className = "text-slate-400 border-slate-400";
-    }
-}
-
-
-
 function updateResponseTime(responseTime) {
-    if (responseTime < 300) {
+    if (responseTime > 0 && responseTime < 300) {
         apiResInfoTagTime.textContent = `${responseTime} ms`;
         apiResInfoTagTime.className = "text-green-400";
     } else if (responseTime >= 300 && responseTime < 1000) {
         apiResInfoTagTime.textContent = `${responseTime} ms`;
         apiResInfoTagTime.className = "text-yellow-400";
-    } else {
+    } else if (responseTime >= 1000)  {
         apiResInfoTagTime.textContent = `${responseTime} ms`;
         apiResInfoTagTime.className = "text-red-400";
+    } else {
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-cyan-400 border-cyan-400";
     }
 }
 
@@ -924,19 +915,19 @@ function resetSession() {
 
 
 
-function setSession(data) {
-    currentToken = data.token;
-    currentUserId = data.userId;
-    currentUserRole = data.userRole;
+function setSession(responseBody) {
+    currentToken = responseBody.token;
+    currentUserId = responseBody.userId;
+    currentUserRole = responseBody.userRole;
 
     subHeaderTokenDot.className = "text-green-400";
     subHeaderTokenText.className = "text-green-400";
     subHeaderTokenText.textContent = "Valid";
 
-    if (data.userRole === "ADMIN") {
+    if (responseBody.userRole === "ADMIN") {
         apiResInfoTagAccessLvl.textContent = "Admin";
         apiResInfoTagAccessLvl.className = "text-amber-400";
-    } else if (data.userRole === "USER") {
+    } else if (responseBody.userRole === "USER") {
         apiResInfoTagAccessLvl.textContent = "User";
         apiResInfoTagAccessLvl.className = "text-sky-400";
     }
@@ -970,35 +961,16 @@ function showLoginRequiredState() {
 
 
 
-function saveApiResponse(data, options = {}) {
-    const {
-        status = 401,
-        headers = {},
-        request = "Empty"
-    } = options;
-
-    const finalHeaders = {
-        requestHeaders: "Empty",
-        responseHeaders: "Empty",
-        ...headers
-    };
-
-    lastApiResponse = {
-        data: data,
-        response: {
-            status: status
-        },
-        headers: finalHeaders
-    };
-
-    lastRequest = request;
+function updateApiResPanelState() {
+    apiResPanelState.response.status = apiResPanelState.response.raw.status;
+    apiResPanelState.response.headers = Object.fromEntries(apiResPanelState.response.raw.headers.entries());
 }
 
 
 
-function showResponsePanel(button) {
-    paintApiResBtn(button);
-    renderResponsePanel(button, lastApiResponse, lastRequest);
+function updatePillApiResBtns() {
+    const button = apiResPanelState.selectedButton;
+    paintSelectedBtn(button);
 }
 
 
@@ -1014,9 +986,9 @@ function blockIfNotAdmin() {
     apiResInfoTagTime.textContent = "--";
     apiResInfoTagTime.className = "text-red-400";
 
-    saveApiResponse(
+    updateApiResPanelState(
         {
-            message: [
+            backendMessage: [
                 "Admin access level is required",
                 "Please login as ADMIN and try again"
             ]
@@ -1026,7 +998,7 @@ function blockIfNotAdmin() {
         }
     );
 
-    showResponsePanel(apiResBodyBtn);
+    updatePillApiResBtns(apiResBodyBtn);
     return true;
 }
 
@@ -1037,14 +1009,125 @@ function blockIfNotLoggedIn(requiredRole = "USER") {
         return false;
     }
 
-    saveApiResponse({
-        message: [
+    updateApiResPanelState({
+        backendMessage: [
             `Successful ${requiredRole}-login is required`,
             `Please login as ${requiredRole} and try again`
         ]
     });
 
     showLoginRequiredState();
-    showResponsePanel(apiResBodyBtn);
+    updatePillApiResBtns(apiResBodyBtn);
     return true;
+}
+
+
+
+function hasEmptyInputs(inputs) {
+    return inputs.some(input => !input.value.trim());
+}
+
+
+
+function getStyle(statusCode){
+    return statusStyles[statusCode] || {
+        text: "?-Status",
+        classes: "text-cyan-400 border-cyan-400"
+    }
+}
+
+
+
+function updatePillTokenArea() {
+    const style = getStyle(apiResPanelState.response.status);
+    const status = apiResPanelState.response.status;
+    updateTokenPillDot(status, style);
+    updateTokenPillText(status, style);
+}
+function updateTokenPillDot(status, style) {
+    subHeaderTokenDot.className = style.classes;
+}
+function updateTokenPillText(status, style) {
+    if (status === 200) {
+        subHeaderTokenText.textContent = "valid";
+    }
+    subHeaderTokenText.className = style.classes;
+}
+async function updateTokenPillBtn() {
+    if (!currentToken) {
+        console.log("No token to copy");
+        return;
+    }
+
+    await navigator.clipboard.writeText(currentToken);
+    console.log("Token copied");
+}
+
+
+
+function updateApiResSubheaderPill() {
+    const method = apiResPanelState.request.method;
+    const badge = badgeClassesStyles[method];
+    const url = apiResPanelState.request.url;
+    updateApiResBadge(method, badge);
+    updateApiResUrl(url);
+}
+function updateApiResBadge(method, badge) {
+    apiResMethBadge.textContent = method;
+    apiResMethBadge.className = badge;
+}
+function updateApiResUrl(url) {
+    apiResUrl.textContent = url;
+}
+
+
+
+function updateInfoAreaTags() {
+    const status = apiResPanelState.response.status;
+    const statusStyle = getStyle(status);
+    const responseTime = apiResPanelState.fetchSpeed.responseTime;
+
+    updateInfoTagStatus(status, statusStyle);
+    updateInfoTagTime(responseTime);
+}
+function updateInfoTagStatus(status, statusStyle) {
+    apiResInfoTagStatus.textContent = `${status} ${statusStyle.text}`;
+    apiResInfoTagStatus.className = statusStyle.classes;
+}
+function updateInfoTagTime(responseTime) {
+    if (responseTime > 0 && responseTime < 300) {
+        apiResInfoTagTime.textContent = `${responseTime} ms`;
+        apiResInfoTagTime.className = "text-green-400";
+    } else if (responseTime >= 300 && responseTime < 1000) {
+        apiResInfoTagTime.textContent = `${responseTime} ms`;
+        apiResInfoTagTime.className = "text-yellow-400";
+    } else if (responseTime >= 1000)  {
+        apiResInfoTagTime.textContent = `${responseTime} ms`;
+        apiResInfoTagTime.className = "text-red-400";
+    } else {
+        apiResInfoTagTime.textContent = "--";
+        apiResInfoTagTime.className = "text-cyan-400 border-cyan-400";
+    }
+}
+function updateInfoTagAccessLevel() {
+    if (currentUserRole === "ADMIN") {
+        apiResInfoTagAccessLvl.textContent = "Admin";
+        apiResInfoTagAccessLvl.className = "text-amber-400";
+    } else if (currentUserRole === "USER") {
+        apiResInfoTagAccessLvl.textContent = "User";
+        apiResInfoTagAccessLvl.className = "text-sky-400";
+    } else {
+        apiResInfoTagAccessLvl.textContent = "Login to get";
+        apiResInfoTagAccessLvl.className = "text-cyan-400";
+    }
+}
+
+
+
+
+function renderApiResponse(){
+    updateApiResSubheaderPill();
+    updateInfoAreaTags();
+    updatePillApiResBtns();
+    showContentInApiResScreen();
 }
