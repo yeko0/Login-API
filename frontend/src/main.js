@@ -151,8 +151,6 @@ let apiResPanelState = {
 
 setTimeout(() => {
     checkBackendStatus();
-    updateInfoTagAccessLevel();
-    resetSession();
 }, 500);
 
 updatePillApiResBtns();
@@ -186,8 +184,6 @@ loginBtn.addEventListener("click", async function () {
 
         if (apiResPanelState.response.raw.ok) {
             setSession(apiResPanelState.response.body);
-            updatePillTokenArea();
-            updateInfoTagAccessLevel();
         }
 
         renderApiResponse();
@@ -249,74 +245,62 @@ registerUserBtn.addEventListener("click", async function () {
 
 
 changePinBtn.addEventListener("click", async function () {
-    const requestMethod = "PATCH";
-    const requestHeaders = {
+    apiResPanelState.request.url = endPointsURL.changePin(currentUserId);
+    apiResPanelState.request.method = "PATCH";
+    apiResPanelState.request.headers = {
         "Authorization": "Bearer " + currentToken,
         "Content-Type": "application/json"
     };
-    const requestBody = {
+    apiResPanelState.request.body = {
         userName: changePinUserName.value,
         userPin: changePinUserPin.value,
         newUserPin: changePinNewUserPin.value
     };
-    const requestBodyResponse = {
-        userName: requestBody.userName,
+    apiResPanelState.request.bodyResponse = {
+        userName: apiResPanelState.request.body.userName,
         userPin: "*********",
         newUserPin: "*********"
     };
-    const changePinURLrequest = endPointsURL.changePin(currentUserId);
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changePinURLrequest);
-
-    if (blockIfNotLoggedIn()) {
+    if(currentToken === null || currentUserId === null){
+        addFrontendMessages(
+            "Successful login is required",
+            "before changing PIN",
+            "please login with valid credentials"
+        );
+        renderApiResponse();
         return;
     }
 
     try {
-        const startTime = performance.now()
-        const response = await fetch(changePinURLrequest,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders,
-                body: JSON.stringify(requestBody),
-            });
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers,
+                body: JSON.stringify(apiResPanelState.request.body)
+            },
+        );
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        if (response.ok) {
-            addFrontendMessages(data, [
-                "After changing pin login is required",
-                "Login again for new token and access level",
-                "Login again with new password/pin"
-            ]);
+        updateApiResPanelState();
 
+        if (apiResPanelState.response.raw.ok) {
             resetSession();
+            addFrontendMessages(
+                "Login is required",
+                "please login again with new PIN"
+            );
         }
 
-        updateApiResPanelState(data, {
-            status: response.status,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
-            },
-            request: requestBodyResponse
-        });
-
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
-
-        console.log(response);
-        console.log(data);
+        renderApiResponse();
 
     } catch (error) {
 
         updateConnectionErrorInfoTags();
-
         console.log(error);
     }
-
 });
 
 
@@ -367,7 +351,6 @@ showUsersAdminBtn.addEventListener("click", async function () {
 
         console.log(error);
     }
-
 });
 
 
@@ -801,7 +784,7 @@ async function checkBackendStatus() {
 
 
 function showContentInApiResScreen() {
-    const textColorAndSize = getStyle(apiResPanelState.response.status).classes + " text-base";
+    const textColorAndSize = getStatusStyle(apiResPanelState.response.status).classes + " text-base";
 
     switch (apiResPanelState.selectedButton) {
         case apiResBodyBtn:
@@ -885,41 +868,6 @@ function updateApiResponseSubHeader(method, styleClass, url) {
     apiResMethBadge.className = styleClass;
 
     apiResUrl.textContent = url;
-}
-
-
-
-function resetSession() {
-    currentToken = null;
-    currentUserId = null;
-    currentUserRole = null;
-
-    subHeaderTokenDot.className = "text-red-500";
-    subHeaderTokenText.className = "text-red-500";
-    subHeaderTokenText.textContent = "Login to get valid";
-
-    apiResInfoTagAccessLvl.textContent = "Login to get";
-    apiResInfoTagAccessLvl.className = "text-red-500";
-}
-
-
-
-function setSession(responseBody) {
-    currentToken = responseBody.token;
-    currentUserId = responseBody.userId;
-    currentUserRole = responseBody.userRole;
-
-    subHeaderTokenDot.className = "text-green-400";
-    subHeaderTokenText.className = "text-green-400";
-    subHeaderTokenText.textContent = "Valid";
-
-    if (responseBody.userRole === "ADMIN") {
-        apiResInfoTagAccessLvl.textContent = "Admin";
-        apiResInfoTagAccessLvl.className = "text-amber-400";
-    } else if (responseBody.userRole === "USER") {
-        apiResInfoTagAccessLvl.textContent = "User";
-        apiResInfoTagAccessLvl.className = "text-sky-400";
-    }
 }
 
 
@@ -1021,7 +969,7 @@ function hasEmptyInputs(inputs) {
 
 
 
-function getStyle(statusCode){
+function getStatusStyle(statusCode){
     return statusStyles[statusCode] || {
         text: "?-Status",
         classes: "text-cyan-400 border-cyan-400"
@@ -1030,18 +978,44 @@ function getStyle(statusCode){
 
 
 
+function resetSession() {
+    currentToken = null;
+    currentUserId = null;
+    currentUserRole = null;
+
+    updatePillTokenArea();
+    updateInfoTagAccessLevel();
+}
+
+
+
+function setSession() {
+    currentToken = apiResPanelState.response.body.token;
+    currentUserId = apiResPanelState.response.body.userId;
+    currentUserRole = apiResPanelState.response.body.userRole;
+
+    updatePillTokenArea();
+    updateInfoTagAccessLevel();
+}
+
+
+
 function updatePillTokenArea() {
-    const style = getStyle(apiResPanelState.response.status);
+    const style = getStatusStyle(apiResPanelState.response.status);
     const status = apiResPanelState.response.status;
-    updateTokenPillDot(status, style);
+    updateTokenPillDot(style);
     updateTokenPillText(status, style);
 }
-function updateTokenPillDot(status, style) {
+function updateTokenPillDot(style) {
     subHeaderTokenDot.className = style.classes;
 }
 function updateTokenPillText(status, style) {
-    if (status === 200) {
+    if (status === 200 && currentToken !== null) {
         subHeaderTokenText.textContent = "valid";
+    } else if(status !== 200 && currentToken == null) {
+        subHeaderTokenText.textContent = "Login failed";
+    } else if(currentToken === null){
+        subHeaderTokenText.textContent = "Login to get";
     }
     subHeaderTokenText.className = style.classes;
 }
@@ -1076,7 +1050,7 @@ function updateApiResUrl(url) {
 
 function updateInfoAreaTags() {
     const status = apiResPanelState.response.status;
-    const statusStyle = getStyle(status);
+    const statusStyle = getStatusStyle(status);
     const responseTime = apiResPanelState.fetchSpeed.responseTime;
 
     updateInfoTagStatus(status, statusStyle);
@@ -1098,20 +1072,22 @@ function updateInfoTagTime(responseTime) {
         apiResInfoTagTime.className = "text-red-400";
     } else {
         apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-cyan-400 border-cyan-400";
+        apiResInfoTagTime.className = getStatusStyle(apiResPanelState.response.status).classes;
     }
 }
 function updateInfoTagAccessLevel() {
-    if (currentUserRole === "ADMIN") {
-        apiResInfoTagAccessLvl.textContent = "Admin";
+    const style = getStatusStyle(apiResPanelState.response.status).classes;
+    const userRole = apiResPanelState.response.body.userRole || "Login to get";
+
+    if (userRole === "ADMIN") {
         apiResInfoTagAccessLvl.className = "text-amber-400";
-    } else if (currentUserRole === "USER") {
-        apiResInfoTagAccessLvl.textContent = "User";
+    } else if (userRole === "USER") {
         apiResInfoTagAccessLvl.className = "text-sky-400";
     } else {
-        apiResInfoTagAccessLvl.textContent = "Login to get";
-        apiResInfoTagAccessLvl.className = "text-cyan-400";
+        apiResInfoTagAccessLvl.className = style;
     }
+
+    apiResInfoTagAccessLvl.textContent = userRole;
 }
 
 
