@@ -2,6 +2,10 @@ import './style.css'
 
 
 const statusStyles = {
+    0: {
+        text: "fetch-fail",
+        classes: "text-red-400 border-red-400"
+    },
     200: {
         text: "OK",
         classes: "text-green-400 border-emerald-400"
@@ -189,10 +193,7 @@ loginBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 });
 
@@ -235,10 +236,7 @@ registerUserBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 });
 
@@ -306,9 +304,7 @@ changePinBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-        console.log(error);
+        catchResponse(error);
     }
 });
 
@@ -355,10 +351,7 @@ showUsersAdminBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 });
 
@@ -405,10 +398,7 @@ searchUserByIdBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 });
 
@@ -472,12 +462,8 @@ changeUserRoleBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
-
 });
 
 
@@ -548,10 +534,7 @@ deleteUserByIdBtn.addEventListener("click", async function () {
 
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 
 });
@@ -599,10 +582,7 @@ currentSessionBtn.addEventListener("click", async function () {
         renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 
 });
@@ -610,39 +590,25 @@ currentSessionBtn.addEventListener("click", async function () {
 
 
 showAllUsersPublicBtn.addEventListener("click", async function () {
-    const requestMethod = "GET";
-
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersPublic);
+    apiResPanelState.request.url = endPointsURL.showAllUsersPublic;
+    apiResPanelState.request.method = "GET";
+    apiResPanelState.request.headers = "Empty";
+    apiResPanelState.request.body = "Empty";
+    apiResPanelState.request.bodyResponse = "Empty";
 
     try {
-        const startTime = performance.now();
-        const response = await fetch(endPointsURL.showAllUsersPublic,
-            {
-                method: requestMethod
-            }
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
+            { method: apiResPanelState.request.method }
         );
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        updateApiResPanelState(data,
-            {
-                status: response.status,
-                headers: {
-                    responseHeaders: Object.fromEntries(response.headers.entries())
-                }
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        updateApiResPanelState();
+        renderApiResponse();
 
     } catch (error) {
-
-        updateConnectionErrorInfoTags();
-
-        console.log(error);
+        catchResponse(error);
     }
 });
 
@@ -1027,11 +993,13 @@ function updateInfoTagAccessLevel() {
 
 
 function renderApiResponse(){
+    apiResPanelState.selectedButton = apiResBodyBtn;
+
+    updatePillTokenArea();
     updateApiResSubheaderPill();
     updateInfoAreaTags();
     updatePillApiResBtns();
     showContentInApiResScreen();
-    updatePillTokenArea();
 }
 
 
@@ -1047,4 +1015,25 @@ function setFrontendOnlyResponse(status, ...frontendMessages) {
 
     apiResPanelState.fetchSpeed.startTime = 0;
     apiResPanelState.fetchSpeed.endTime = 0;
+}
+
+
+
+function catchResponse(error) {
+    apiResPanelState.response.raw = null;
+    apiResPanelState.response.status = 0;
+    apiResPanelState.response.headers = "Empty";
+    apiResPanelState.response.body = {
+        backendMessage: ["Empty"],
+        frontendMessage: [
+            "Fetch failed",
+            error.name ?? "Unknown error name",
+            error.message ?? "No backend error message"
+        ]
+    };
+
+    apiResPanelState.fetchSpeed.startTime = 0;
+    apiResPanelState.fetchSpeed.endTime = 0;
+
+    renderApiResponse();
 }
