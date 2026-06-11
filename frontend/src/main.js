@@ -365,71 +365,44 @@ showUsersAdminBtn.addEventListener("click", async function () {
 
 
 searchUserByIdBtn.addEventListener("click", async function () {
-    const requestMethod = "GET";
-    const requestHeaders = {"Authorization": "Bearer " + currentToken};
-    const searchUserByIdURLrequest = endPointsURL.searchUserById(searchUserByIdUserId.value)
+    apiResPanelState.request.url = endPointsURL.searchUserById(searchUserByIdUserId.value);
+    apiResPanelState.request.method = "GET";
+    apiResPanelState.request.headers = { "Authorization": "Bearer " + currentToken };
+    apiResPanelState.request.body = "Empty";
+    apiResPanelState.request.bodyResponse = "Empty";
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, searchUserByIdURLrequest);
-
-    if (blockIfNotLoggedIn("ADMIN")) {
-        return;
-    }
-
-    if (blockIfNotAdmin()) {
-        return;
-    }
-
-    if (searchUserByIdUserId.value === "" || searchUserByIdUserId.value === null) {
-
-        apiResInfoTagStatus.textContent = "400 Bad Request";
-        apiResInfoTagStatus.className = "text-yellow-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-yellow-400";
-
-        updateApiResPanelState(
-            {
-                backendMessage: [
-                    "User ID to search is required",
-                    "Input area can't be empty",
-                    "Please enter a user ID in the input area"
-                ]
-            },
-            {
-                status: 400
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: [
+                "Successful Admin login is required",
+                "before searching users",
+                "login as Admin and try again"
+            ]
+        };
+        resetSession();
+        renderApiResponse();
         return;
     }
 
     try {
-
-        const startTime = performance.now();
-        const response = await fetch(searchUserByIdURLrequest,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers
             }
         );
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        updateApiResPanelState(data,
-            {
-                status: response.status,
-                headers: {
-                    requestHeaders: requestHeaders,
-                    responseHeaders: Object.fromEntries(response.headers.entries())
-                }
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        updateApiResPanelState();
+        renderApiResponse();
 
     } catch (error) {
 
@@ -442,77 +415,61 @@ searchUserByIdBtn.addEventListener("click", async function () {
 
 
 changeUserRoleBtn.addEventListener("click", async function () {
-    const requestMethod = "PATCH";
-    const requestHeaders = {
+    apiResPanelState.request.url = endPointsURL.changeUserRole(changeUserRoleUserId.value);
+    apiResPanelState.request.method = "PATCH";
+    apiResPanelState.request.headers = {
         "Authorization": "Bearer " + currentToken,
         "Content-Type": "application/json"
     };
-    const requestBody = {"userRole": changeUserRoleUserRole.value};
-    const changeUserRoleURLrequest = endPointsURL.changeUserRole(changeUserRoleUserId.value);
+    apiResPanelState.request.body = { userRole: changeUserRoleUserRole.value };
+    apiResPanelState.request.bodyResponse = { userRole: changeUserRoleUserRole.value };
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.PATCH, changeUserRoleURLrequest);
-
-    if (blockIfNotLoggedIn("ADMIN")) {
-        return;
-    }
-
-    if (blockIfNotAdmin()) {
-        return;
-    }
-
-    if( changeUserRoleUserRole.value === "" || changeUserRoleUserRole.value === null ||
-        changeUserRoleUserId.value === "" || changeUserRoleUserId.value === null ){
-        apiResInfoTagStatus.textContent = "400 Bad Request";
-        apiResInfoTagStatus.className = "text-yellow-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-yellow-400";
-
-        updateApiResPanelState(
-            {
-                backendMessage: [
-                    "User ID and User role are required",
-                    "Input areas can't be empty",
-                    "Please enter a user ID in the input area",
-                    "and select a user role in the dropdown menu"
-                ]
-            },
-            {
-                status: 400,
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: [
+                "Successful Admin login is required",
+                "before changing a users role",
+                "login as Admin and try again"
+            ]
+        };
+        resetSession();
+        renderApiResponse();
         return;
     }
 
     try {
-        const startTime = performance.now();
-        const response = await fetch(changeUserRoleURLrequest,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders,
-                body: JSON.stringify(requestBody)
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers,
+                body: JSON.stringify(apiResPanelState.request.body)
             }
         );
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
+        
+        if (
+            apiResPanelState.response.raw.ok &&
+            Number(changeUserRoleUserId.value) === currentUserId
+        ) {
+            addFrontendMessages(
+                "Access-lvl was changed",
+                "Login is required",
+                "Please login again"
+            );
 
-        updateApiResPanelState(data,
-            {
-                status: response.status,
-                headers: {
-                    requestHeaders: requestHeaders,
-                    responseHeaders: Object.fromEntries(response.headers.entries())
-                },
-                request: requestBody
-            }
-        );
+            resetSession();
+        }
 
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        updateApiResPanelState();
+        renderApiResponse();
 
     } catch (error) {
 
