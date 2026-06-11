@@ -130,7 +130,7 @@ let apiResPanelState = {
 
     response: {
         raw: null,
-        status: 401,
+        status: null,
         headers: "Empty",
         body: {
             backendMessage: "Empty"
@@ -183,7 +183,7 @@ loginBtn.addEventListener("click", async function () {
         updateApiResPanelState();
 
         if (apiResPanelState.response.raw.ok) {
-            setSession(apiResPanelState.response.body);
+            setSession();
         }
 
         renderApiResponse();
@@ -262,12 +262,21 @@ changePinBtn.addEventListener("click", async function () {
         newUserPin: "*********"
     };
 
-    if(currentToken === null || currentUserId === null){
-        addFrontendMessages(
-            "Successful login is required",
-            "before changing PIN",
-            "please login with valid credentials"
-        );
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: [
+                "Successful login is required",
+                "before changing PIN",
+                "login and try again"
+            ]
+        };
+        resetSession();
         renderApiResponse();
         return;
     }
@@ -306,44 +315,44 @@ changePinBtn.addEventListener("click", async function () {
 
 
 showUsersAdminBtn.addEventListener("click", async function () {
-    const requestMethod = "GET";
-    const requestHeaders = {"Authorization": "Bearer " + currentToken};
+    apiResPanelState.request.url = endPointsURL.showAllUsersAdmin;
+    apiResPanelState.request.method = "GET";
+    apiResPanelState.request.headers = { "Authorization": "Bearer " + currentToken };
+    apiResPanelState.request.body = "Empty";
+    apiResPanelState.request.bodyResponse = "Empty";
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.showAllUsersAdmin);
-
-    if (blockIfNotLoggedIn("ADMIN")) {
-        return;
-    }
-
-    if (blockIfNotAdmin()) {
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: [
+                "Successful Admin login is required",
+                "before checking users",
+                "login as Admin and try again"
+            ]
+        };
+        resetSession();
+        renderApiResponse();
         return;
     }
 
     try {
-        const startTime = performance.now();
-        const response = await fetch(endPointsURL.showAllUsersAdmin,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers
             }
         );
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        updateApiResPanelState(data,
-            {
-                status: response.status,
-                headers: {
-                    requestHeaders: requestHeaders,
-                    responseHeaders: Object.fromEntries(response.headers.entries())
-                }
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        updateApiResPanelState();
+        renderApiResponse();
 
     } catch (error) {
 
@@ -873,13 +882,12 @@ function updateApiResponseSubHeader(method, styleClass, url) {
 
 
 function addFrontendMessages(...messages) {
-    apiResPanelState.response.body.backendMessage = [
-        apiResPanelState.response.body.backendMessage ?? "No backend message",
-    ];
+    const backendMessage = apiResPanelState.response.body.backendMessage ?? "Empty";
 
-    apiResPanelState.response.body.frontendMessage = [
-        ...messages
-    ];
+    apiResPanelState.response.body.backendMessage =
+        Array.isArray(backendMessage) ? backendMessage : [backendMessage];
+
+    apiResPanelState.response.body.frontendMessage = messages;
 }
 
 
@@ -1007,17 +1015,20 @@ function updatePillTokenArea() {
     updateTokenPillText(status, style);
 }
 function updateTokenPillDot(style) {
-    subHeaderTokenDot.className = style.classes;
+    if (currentToken != null) {
+        subHeaderTokenDot.className = "text-green-400";
+    } else {
+        subHeaderTokenDot.className = style.classes;
+    }
 }
 function updateTokenPillText(status, style) {
-    if (status === 200 && currentToken !== null) {
+    if (currentToken != null) {
         subHeaderTokenText.textContent = "valid";
-    } else if(status !== 200 && currentToken == null) {
-        subHeaderTokenText.textContent = "Login failed";
-    } else if(currentToken === null){
+        subHeaderTokenText.className = "text-green-400";
+    } else {
         subHeaderTokenText.textContent = "Login to get";
+        subHeaderTokenText.className = style.classes;
     }
-    subHeaderTokenText.className = style.classes;
 }
 async function updateTokenPillBtn() {
     if (!currentToken) {
@@ -1055,6 +1066,7 @@ function updateInfoAreaTags() {
 
     updateInfoTagStatus(status, statusStyle);
     updateInfoTagTime(responseTime);
+    updateInfoTagAccessLevel();
 }
 function updateInfoTagStatus(status, statusStyle) {
     apiResInfoTagStatus.textContent = `${status} ${statusStyle.text}`;
@@ -1077,7 +1089,7 @@ function updateInfoTagTime(responseTime) {
 }
 function updateInfoTagAccessLevel() {
     const style = getStatusStyle(apiResPanelState.response.status).classes;
-    const userRole = apiResPanelState.response.body.userRole || "Login to get";
+    const userRole = currentUserRole || "Login to get";
 
     if (userRole === "ADMIN") {
         apiResInfoTagAccessLvl.className = "text-amber-400";
@@ -1098,4 +1110,20 @@ function renderApiResponse(){
     updateInfoAreaTags();
     updatePillApiResBtns();
     showContentInApiResScreen();
+    updatePillTokenArea();
+}
+
+
+
+function setFrontendOnlyResponse(status, ...frontendMessages) {
+    apiResPanelState.response.raw = null;
+    apiResPanelState.response.status = status;
+    apiResPanelState.response.headers = "Empty";
+    apiResPanelState.response.body = {
+        backendMessage: ["Empty"],
+        frontendMessage: frontendMessages
+    };
+
+    apiResPanelState.fetchSpeed.startTime = 0;
+    apiResPanelState.fetchSpeed.endTime = 0;
 }
