@@ -454,7 +454,7 @@ changeUserRoleBtn.addEventListener("click", async function () {
         );
         apiResPanelState.fetchSpeed.endTime = performance.now();
         apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-        
+
         if (
             apiResPanelState.response.raw.ok &&
             Number(changeUserRoleUserId.value) === currentUserId
@@ -483,97 +483,68 @@ changeUserRoleBtn.addEventListener("click", async function () {
 
 
 deleteUserByIdBtn.addEventListener("click", async function () {
-    const requestMethod = "DELETE";
-    const requestHeaders = {
+    apiResPanelState.request.url = endPointsURL.deleteUser(deleteUserByIdUserId.value);
+    apiResPanelState.request.method = "DELETE";
+    apiResPanelState.request.headers = {
         "Authorization": "Bearer " + currentToken,
         "Content-Type": "application/json"
     };
-    const requestBody = {
-        "userName": deleteUserByIdUserName.value,
-        "userPin": deleteUserByIdUserPin.value
+    apiResPanelState.request.body = {
+        userName: deleteUserByIdUserName.value,
+        userPin: deleteUserByIdUserPin.value
     };
-    const requestBodyResponse = {
-        userId: deleteUserByIdUserId.value,
-        userName: requestBody.userName,
+    apiResPanelState.request.bodyResponse = {
+        userName: deleteUserByIdUserName.value,
         userPin: "*********"
     };
-    const deleteUserByIdURLrequest = endPointsURL.deleteUser(deleteUserByIdUserId.value);
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.DELETE, deleteUserByIdURLrequest);
-
-    if (blockIfNotLoggedIn()) {
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: [
+                "Successful login is required",
+                "before deleting your account",
+                "login and try again"
+            ]
+        };
+        resetSession();
+        renderApiResponse();
         return;
     }
 
-    if( deleteUserByIdUserId.value === "" || deleteUserByIdUserId.value === null ||
-        deleteUserByIdUserName.value === "" || deleteUserByIdUserName.value === null ||
-        deleteUserByIdUserPin.value === "" || deleteUserByIdUserPin.value === null ){
-
-        apiResInfoTagStatus.textContent = "400 Bad Request";
-        apiResInfoTagStatus.className = "text-yellow-400";
-
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-yellow-400";
-
-        updateApiResPanelState(
-            {
-                backendMessage: [
-                    "Confirmation of ID, name and PIN are required",
-                    "Input areas can't be empty",
-                    "Please fill all fields and try again"
-                ]
-            },
-            {
-                status: 400
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
+    if (!confirm("Delete your account permanently?")) {
         return;
     }
-
-    const confirmDelete = confirm("Delete your account permanently?");
-    if (!confirmDelete) {
-        return;
-    }
-
     try {
-        const startTime = performance.now();
-        const response = await fetch(deleteUserByIdURLrequest,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders,
-                body: JSON.stringify(requestBody)
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers,
+                body: JSON.stringify(apiResPanelState.request.body)
             }
         );
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
-
-        if (response.ok) {
-            addFrontendMessages(data, [
-                "Session has been cleared",
-                "Please login again"
-            ]);
+        if (apiResPanelState.response.raw.ok) {
+            addFrontendMessages(
+                "Login is required",
+                "after deleting your account",
+                "Login with a new account or",
+                "Register a new account"
+            );
 
             resetSession();
         }
 
-        updateApiResPanelState(data,
-            {
-                status: response.status,
-                headers: {
-                    requestHeaders: requestHeaders,
-                    responseHeaders: Object.fromEntries(response.headers.entries())
-                },
-                request: requestBodyResponse
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        updateApiResPanelState();
+        renderApiResponse();
 
 
     } catch (error) {
@@ -588,51 +559,44 @@ deleteUserByIdBtn.addEventListener("click", async function () {
 
 
 currentSessionBtn.addEventListener("click", async function () {
-    const requestMethod = "GET";
-    const requestHeaders = {"Authorization": "Bearer " + currentToken};
+    apiResPanelState.request.url = endPointsURL.currentSession;
+    apiResPanelState.request.method = "GET";
+    apiResPanelState.request.headers = { "Authorization": "Bearer " + currentToken };
+    apiResPanelState.request.body = "Empty";
+    apiResPanelState.request.bodyResponse = "Empty";
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.GET, endPointsURL.currentSession);
-
-    if (blockIfNotLoggedIn()) {
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: [
+                "Successful login is required",
+                "before checking current session",
+                "login and try again"
+            ]
+        };
+        resetSession();
+        renderApiResponse();
         return;
     }
 
     try {
-        const startTime = performance.now();
-        const response = await fetch(endPointsURL.currentSession,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers
             }
         );
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
-
-        if (!response.ok) {
-            addFrontendMessages(data, [
-                "Current Session is not valid",
-                "Please login again",
-                "Token expired or invalid"
-            ]);
-
-            resetSession();
-        }
-
-        updateApiResPanelState(data,
-            {
-                status: response.status,
-                headers: {
-                    requestHeaders: requestHeaders,
-                    responseHeaders: Object.fromEntries(response.headers.entries())
-                }
-            }
-        );
-
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        updateApiResPanelState();
+        renderApiResponse();
 
     } catch (error) {
 
