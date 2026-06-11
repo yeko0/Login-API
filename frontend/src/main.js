@@ -151,6 +151,8 @@ let apiResPanelState = {
 
 setTimeout(() => {
     checkBackendStatus();
+    updateInfoTagAccessLevel();
+    resetSession();
 }, 500);
 
 updatePillApiResBtns();
@@ -201,47 +203,40 @@ loginBtn.addEventListener("click", async function () {
 
 
 registerUserBtn.addEventListener("click", async function () {
-    const requestMethod = "POST";
-    const requestHeaders = {"Content-Type": "application/json"};
-    const requestBody = {
+    apiResPanelState.request.url = endPointsURL.registerUser;
+    apiResPanelState.request.method = "POST";
+    apiResPanelState.request.headers = {"Content-Type": "application/json"};
+    apiResPanelState.request.body = {
         userName: registerUserUserName.value,
         userPin: registerUserUserPin.value
-    }
-    const requestBodyResponse = {
-        userName: requestBody.userName,
+    };
+    apiResPanelState.request.bodyResponse = {
+        userName: apiResPanelState.request.body.userName,
         userPin: "*********"
     };
 
-    updateApiResponseSubHeader(requestMethod, badgeClassesStyles.POST, endPointsURL.registerUser);
-
     try {
-        const startTime = performance.now();
-        const response = await fetch(endPointsURL.registerUser,
+        apiResPanelState.fetchSpeed.startTime = performance.now();
+        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
             {
-                method: requestMethod,
-                headers: requestHeaders,
-                body: JSON.stringify(requestBody),
+                method: apiResPanelState.request.method,
+                headers: apiResPanelState.request.headers,
+                body: JSON.stringify(apiResPanelState.request.body)
             },
         );
-        const endTime = performance.now();
-        const responseTime = Math.round(endTime - startTime);
-        const data = await response.json();
+        apiResPanelState.fetchSpeed.endTime = performance.now();
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
 
-        updateApiResPanelState(data, {
-            status: response.status,
-            headers: {
-                requestHeaders: requestHeaders,
-                responseHeaders: Object.fromEntries(response.headers.entries())
-            },
-            request: requestBodyResponse
-        });
+        updateApiResPanelState();
 
-        updatePillApiResBtns(apiResBodyBtn);
-        updateInfoTagStatus(response);
-        updateResponseTime(responseTime);
+        if (apiResPanelState.response.raw.ok) {
+            addFrontendMessages(
+                "User registered successfully",
+                "Login with new user if you wish"
+            );
+        }
 
-        console.log(response);
-        console.log(data);
+        renderApiResponse();
 
     } catch (error) {
 
@@ -741,13 +736,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
 
 
 subHeaderTokenBtn.addEventListener("click", async function () {
-    if (!currentToken) {
-        console.log("No token to copy");
-        return;
-    }
-
-    await navigator.clipboard.writeText(currentToken);
-    console.log("Token copied");
+    updateTokenPillBtn();
 });
 
 
@@ -777,7 +766,7 @@ apiResPayloadBtn.addEventListener("click", function () {
 
 
 apiResCopyBtn.addEventListener("click", async function () {
-    updateTokenPillBtn();
+    await navigator.clipboard.writeText(apiResPanelScreen.textContent);
 });
 
 
@@ -935,9 +924,12 @@ function setSession(responseBody) {
 
 
 
-function addFrontendMessages(data, messages) {
-    data.message = [
-        data.message ?? "No backend message",
+function addFrontendMessages(...messages) {
+    apiResPanelState.response.body.backendMessage = [
+        apiResPanelState.response.body.backendMessage ?? "No backend message",
+    ];
+
+    apiResPanelState.response.body.frontendMessage = [
         ...messages
     ];
 }
