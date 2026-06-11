@@ -157,20 +157,21 @@ setTimeout(() => {
     checkBackendStatus();
 }, 500);
 
-updatePillApiResBtns();
+paintSelectedBtn();
 
 loginBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.login;
-    apiResPanelState.request.method = "POST";
-    apiResPanelState.request.headers = {"Content-Type": "application/json"};
-    apiResPanelState.request.body = {
-        userName: loginUserName.value,
-        userPin: loginUserPin.value
-    };
-    apiResPanelState.request.bodyResponse = {
-        userName: apiResPanelState.request.body.userName,
-        userPin: "*********"
-    };
+    setApiRequest(endPointsURL.login,{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: {
+            userName: loginUserName.value,
+            userPin: loginUserPin.value
+        },
+        bodyResponse: {
+            userName: loginUserName.value,
+            userPin: "*********"
+        }
+    });
 
     try {
         apiResPanelState.fetchSpeed.startTime = performance.now();
@@ -200,17 +201,18 @@ loginBtn.addEventListener("click", async function () {
 
 
 registerUserBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.registerUser;
-    apiResPanelState.request.method = "POST";
-    apiResPanelState.request.headers = {"Content-Type": "application/json"};
-    apiResPanelState.request.body = {
-        userName: registerUserUserName.value,
-        userPin: registerUserUserPin.value
-    };
-    apiResPanelState.request.bodyResponse = {
-        userName: apiResPanelState.request.body.userName,
-        userPin: "*********"
-    };
+    setApiRequest(endPointsURL.registerUser,{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: {
+            userName: registerUserUserName.value,
+            userPin: registerUserUserPin.value
+        },
+        bodyResponse: {
+            userName: registerUserUserName.value,
+            userPin: "*********"
+        }
+    });
 
     try {
         apiResPanelState.fetchSpeed.startTime = performance.now();
@@ -243,22 +245,23 @@ registerUserBtn.addEventListener("click", async function () {
 
 
 changePinBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.changePin(currentUserId);
-    apiResPanelState.request.method = "PATCH";
-    apiResPanelState.request.headers = {
-        "Authorization": "Bearer " + currentToken,
-        "Content-Type": "application/json"
-    };
-    apiResPanelState.request.body = {
-        userName: changePinUserName.value,
-        userPin: changePinUserPin.value,
-        newUserPin: changePinNewUserPin.value
-    };
-    apiResPanelState.request.bodyResponse = {
-        userName: apiResPanelState.request.body.userName,
-        userPin: "*********",
-        newUserPin: "*********"
-    };
+    setApiRequest(endPointsURL.changePin(currentUserId),{
+        method: "PATCH",
+        headers: {
+            "Authorization": "Bearer " + currentToken,
+            "Content-Type": "application/json"
+        },
+        body: {
+            userName: changePinUserName.value,
+            userPin: changePinUserPin.value,
+            newUserPin: changePinNewUserPin.value
+        },
+        bodyResponse: {
+            userName: changePinUserName.value,
+            userPin: "*********",
+            newUserPin: "*********"
+        }
+    });
 
     if(currentToken === null){
         apiResPanelState.response.raw = null;
@@ -311,11 +314,9 @@ changePinBtn.addEventListener("click", async function () {
 
 
 showUsersAdminBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.showAllUsersAdmin;
-    apiResPanelState.request.method = "GET";
-    apiResPanelState.request.headers = { "Authorization": "Bearer " + currentToken };
-    apiResPanelState.request.body = "Empty";
-    apiResPanelState.request.bodyResponse = "Empty";
+    setApiRequest(endPointsURL.showAllUsersAdmin,{
+        headers: { "Authorization": "Bearer " + currentToken }
+    });
 
     if(currentToken === null){
         apiResPanelState.response.raw = null;
@@ -358,11 +359,9 @@ showUsersAdminBtn.addEventListener("click", async function () {
 
 
 searchUserByIdBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.searchUserById(searchUserByIdUserId.value);
-    apiResPanelState.request.method = "GET";
-    apiResPanelState.request.headers = { "Authorization": "Bearer " + currentToken };
-    apiResPanelState.request.body = "Empty";
-    apiResPanelState.request.bodyResponse = "Empty";
+    setApiRequest(endPointsURL.searchUserById(searchUserByIdUserId.value),{
+       headers: { "Authorization": "Bearer " + currentToken }
+    });
 
     if(currentToken === null){
         apiResPanelState.response.raw = null;
@@ -405,14 +404,15 @@ searchUserByIdBtn.addEventListener("click", async function () {
 
 
 changeUserRoleBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.changeUserRole(changeUserRoleUserId.value);
-    apiResPanelState.request.method = "PATCH";
-    apiResPanelState.request.headers = {
-        "Authorization": "Bearer " + currentToken,
-        "Content-Type": "application/json"
-    };
-    apiResPanelState.request.body = { userRole: changeUserRoleUserRole.value };
-    apiResPanelState.request.bodyResponse = { userRole: changeUserRoleUserRole.value };
+    setApiRequest(endPointsURL.changeUserRole(changeUserRoleUserId.value),{
+        method: "PATCH",
+        headers: {
+            "Authorization": "Bearer " + currentToken,
+            "Content-Type": "application/json"
+        },
+        body: { userRole: changeUserRoleUserRole.value },
+        bodyResponse: { userRole: changeUserRoleUserRole.value }
+    });
 
     if(currentToken === null){
         apiResPanelState.response.raw = null;
@@ -469,20 +469,21 @@ changeUserRoleBtn.addEventListener("click", async function () {
 
 
 deleteUserByIdBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.deleteUser(deleteUserByIdUserId.value);
-    apiResPanelState.request.method = "DELETE";
-    apiResPanelState.request.headers = {
-        "Authorization": "Bearer " + currentToken,
-        "Content-Type": "application/json"
-    };
-    apiResPanelState.request.body = {
-        userName: deleteUserByIdUserName.value,
-        userPin: deleteUserByIdUserPin.value
-    };
-    apiResPanelState.request.bodyResponse = {
-        userName: deleteUserByIdUserName.value,
-        userPin: "*********"
-    };
+    setApiRequest(endPointsURL.deleteUser(deleteUserByIdUserId.value),{
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + currentToken,
+            "Content-Type": "application/json"
+        },
+        body: {
+            userName: deleteUserByIdUserName.value,
+            userPin: deleteUserByIdUserPin.value
+        },
+        bodyResponse: {
+            userName: deleteUserByIdUserName.value,
+            userPin: "*********"
+        }
+    });
 
     if(currentToken === null){
         apiResPanelState.response.raw = null;
@@ -542,11 +543,9 @@ deleteUserByIdBtn.addEventListener("click", async function () {
 
 
 currentSessionBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.currentSession;
-    apiResPanelState.request.method = "GET";
-    apiResPanelState.request.headers = { "Authorization": "Bearer " + currentToken };
-    apiResPanelState.request.body = "Empty";
-    apiResPanelState.request.bodyResponse = "Empty";
+    setApiRequest(endPointsURL.currentSession,{
+        headers: { "Authorization": "Bearer " + currentToken }
+    });
 
     if(currentToken === null){
         apiResPanelState.response.raw = null;
@@ -590,11 +589,7 @@ currentSessionBtn.addEventListener("click", async function () {
 
 
 showAllUsersPublicBtn.addEventListener("click", async function () {
-    apiResPanelState.request.url = endPointsURL.showAllUsersPublic;
-    apiResPanelState.request.method = "GET";
-    apiResPanelState.request.headers = "Empty";
-    apiResPanelState.request.body = "Empty";
-    apiResPanelState.request.bodyResponse = "Empty";
+    setApiRequest(endPointsURL.showAllUsersPublic);
 
     try {
         apiResPanelState.fetchSpeed.startTime = performance.now();
@@ -621,25 +616,19 @@ subHeaderTokenBtn.addEventListener("click", async function () {
 
 
 apiResBodyBtn.addEventListener("click", function () {
-    apiResPanelState.selectedButton = apiResBodyBtn;
-    updatePillApiResBtns();
-    showContentInApiResScreen();
-});
+    updatePillApiResBtn(apiResBodyBtn);
+   });
 
 
 
 apiResHeadersBtn.addEventListener("click", function () {
-    apiResPanelState.selectedButton = apiResHeadersBtn;
-    updatePillApiResBtns();
-    showContentInApiResScreen();
+    updatePillApiResBtn(apiResHeadersBtn);
 });
 
 
 
 apiResPayloadBtn.addEventListener("click", function () {
-    apiResPanelState.selectedButton = apiResPayloadBtn;
-    updatePillApiResBtns();
-    showContentInApiResScreen();
+    updatePillApiResBtn(apiResPayloadBtn);
 });
 
 
@@ -708,8 +697,9 @@ function showContentInApiResScreen() {
 
 
 
-function paintSelectedBtn(button) {
+function paintSelectedBtn() {
     const defaultStyle = "border-[#263449] text-slate-600";
+    const button = apiResPanelState.selectedButton;
     switch (button) {
         case apiResBodyBtn:
             apiResHeadersBtn.className = defaultStyle;
@@ -803,9 +793,10 @@ function updateApiResPanelState() {
 
 
 
-function updatePillApiResBtns() {
-    const button = apiResPanelState.selectedButton;
-    paintSelectedBtn(button);
+function updatePillApiResBtn(button) {
+    apiResPanelState.selectedButton = button;
+    paintSelectedBtn();
+    showContentInApiResScreen();
 }
 
 
@@ -833,7 +824,7 @@ function blockIfNotAdmin() {
         }
     );
 
-    updatePillApiResBtns(apiResBodyBtn);
+    updatePillApiResBtn(apiResBodyBtn);
     return true;
 }
 
@@ -852,7 +843,7 @@ function blockIfNotLoggedIn(requiredRole = "USER") {
     });
 
     showLoginRequiredState();
-    updatePillApiResBtns(apiResBodyBtn);
+    updatePillApiResBtn(apiResBodyBtn);
     return true;
 }
 
@@ -998,7 +989,7 @@ function renderApiResponse(){
     updatePillTokenArea();
     updateApiResSubheaderPill();
     updateInfoAreaTags();
-    updatePillApiResBtns();
+    paintSelectedBtn();
     showContentInApiResScreen();
 }
 
@@ -1036,4 +1027,22 @@ function catchResponse(error) {
     apiResPanelState.fetchSpeed.endTime = 0;
 
     renderApiResponse();
+}
+
+
+
+function setApiRequest(
+    url,
+    {
+        method = "GET",
+        headers = "Empty",
+        body = "Empty",
+        bodyResponse = "Empty"
+    } = {}
+) {
+    apiResPanelState.request.url = url;
+    apiResPanelState.request.method = method;
+    apiResPanelState.request.headers = headers;
+    apiResPanelState.request.body = body;
+    apiResPanelState.request.bodyResponse = bodyResponse;
 }
