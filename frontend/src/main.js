@@ -8,11 +8,15 @@ const statusStyles = {
     },
     200: {
         text: "OK",
-        classes: "text-green-400 border-emerald-400"
+        classes: "text-green-400 border-green-400"
     },
     201: {
         text: "Created",
-        classes: "text-green-400 border-emerald-400"
+        classes: "text-green-400 border-green-400"
+    },
+    204: {
+        text: "No Content",
+        classes: "text-green-400 border-green-400"
     },
     400: {
         text: "Bad Request",
@@ -153,8 +157,8 @@ let apiResPanelState = {
 };
 
 
-setTimeout(() => {
-    checkBackendStatus();
+setTimeout(async () => {
+    await checkBackendStatus();
 }, 500);
 
 paintSelectedBtn();
@@ -174,17 +178,7 @@ loginBtn.addEventListener("click", async function () {
     });
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers,
-                body: JSON.stringify(apiResPanelState.request.body)
-            },
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
 
         if (apiResPanelState.response.raw.ok) {
@@ -215,17 +209,7 @@ registerUserBtn.addEventListener("click", async function () {
     });
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers,
-                body: JSON.stringify(apiResPanelState.request.body)
-            },
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
 
         if (apiResPanelState.response.raw.ok) {
@@ -263,37 +247,14 @@ changePinBtn.addEventListener("click", async function () {
         }
     });
 
-    if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: [
-                "Successful login is required",
-                "before changing PIN",
-                "login and try again"
-            ]
-        };
-        resetSession();
-        renderApiResponse();
-        return;
-    }
+    if(blockIfNotLoggedIn([
+        "Successful login is required",
+        "before changing PIN",
+        "login and try again"
+    ])) return;
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers,
-                body: JSON.stringify(apiResPanelState.request.body)
-            },
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
 
         if (apiResPanelState.response.raw.ok) {
@@ -318,36 +279,14 @@ showUsersAdminBtn.addEventListener("click", async function () {
         headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: [
-                "Successful Admin login is required",
-                "before checking users",
-                "login as Admin and try again"
-            ]
-        };
-        resetSession();
-        renderApiResponse();
-        return;
-    }
+    if(blockIfNotLoggedIn([
+        "Successful Admin login is required",
+        "before checking users",
+        "login as Admin and try again"
+    ])) return;
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers
-            }
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
         renderApiResponse();
 
@@ -363,36 +302,14 @@ searchUserByIdBtn.addEventListener("click", async function () {
        headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: [
-                "Successful Admin login is required",
-                "before searching users",
-                "login as Admin and try again"
-            ]
-        };
-        resetSession();
-        renderApiResponse();
-        return;
-    }
+    if(blockIfNotLoggedIn([
+        "Successful Admin login is required",
+        "before searching users",
+        "login as Admin and try again"
+    ])) return;
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers
-            }
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
         renderApiResponse();
 
@@ -414,47 +331,22 @@ changeUserRoleBtn.addEventListener("click", async function () {
         bodyResponse: { userRole: changeUserRoleUserRole.value }
     });
 
-    if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: [
-                "Successful Admin login is required",
-                "before changing a users role",
-                "login as Admin and try again"
-            ]
-        };
-        resetSession();
-        renderApiResponse();
-        return;
-    }
+    if(blockIfNotLoggedIn([
+        "Successful Admin login is required",
+        "before changing a users role",
+        "login as Admin and try again"
+    ])) return;
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers,
-                body: JSON.stringify(apiResPanelState.request.body)
-            }
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
+        await sendApiRequest();
 
-        if (
-            apiResPanelState.response.raw.ok &&
-            Number(changeUserRoleUserId.value) === currentUserId
-        ) {
+        if (apiResPanelState.response.raw.ok &&
+            Number(changeUserRoleUserId.value) === currentUserId) {
             addFrontendMessages(
                 "Access-lvl was changed",
                 "Login is required",
                 "Please login again"
             );
-
             resetSession();
         }
 
@@ -485,39 +377,15 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         }
     });
 
-    if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: [
-                "Successful login is required",
-                "before deleting your account",
-                "login and try again"
-            ]
-        };
-        resetSession();
-        renderApiResponse();
-        return;
-    }
+    if(blockIfNotLoggedIn([
+        "Successful login is required",
+        "before deleting your account",
+        "login and try again"
+    ])) return;
 
-    if (!confirm("Delete your account permanently?")) {
-        return;
-    }
+    if (!confirm("Delete your account permanently?")) { return; }
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers,
-                body: JSON.stringify(apiResPanelState.request.body)
-            }
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
+        await sendApiRequest();
 
         if (apiResPanelState.response.raw.ok) {
             addFrontendMessages(
@@ -526,7 +394,6 @@ deleteUserByIdBtn.addEventListener("click", async function () {
                 "Login with a new account or",
                 "Register a new account"
             );
-
             resetSession();
         }
 
@@ -547,36 +414,14 @@ currentSessionBtn.addEventListener("click", async function () {
         headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: [
-                "Successful login is required",
-                "before checking current session",
-                "login and try again"
-            ]
-        };
-        resetSession();
-        renderApiResponse();
-        return;
-    }
+    if(blockIfNotLoggedIn([
+        "Successful login is required",
+        "before checking current session",
+        "login and try again"
+    ])) return;
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            {
-                method: apiResPanelState.request.method,
-                headers: apiResPanelState.request.headers
-            }
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
         renderApiResponse();
 
@@ -592,13 +437,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
     setApiRequest(endPointsURL.showAllUsersPublic);
 
     try {
-        apiResPanelState.fetchSpeed.startTime = performance.now();
-        apiResPanelState.response.raw = await fetch(apiResPanelState.request.url,
-            { method: apiResPanelState.request.method }
-        );
-        apiResPanelState.fetchSpeed.endTime = performance.now();
-        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
-
+        await sendApiRequest();
         updateApiResPanelState();
         renderApiResponse();
 
@@ -610,7 +449,7 @@ showAllUsersPublicBtn.addEventListener("click", async function () {
 
 
 subHeaderTokenBtn.addEventListener("click", async function () {
-    updateTokenPillBtn();
+    await updateTokenPillBtn();
 });
 
 
@@ -645,7 +484,7 @@ apiResClearBtn.addEventListener("click", function () {
 
 
 
-//------------------------------------ Functions ------------------------------------------//
+//---------- Functions -------------------------- Functions ------------------------- Functions -------------//
 
 
 
@@ -717,43 +556,6 @@ function paintSelectedBtn() {
             break;
     }
     button.className = "border-cyan-300 text-cyan-300";
-}
-
-
-
-function updateResponseTime(responseTime) {
-    if (responseTime > 0 && responseTime < 300) {
-        apiResInfoTagTime.textContent = `${responseTime} ms`;
-        apiResInfoTagTime.className = "text-green-400";
-    } else if (responseTime >= 300 && responseTime < 1000) {
-        apiResInfoTagTime.textContent = `${responseTime} ms`;
-        apiResInfoTagTime.className = "text-yellow-400";
-    } else if (responseTime >= 1000)  {
-        apiResInfoTagTime.textContent = `${responseTime} ms`;
-        apiResInfoTagTime.className = "text-red-400";
-    } else {
-        apiResInfoTagTime.textContent = "--";
-        apiResInfoTagTime.className = "text-cyan-400 border-cyan-400";
-    }
-}
-
-
-
-function updateConnectionErrorInfoTags() {
-    apiResInfoTagStatus.textContent = "Connection failed";
-    apiResInfoTagStatus.className = "text-red-400 border-red-400";
-
-    apiResInfoTagTime.textContent = "--";
-    apiResInfoTagTime.className = "text-red-400";
-}
-
-
-
-function updateApiResponseSubHeader(method, styleClass, url) {
-    apiResMethBadge.textContent = method;
-    apiResMethBadge.className = styleClass;
-
-    apiResUrl.textContent = url;
 }
 
 
@@ -830,21 +632,22 @@ function blockIfNotAdmin() {
 
 
 
-function blockIfNotLoggedIn(requiredRole = "USER") {
-    if (currentToken !== null) {
-        return false;
+function blockIfNotLoggedIn(message) {
+    if(currentToken === null){
+        apiResPanelState.response.raw = null;
+        apiResPanelState.response.status = 401;
+        apiResPanelState.response.headers = "Empty";
+        apiResPanelState.fetchSpeed.startTime = 0;
+        apiResPanelState.fetchSpeed.endTime = 0;
+        apiResPanelState.response.body = {
+            backendMessage: "Empty",
+            frontendMessage: message
+        };
+        resetSession();
+        renderApiResponse();
+        return true;
     }
-
-    updateApiResPanelState({
-        backendMessage: [
-            `Successful ${requiredRole}-login is required`,
-            `Please login as ${requiredRole} and try again`
-        ]
-    });
-
-    showLoginRequiredState();
-    updatePillApiResBtn(apiResBodyBtn);
-    return true;
+    return false;
 }
 
 
@@ -1045,4 +848,32 @@ function setApiRequest(
     apiResPanelState.request.headers = headers;
     apiResPanelState.request.body = body;
     apiResPanelState.request.bodyResponse = bodyResponse;
+}
+
+
+
+async function sendApiRequest() {
+    const fetchOptions = {
+        method: apiResPanelState.request.method
+    };
+
+    if (apiResPanelState.request.headers !== "Empty") {
+        fetchOptions.headers = apiResPanelState.request.headers;
+    }
+
+    if (apiResPanelState.request.body !== "Empty") {
+        fetchOptions.body = JSON.stringify(apiResPanelState.request.body);
+    }
+
+    apiResPanelState.fetchSpeed.startTime = performance.now();
+    apiResPanelState.response.raw = await fetch(
+        apiResPanelState.request.url, fetchOptions
+    );
+    apiResPanelState.fetchSpeed.endTime = performance.now();
+
+    if (apiResPanelState.response.raw.status === 204) {
+        apiResPanelState.response.body ={backendMessage: ["Empty"]};
+    } else {
+        apiResPanelState.response.body = await apiResPanelState.response.raw.json();
+    }
 }
