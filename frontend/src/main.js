@@ -140,9 +140,9 @@ let apiResPanelState = {
         raw: null,
         status: null,
         headers: "Empty",
-        body: {
+        body: /** @type {Record<string, any>} */( {
             backendMessage: "Empty"
-        }
+        } )
     },
 
     fetchSpeed: {
@@ -285,6 +285,12 @@ showUsersAdminBtn.addEventListener("click", async function () {
         "login as Admin and try again"
     ])) return;
 
+    if(blockIfNotAdmin([
+        "Successful Admin login is required",
+        "before checking users",
+        "login as Admin and try again"
+    ])) return;
+
     try {
         await sendApiRequest();
         updateApiResPanelState();
@@ -303,6 +309,12 @@ searchUserByIdBtn.addEventListener("click", async function () {
     });
 
     if(blockIfNotLoggedIn([
+        "Successful Admin login is required",
+        "before searching users",
+        "login as Admin and try again"
+    ])) return;
+
+    if(blockIfNotAdmin([
         "Successful Admin login is required",
         "before searching users",
         "login as Admin and try again"
@@ -332,6 +344,12 @@ changeUserRoleBtn.addEventListener("click", async function () {
     });
 
     if(blockIfNotLoggedIn([
+        "Successful Admin login is required",
+        "before changing a users role",
+        "login as Admin and try again"
+    ])) return;
+
+    if(blockIfNotAdmin([
         "Successful Admin login is required",
         "before changing a users role",
         "login as Admin and try again"
@@ -571,23 +589,6 @@ function addFrontendMessages(...messages) {
 
 
 
-function showLoginRequiredState() {
-    subHeaderTokenDot.className = "text-orange-400";
-    subHeaderTokenText.className = "text-orange-400";
-    subHeaderTokenText.textContent = "Login to get valid";
-
-    apiResInfoTagStatus.textContent = "401 Unauthorized";
-    apiResInfoTagStatus.className = "text-orange-400";
-
-    apiResInfoTagTime.textContent = "--";
-    apiResInfoTagTime.className = "text-orange-400";
-
-    apiResInfoTagAccessLvl.textContent = "Login to get";
-    apiResInfoTagAccessLvl.className = "text-orange-400";
-}
-
-
-
 function updateApiResPanelState() {
     apiResPanelState.response.status = apiResPanelState.response.raw.status;
     apiResPanelState.response.headers = Object.fromEntries(apiResPanelState.response.raw.headers.entries());
@@ -603,46 +604,35 @@ function updatePillApiResBtn(button) {
 
 
 
-function blockIfNotAdmin() {
-    if (currentUserRole === "ADMIN") {
-        return false;
+function setGuardResponse(status, message) {
+    apiResPanelState.response.raw = null;
+    apiResPanelState.response.status = status;
+    apiResPanelState.response.headers = "Empty";
+    apiResPanelState.response.body = {
+        backendMessage: "Empty",
+        frontendMessage: message
+    };
+
+    apiResPanelState.fetchSpeed.startTime = 0;
+    apiResPanelState.fetchSpeed.endTime = 0;
+}
+
+
+
+function blockIfNotAdmin(message) {
+    if (currentUserRole !== "ADMIN") {
+        setGuardResponse(403, message);
+        renderApiResponse();
+        return true;
     }
-
-    apiResInfoTagStatus.textContent = "403 Forbidden";
-    apiResInfoTagStatus.className = "text-red-400";
-
-    apiResInfoTagTime.textContent = "--";
-    apiResInfoTagTime.className = "text-red-400";
-
-    updateApiResPanelState(
-        {
-            backendMessage: [
-                "Admin access level is required",
-                "Please login as ADMIN and try again"
-            ]
-        },
-        {
-            status: 403
-        }
-    );
-
-    updatePillApiResBtn(apiResBodyBtn);
-    return true;
+    return false;
 }
 
 
 
 function blockIfNotLoggedIn(message) {
     if(currentToken === null){
-        apiResPanelState.response.raw = null;
-        apiResPanelState.response.status = 401;
-        apiResPanelState.response.headers = "Empty";
-        apiResPanelState.fetchSpeed.startTime = 0;
-        apiResPanelState.fetchSpeed.endTime = 0;
-        apiResPanelState.response.body = {
-            backendMessage: "Empty",
-            frontendMessage: message
-        };
+        setGuardResponse(401, message);
         resetSession();
         renderApiResponse();
         return true;
@@ -798,21 +788,6 @@ function renderApiResponse(){
 
 
 
-function setFrontendOnlyResponse(status, ...frontendMessages) {
-    apiResPanelState.response.raw = null;
-    apiResPanelState.response.status = status;
-    apiResPanelState.response.headers = "Empty";
-    apiResPanelState.response.body = {
-        backendMessage: ["Empty"],
-        frontendMessage: frontendMessages
-    };
-
-    apiResPanelState.fetchSpeed.startTime = 0;
-    apiResPanelState.fetchSpeed.endTime = 0;
-}
-
-
-
 function catchResponse(error) {
     apiResPanelState.response.raw = null;
     apiResPanelState.response.status = 0;
@@ -837,17 +812,17 @@ function catchResponse(error) {
 function setApiRequest(
     url,
     {
-        method = "GET",
-        headers = "Empty",
-        body = "Empty",
-        bodyResponse = "Empty"
+        method,
+        headers,
+        body,
+        bodyResponse
     } = {}
 ) {
     apiResPanelState.request.url = url;
-    apiResPanelState.request.method = method;
-    apiResPanelState.request.headers = headers;
-    apiResPanelState.request.body = body;
-    apiResPanelState.request.bodyResponse = bodyResponse;
+    apiResPanelState.request.method = method ?? "GET";
+    apiResPanelState.request.headers = headers ?? "Empty";
+    apiResPanelState.request.body = body ?? "Empty";
+    apiResPanelState.request.bodyResponse = bodyResponse ?? "Empty";
 }
 
 
