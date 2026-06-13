@@ -177,6 +177,8 @@ loginBtn.addEventListener("click", async function () {
         }
     });
 
+    if(guardEmptyInputs([loginUserName, loginUserPin])) return;
+
     try {
         await sendApiRequest();
         updateApiResPanelState();
@@ -207,6 +209,8 @@ registerUserBtn.addEventListener("click", async function () {
             userPin: "*********"
         }
     });
+
+    if(guardEmptyInputs([registerUserUserName, registerUserUserPin])) return;
 
     try {
         await sendApiRequest();
@@ -247,7 +251,9 @@ changePinBtn.addEventListener("click", async function () {
         }
     });
 
-    if(blockIfNotLoggedIn([
+    if(guardEmptyInputs([changePinUserName, changePinUserPin, changePinNewUserPin])) return;
+
+    if(guardNotLoggedIn([
         "Successful login is required",
         "before changing PIN",
         "login and try again"
@@ -279,13 +285,13 @@ showUsersAdminBtn.addEventListener("click", async function () {
         headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(blockIfNotLoggedIn([
+    if(guardNotLoggedIn([
         "Successful Admin login is required",
         "before checking users",
         "login as Admin and try again"
     ])) return;
 
-    if(blockIfNotAdmin([
+    if(guardNotAdmin([
         "Successful Admin login is required",
         "before checking users",
         "login as Admin and try again"
@@ -308,13 +314,15 @@ searchUserByIdBtn.addEventListener("click", async function () {
        headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(blockIfNotLoggedIn([
+    if(guardEmptyInputs([searchUserByIdUserId])) return;
+
+    if(guardNotLoggedIn([
         "Successful Admin login is required",
         "before searching users",
         "login as Admin and try again"
     ])) return;
 
-    if(blockIfNotAdmin([
+    if(guardNotAdmin([
         "Successful Admin login is required",
         "before searching users",
         "login as Admin and try again"
@@ -343,13 +351,15 @@ changeUserRoleBtn.addEventListener("click", async function () {
         bodyResponse: { userRole: changeUserRoleUserRole.value }
     });
 
-    if(blockIfNotLoggedIn([
+    if(guardEmptyInputs([changeUserRoleUserId, changeUserRoleUserRole])) return;
+
+    if(guardNotLoggedIn([
         "Successful Admin login is required",
         "before changing a users role",
         "login as Admin and try again"
     ])) return;
 
-    if(blockIfNotAdmin([
+    if(guardNotAdmin([
         "Successful Admin login is required",
         "before changing a users role",
         "login as Admin and try again"
@@ -395,7 +405,9 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         }
     });
 
-    if(blockIfNotLoggedIn([
+    if(guardEmptyInputs([deleteUserByIdUserId, deleteUserByIdUserName, deleteUserByIdUserPin])) return;
+
+    if(guardNotLoggedIn([
         "Successful login is required",
         "before deleting your account",
         "login and try again"
@@ -432,7 +444,7 @@ currentSessionBtn.addEventListener("click", async function () {
         headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(blockIfNotLoggedIn([
+    if(guardNotLoggedIn([
         "Successful login is required",
         "before checking current session",
         "login and try again"
@@ -619,7 +631,7 @@ function setGuardResponse(status, message) {
 
 
 
-function blockIfNotAdmin(message) {
+function guardNotAdmin(message) {
     if (currentUserRole !== "ADMIN") {
         setGuardResponse(403, message);
         renderApiResponse();
@@ -630,7 +642,7 @@ function blockIfNotAdmin(message) {
 
 
 
-function blockIfNotLoggedIn(message) {
+function guardNotLoggedIn(message) {
     if(currentToken === null){
         setGuardResponse(401, message);
         resetSession();
@@ -642,8 +654,16 @@ function blockIfNotLoggedIn(message) {
 
 
 
-function hasEmptyInputs(inputs) {
-    return inputs.some(input => !input.value.trim());
+function guardEmptyInputs(inputs) {
+    if(inputs.some(input => !input.value.trim())){
+        setGuardResponse(400,[
+            "Input fields cannot be empty",
+            "Please fill in all fields"
+        ]);
+        renderApiResponse();
+        return true;
+    }
+    return false;
 }
 
 
