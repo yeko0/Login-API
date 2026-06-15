@@ -1,111 +1,96 @@
-# Login API v2.3 - Mini Frontend Console
+# Login API v2.5 — Fullstack API Console
 
-Backend REST API built with **Java 17**, **Spring Boot 4**, **Spring JDBC / JdbcTemplate**, **JWT**, **BCrypt**, and a relational database.
+A learning-focused fullstack authentication project built with **Java 17**, **Spring Boot 4**, **JdbcTemplate**, **JWT**, **BCrypt**, **PostgreSQL**, **Vite**, **Tailwind CSS**, and **Vanilla JavaScript**.
 
-This branch is **v2.3-mini-frontend** of the Login API project.
+The project combines a REST API backend with a browser-based console for testing every endpoint, inspecting requests and responses, and understanding authentication and authorization flows.
 
-The goal of this version is to keep the backend from v2 stable and add a small but functional frontend console for testing the REST API from the browser.
-
----
-
-## Project overview
-
-This project is a learning-focused authentication API with a browser frontend.
-
-It includes:
-
-- A Spring Boot backend with JWT authentication
-- BCrypt PIN hashing
-- Role-based access control with `USER` and `ADMIN`
-- Owner-only account actions
-- Admin-only user management actions
-- A Vite + Tailwind + JavaScript frontend console
-- A response panel that shows live API feedback
-
-The frontend is not meant to be a production UI yet. It is a practical API console used to test and understand the request flow.
+> Current branch: `v2.5-js-architecture-migration`
 
 ---
 
 ## Frontend preview
 
-Frontend UI prototype / console layout:
+The interface contains endpoint cards on the left and a live API response inspector on the right.
 
-![Auth API Console Frontend](frontend/public/ux-ui-prototype/auth-api-console-redesign.png)
+<!--
+Add these files before committing the README:
 
-The frontend contains cards for:
+docs/screenshots/auth-api-console-top.png
+docs/screenshots/auth-api-console-bottom.png
+-->
+
+<p align="center">
+  <img src="docs/screenshots/login-api-top.png" alt="Auth API Console top section" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/login-api-bottom.png" alt="Auth API Console lower section" width="100%">
+</p>
+
+The frontend provides cards for:
 
 - Login
 - Register user
 - Change PIN
 - Show all users as admin
-- Search user by ID
-- Change user role
-- Delete user
+- Search user by ID as admin
+- Change user role as admin
+- Delete own account
 - Current session
-- Public users debug endpoint
-
-Each card represents one backend request: input, action, request, and response.
+- Public user-list debug endpoint
 
 ---
 
-## What changed in v2.3
+## What changed in v2.5
 
-- Added a browser-based frontend API console
-- Added Tailwind styling through Vite
-- Added a backend status indicator for `localhost:8081`
-- Added current token status in the sub-header
-- Added cards for public, owner, admin, and token-based endpoints
-- Added a right-side API response panel
-- Added response status, response time, current access-level display, and response body preview
-- Added Body / Headers / Request tabs for inspecting requests and responses
-- Added copy and clear controls for the response panel
-- Added public `/users` debug card for development testing
-- Kept the backend behavior from v2 stable
+Version 2.5 completes the frontend JavaScript architecture migration.
+
+- Centralized request and response data in `apiResPanelState`
+- Centralized request preparation with `setApiRequest()`
+- Centralized Fetch execution with `sendApiRequest()`
+- Centralized response-state updates and rendering
+- Added reusable frontend-only guards
+- Added empty-input validation before Fetch
+- Added positive-integer validation for user IDs
+- Added login and administrator access guards
+- Added consistent network-error handling with frontend status `0`
+- Added support for `204 No Content` responses
+- Separated backend and frontend feedback through `backendMessage` and `frontendMessage`
+- Preserved safe request previews by masking PIN values
+- Added response Body, Headers, and Payload views
 
 ---
 
-## Backend features
+## Main features
+
+### Backend
 
 - User registration
-- Login with JWT
+- JWT login and current-session validation
 - BCrypt PIN hashing
-- `Authorization: Bearer <token>` authentication
 - `USER` and `ADMIN` roles
-- Admin-only endpoints
-- Account-owner-only endpoints
-- Current session endpoint
-- DTO validation with `@Valid` and `@NotBlank`
-- Role checks resolved from the database in real time
-- JdbcTemplate-based persistence
+- Administrator-only endpoints
+- Account-owner-only actions
+- Runtime role checks against the database
+- DTO validation with Jakarta Validation
+- Global validation and parameter error handling
+- JdbcTemplate persistence
 - PostgreSQL support
-- MariaDB/XAMPP local testing compatibility
+- MariaDB compatibility for local testing
 
----
+### Frontend
 
-## Frontend features
-
-- Vite frontend running separately from the backend
-- Tailwind-based dark UI
-- API request cards grouped by endpoint type
-- Backend online/offline indicator
-- Current token indicator
-- API response panel with:
-    - HTTP method
-    - Request URL
-    - HTTP status
-    - Response time
-    - Current logged-in access level
-    - Response body
-    - Request payload preview
-    - Request/response headers preview
-- Local JavaScript state for:
-    - `currentToken`
-    - `currentUserId`
-    - `currentUserRole`
-    - last API response
-    - last request
-
-Important note: the frontend stores session information only in JavaScript variables for this version. It is enough for learning and testing, but not a final production session strategy.
+- Vite + Tailwind CSS interface
+- Live backend online/offline indicator
+- Current token and access-level indicators
+- Endpoint cards grouped as Public, Owner, Admin, and Token
+- Request and response inspector
+- HTTP method, URL, status, and response-time display
+- Body, Headers, and Payload tabs
+- Copy and clear controls
+- Masked PIN values in request previews
+- Frontend validation before requests are sent
+- In-memory login session for learning and testing
 
 ---
 
@@ -118,23 +103,56 @@ Important note: the frontend stores session information only in JavaScript varia
 - Spring Web MVC
 - Spring JDBC / JdbcTemplate
 - PostgreSQL
-- BCrypt via `spring-security-crypto`
-- JWT with JJWT
+- MariaDB JDBC driver
+- BCrypt through `spring-security-crypto`
+- JJWT 0.12.6
 - Maven
-- IntelliJ IDEA HTTP Client
 
 ### Frontend
 
 - HTML
-- JavaScript
-- Vite
-- Tailwind CSS
+- Vanilla JavaScript
+- Vite 8
+- Tailwind CSS 4
+
+---
+
+## Project structure
+
+```text
+Login-API-v1/
+├── frontend/
+│   ├── public/
+│   │   ├── background.png
+│   │   └── ux-ui-prototype/
+│   ├── src/
+│   │   ├── main.js
+│   │   └── style.css
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+├── src/
+│   ├── main/
+│   │   ├── java/org/yeko/loginapi/
+│   │   │   ├── controller/
+│   │   │   ├── dto/
+│   │   │   ├── entity/
+│   │   │   ├── exception/
+│   │   │   ├── repository/
+│   │   │   └── service/
+│   │   └── resources/
+│   │       └── application-example.properties
+│   └── test/
+├── pom.xml
+├── requests.http
+└── README.md
+```
 
 ---
 
 ## Database
 
-Main PostgreSQL table:
+### PostgreSQL
 
 ```sql
 CREATE TABLE users
@@ -146,7 +164,7 @@ CREATE TABLE users
 );
 ```
 
-MariaDB/MySQL version for local school/XAMPP testing:
+### MariaDB / MySQL
 
 ```sql
 CREATE TABLE users
@@ -158,22 +176,15 @@ CREATE TABLE users
 );
 ```
 
-### Columns
-
-| Column      | Description                  |
-|-------------|------------------------------|
-| `user_id`   | Unique user id               |
-| `user_name` | Unique username              |
-| `user_pin`  | BCrypt-hashed PIN            |
-| `user_role` | User role: `USER` or `ADMIN` |
+The API never returns the stored PIN hash in public user responses.
 
 ---
 
-## Configuration
+## Local configuration
 
-The real `application.properties` is ignored by Git because it contains local database credentials and JWT secrets.
+The real `application.properties` file is ignored by Git because it contains database credentials and the JWT secret.
 
-Use `application-example.properties` as a template and create your own local file:
+Create:
 
 ```text
 src/main/resources/application.properties
@@ -185,89 +196,110 @@ Example for PostgreSQL:
 spring.application.name=login-api
 server.port=8081
 
-spring.datasource.url=jdbc:postgresql://localhost:5432/data_base_name
+spring.datasource.url=jdbc:postgresql://localhost:5432/login_app_db
 spring.datasource.username=postgres
-spring.datasource.password=postgres
+spring.datasource.password=your-password
 
-jwt.secret=secret-key
+jwt.secret=replace-with-a-secret-of-at-least-32-bytes
 jwt.duration-millis=1800000
 ```
 
-Example for MariaDB/XAMPP local testing:
+Example for MariaDB:
 
 ```properties
 spring.application.name=login-api
 server.port=8081
 
-spring.datasource.url=jdbc:mariadb://localhost:3307/data_base_name
+spring.datasource.url=jdbc:mariadb://localhost:3307/login_app_db
 spring.datasource.username=root
 spring.datasource.password=
 
-jwt.secret=secret-key
+jwt.secret=replace-with-a-secret-of-at-least-32-bytes
 jwt.duration-millis=1800000
 ```
 
+Do not commit the real JWT secret or database credentials.
+
 ---
 
-## How to run
+## Run the project
 
 ### 1. Start the backend
 
-Run the Spring Boot application from IntelliJ or Maven.
+Run the Spring Boot application from IntelliJ IDEA or from the project root:
 
-Expected backend URL:
+```bash
+./mvnw spring-boot:run
+```
+
+On Windows:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Backend URL:
 
 ```text
 http://localhost:8081
 ```
 
-The frontend status pill checks the backend on `localhost:8081`.
-
 ### 2. Start the frontend
 
-Go to the frontend folder and run Vite:
-
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Expected frontend URL:
+Frontend URL:
 
 ```text
 http://localhost:5173
 ```
 
+The backend currently allows the Vite development origin through CORS.
+
 ---
 
 ## Authentication flow
 
-After login, the backend returns a JWT token.
-
-Protected requests use this header:
+1. A user registers with a username and PIN.
+2. The backend hashes the PIN with BCrypt.
+3. A successful login returns a signed JWT.
+4. Protected requests send:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-The JWT identifies the user by `userId` and `userName`.
+5. The token identifies the user.
+6. Authorization checks use the current role stored in the database.
 
-User roles are checked directly from the database, so role changes apply immediately even if an old token still exists.
+The frontend stores the current token, user ID, and role only in JavaScript memory. Refreshing the page clears the session.
 
 ---
 
 ## Endpoints
 
-### Public endpoints
+| Access         |   Method | Endpoint                 | Purpose                                        |
+|----------------|---------:|--------------------------|------------------------------------------------|
+| Public         |   `POST` | `/users`                 | Register a user                                |
+| Public         |   `POST` | `/auth/login`            | Login and receive a JWT                        |
+| Public / Debug |    `GET` | `/users`                 | List public user profiles                      |
+| Token          |    `GET` | `/auth/session`          | Validate the token and return the current user |
+| Admin          |    `GET` | `/admin/users`           | List all public user profiles                  |
+| Admin          |    `GET` | `/users/{id}`            | Find a public user profile by ID               |
+| Admin          |  `PATCH` | `/admin/users/{id}/role` | Change a user's role                           |
+| Owner          |  `PATCH` | `/users/{id}/pin`        | Change the authenticated owner's PIN           |
+| Owner          | `DELETE` | `/users/{id}`            | Delete the authenticated owner's account       |
 
-#### Create user
+### Register
 
 ```http
 POST /users
 Content-Type: application/json
 ```
-
-Request body:
 
 ```json
 {
@@ -276,7 +308,7 @@ Request body:
 }
 ```
 
-Response example:
+Successful response:
 
 ```json
 {
@@ -286,18 +318,12 @@ Response example:
 }
 ```
 
-New users are created with the default role `USER`.
-
----
-
-#### Login
+### Login
 
 ```http
 POST /auth/login
 Content-Type: application/json
 ```
-
-Request body:
 
 ```json
 {
@@ -306,7 +332,7 @@ Request body:
 }
 ```
 
-Response example:
+Successful response:
 
 ```json
 {
@@ -317,359 +343,88 @@ Response example:
 }
 ```
 
----
+### Backend message response
 
-#### Public debug users
-
-```http
-GET /users
-```
-
-This endpoint is currently public for development/debugging.
-
-It can be used to quickly verify that the frontend, backend, and database connection are working.
-
----
-
-### Authenticated endpoint
-
-#### Get current session
-
-```http
-GET /auth/session
-Authorization: Bearer <token>
-```
-
-Returns the current user based on the active token.
-
-Response example:
+Operations that return a text message use a consistent field:
 
 ```json
 {
-  "userId": 1,
-  "userName": "yeko",
-  "userRole": "USER"
+  "backendMessage": "Password Updated"
+}
+```
+
+The frontend may extend a successful or blocked response with its own UI feedback:
+
+```json
+{
+  "backendMessage": [
+    "Password Updated"
+  ],
+  "frontendMessage": [
+    "Login is required",
+    "Please login again with the new PIN"
+  ]
 }
 ```
 
 ---
 
-### Admin endpoints
-
-#### Get all users as admin
-
-```http
-GET /admin/users
-Authorization: Bearer <admin-token>
-```
-
-Requires role:
-
-```text
-ADMIN
-```
-
-Response example:
-
-```json
-[
-  {
-    "userId": 1,
-    "userName": "yeko",
-    "userRole": "USER"
-  },
-  {
-    "userId": 2,
-    "userName": "admin",
-    "userRole": "ADMIN"
-  }
-]
-```
-
----
-
-#### Get user by id
-
-```http
-GET /users/{id}
-Authorization: Bearer <admin-token>
-```
-
-Requires role:
-
-```text
-ADMIN
-```
-
-Response example:
-
-```json
-{
-  "userId": 1,
-  "userName": "yeko",
-  "userRole": "USER"
-}
-```
-
----
-
-#### Update user role
-
-```http
-PATCH /admin/users/{id}/role
-Authorization: Bearer <admin-token>
-Content-Type: application/json
-```
-
-Request body:
-
-```json
-{
-  "userRole": "ADMIN"
-}
-```
-
-Allowed roles:
-
-```text
-USER
-ADMIN
-```
-
-The API normalizes role input:
-
-```text
-" admin " → "ADMIN"
-"user"    → "USER"
-```
-
-The API does not allow changing the last remaining `ADMIN` to `USER`.
-
-Response example:
-
-```json
-{
-  "message": "Role Updated"
-}
-```
-
----
-
-### Account owner endpoints
-
-These endpoints require that the token belongs to the same user id in the URL.
-
-#### Update own PIN
-
-```http
-PATCH /users/{id}/pin
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-Request body:
-
-```json
-{
-  "userName": "yeko",
-  "userPin": "1234",
-  "newUserPin": "9999"
-}
-```
-
-Response example:
-
-```json
-{
-  "message": "Password Updated"
-}
-```
-
----
-
-#### Delete own account
-
-```http
-DELETE /users/{id}
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-Request body:
-
-```json
-{
-  "userName": "yeko",
-  "userPin": "9999"
-}
-```
-
-Response example:
-
-```json
-{
-  "message": "User yeko Deleted"
-}
-```
-
----
-
-## Error response
-
-Most denied requests return:
-
-```json
-{
-  "message": "Access Denied"
-}
-```
-
-Common status codes currently used:
-
-| Status                      | Meaning                                                  |
-|-----------------------------|----------------------------------------------------------|
-| `200 OK`                    | Successful request                                       |
-| `201 Created`               | User created successfully                                |
-| `400 Bad Request`           | Invalid request, for example username already exists     |
-| `401 Unauthorized`          | Login/session/account-owner check failed                 |
-| `403 Forbidden`             | User is authenticated but does not have admin permission |
-| `404 Not Found`             | Requested resource was not found                         |
-| `409 Conflict`              | Invalid/conflicting data                                 |
-| `500 Internal Server Error` | Unexpected server/database error                         |
-
-Validation errors are handled by Spring validation using DTO annotations like `@NotBlank`.
-
----
-
-## Project structure
-
-Backend structure:
-
-```text
-controller
-├── AuthController
-└── UserController
-
-service
-├── AuthService
-├── JwtService
-├── PasswordService
-└── UserService
-
-repository
-└── UserRepository
-
-dto
-├── ApiMessage
-├── CreateUserRequest
-├── DeleteUserRequest
-├── LoginRequest
-├── LoginResponse
-├── UpdatePinRequest
-├── UpdateRoleRequest
-└── UserResponse
-
-entity
-└── User
-
-exception
-└── GlobalExceptionHandler
-```
-
-Frontend structure:
-
-```text
-frontend
-├── index.html
-├── package.json
-├── public
-│   ├── background.png
-│   └── ux-ui-prototype
-│       └── auth-api-console-redesign.png
-└── src
-    ├── main.js
-    └── style.css
-```
-
----
-
-## Repository layer in v2
-
-`UserRepository` uses `JdbcTemplate`.
-
-Examples of the current style:
-
-```text
-SELECT returning multiple rows
-→ jdbcTemplate.query(...)
-
-SELECT returning one guaranteed value
-→ jdbcTemplate.queryForObject(...)
-
-INSERT / UPDATE / DELETE
-→ jdbcTemplate.update(...)
-```
-
-The repository has separate mapping methods for:
-
-```text
-full user
-→ includes user_pin/hash for internal authentication
-
-public user
-→ excludes user_pin/hash for API responses
-```
-
-DTO conversion is handled in the service layer, not in the repository.
+## Response status codes
+
+|                      Status | Meaning                                               |
+|----------------------------:|-------------------------------------------------------|
+|                         `0` | Frontend Fetch/network failure                        |
+|                    `200 OK` | Successful request                                    |
+|               `201 Created` | User created successfully                             |
+|           `400 Bad Request` | Invalid request, validation error, or invalid user ID |
+|          `401 Unauthorized` | Missing or invalid login/session                      |
+|             `403 Forbidden` | Authenticated user lacks permission                   |
+|             `404 Not Found` | Requested user was not found                          |
+|              `409 Conflict` | Conflicting data, such as an existing username        |
+| `500 Internal Server Error` | Unexpected backend or database error                  |
 
 ---
 
 ## Security notes
 
-- User PINs are never stored as plain text.
-- PINs are hashed with BCrypt.
-- JWT tokens are signed with a secret from local `application.properties`.
-- Admin permissions are checked against the current database role, not only against token claims.
-- Role changes take effect immediately for protected admin endpoints.
-- The token contains identity data such as `userId` and `userName`, but role permissions are resolved from the database.
-- `application.properties` is ignored by Git to avoid committing local credentials and secrets.
-- The current frontend is a development/testing console, not a production authentication frontend.
+- PINs are hashed with BCrypt and are never stored as plain text.
+- PIN hashes are not included in public API responses.
+- JWT secrets and database credentials belong only in the ignored local configuration file.
+- Administrator permissions are checked against the current database role.
+- PINs are masked in the frontend Payload preview.
+- The public `GET /users` endpoint exists for development and should be protected or removed before a production deployment.
+- This project uses custom JWT authorization logic for learning purposes and is not presented as production-ready authentication infrastructure.
 
 ---
 
-## Current project status
+## Current status
 
-This is **v2.3-mini-frontend**.
+### Completed in v2.5
 
-Completed:
+- Backend authentication and authorization flow
+- BCrypt PIN protection
+- JWT login and session validation
+- PostgreSQL / JdbcTemplate persistence
+- Public, owner, administrator, and token endpoints
+- Full frontend API console
+- Centralized frontend request/response architecture
+- Reusable authentication and input guards
+- Consistent backend/frontend messages
+- Live request and response inspection
 
-- Backend v2 JdbcTemplate refactor
-- JWT login/session flow
-- Admin and owner endpoint testing
-- Public debug endpoint testing
-- Mini frontend API console
-- Tailwind/Vite frontend setup
-- Live backend status indicator
-- Current token indicator
-- API response panel
-- Basic request/response inspection in the browser
+### Possible future improvements
 
-Completed v2.3 goal:
+- Logged-in / logout mode inside the Login card
+- Responsive layout for smaller screens
+- Persistent session storage when appropriate
+- Loading and disabled-button states during requests
+- Unit and integration tests
+- Docker configuration
+- Deployment configuration
+- Spring Security filter-chain integration
 
-```text
-Backend API only
-→ Backend API + functional mini frontend console
-```
+---
 
-Planned future improvements:
+## Purpose
 
-- Refactor repeated frontend JavaScript into reusable helper functions
-- Improve responsive layout for smaller screens
-- Add better loading states during requests
-- Improve form validation before sending requests
-- Add more consistent frontend error messages
-- Add localStorage/sessionStorage support if needed
-- Add unit and integration tests
-- Add Docker setup
-- Add deployment setup
-- Later: Spring Security filter-based authentication
+This repository documents my progress while learning backend and fullstack development. The goal is to understand each layer directly: database access, authentication, authorization, API design, frontend state, Fetch requests, validation, and UI feedback.
