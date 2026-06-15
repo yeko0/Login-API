@@ -37,8 +37,7 @@ public class UserService {
 
 
     private boolean isValidRole(String role ){
-        return role.equals("USER")
-                || role.equals("ADMIN");
+        return role.equals("USER") || role.equals("ADMIN");
     }
 
 
@@ -77,7 +76,7 @@ public class UserService {
 
 
     public boolean updatePinIfAuthenticated(UpdatePinRequest update, Long id ){
-        Optional<User> userFound = ur.findUserById(id);
+        Optional<User> userFound = urJpa.findById(id);
 
         if( userFound.isPresent() ) {
             User user = userFound.get();
@@ -92,7 +91,7 @@ public class UserService {
 
 
     public Optional<UserResponse> findPublicUserById(Long id ){
-        Optional<User> userFound = ur.findPublicUserById(id);
+        Optional<User> userFound = urJpa.findById(id);
 
         return userFound.map(this::toUserResponse);
 
@@ -109,7 +108,7 @@ public class UserService {
 
 
     public boolean deleteUserIfAuthenticated(DeleteUserRequest deleteRequest, Long id ){
-        Optional<User> userFound = ur.findUserById(id);
+        Optional<User> userFound = urJpa.findById(id);
 
         if (userFound.isPresent() ){
             User user = userFound.get();
