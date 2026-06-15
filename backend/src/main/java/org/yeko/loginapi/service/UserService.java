@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.repository.UserRepository;
+import org.yeko.loginapi.repository.UserJpaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,14 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+    private final UserJpaRepository urJpa;
     private final UserRepository ur;
     private final PasswordService ps;
     private final AuthService as;
 
-    public UserService(UserRepository userRepository, PasswordService passwordService, AuthService authService) {
+    public UserService(UserJpaRepository userJpaRepository, UserRepository userRepository,
+                       PasswordService passwordService, AuthService authService) {
+        this.urJpa = userJpaRepository;
         this.ur = userRepository;
         this.ps = passwordService;
         this.as = authService;
@@ -50,7 +54,7 @@ public class UserService {
 
 
     public List<UserResponse> getAllUsers(){
-        List<User> users = ur.getAllUsers();
+        List<User> users = urJpa.findAll();
         List<UserResponse> uRespList = new ArrayList<>();
         for (User u : users){
             uRespList.add(toUserResponse(u));
