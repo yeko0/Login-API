@@ -42,7 +42,7 @@ public class UserService {
 
 
     private boolean isLastAdmin(){
-        return ur.countAdmins("ADMIN") == 1;
+        return urJpa.countByUserRole("ADMIN") == 1;
     }
 
 

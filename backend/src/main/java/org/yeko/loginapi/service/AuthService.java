@@ -97,7 +97,7 @@ public class AuthService {
 
         if (token.isPresent() ){
             Long id = extractUserId(token.get());
-            return ur.getUserRoleFromDB(id);
+            return urJpa.findById(id).map(User::getUserRole);
         }
 
         return Optional.empty();
