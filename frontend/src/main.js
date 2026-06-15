@@ -251,13 +251,14 @@ changePinBtn.addEventListener("click", async function () {
         }
     });
 
-    if(guardEmptyInputs([changePinUserName, changePinUserPin, changePinNewUserPin])) return;
-
     if(guardNotLoggedIn([
         "Successful login is required",
         "before changing PIN",
         "login and try again"
     ])) return;
+
+
+    if(guardEmptyInputs([changePinUserName, changePinUserPin, changePinNewUserPin])) return;
 
     try {
         await sendApiRequest();
@@ -314,7 +315,6 @@ searchUserByIdBtn.addEventListener("click", async function () {
        headers: { "Authorization": "Bearer " + currentToken }
     });
 
-    if(guardEmptyInputs([searchUserByIdUserId])) return;
 
     if(guardNotLoggedIn([
         "Successful Admin login is required",
@@ -327,6 +327,10 @@ searchUserByIdBtn.addEventListener("click", async function () {
         "before searching users",
         "login as Admin and try again"
     ])) return;
+
+    if(guardEmptyInputs([searchUserByIdUserId])) return;
+
+    if(guardInputNotNumber(searchUserByIdUserId)) return;
 
     try {
         await sendApiRequest();
@@ -351,7 +355,6 @@ changeUserRoleBtn.addEventListener("click", async function () {
         bodyResponse: { userRole: changeUserRoleUserRole.value }
     });
 
-    if(guardEmptyInputs([changeUserRoleUserId, changeUserRoleUserRole])) return;
 
     if(guardNotLoggedIn([
         "Successful Admin login is required",
@@ -364,6 +367,10 @@ changeUserRoleBtn.addEventListener("click", async function () {
         "before changing a users role",
         "login as Admin and try again"
     ])) return;
+
+    if(guardEmptyInputs([changeUserRoleUserId, changeUserRoleUserRole])) return;
+
+    if(guardInputNotNumber(changeUserRoleUserId)) return;
 
     try {
         await sendApiRequest();
@@ -405,15 +412,17 @@ deleteUserByIdBtn.addEventListener("click", async function () {
         }
     });
 
-    if(guardEmptyInputs([deleteUserByIdUserId, deleteUserByIdUserName, deleteUserByIdUserPin])) return;
-
     if(guardNotLoggedIn([
         "Successful login is required",
         "before deleting your account",
         "login and try again"
     ])) return;
 
-    if (!confirm("Delete your account permanently?")) { return; }
+    if(guardEmptyInputs([deleteUserByIdUserId, deleteUserByIdUserName, deleteUserByIdUserPin])) return;
+
+    if(guardInputNotNumber(deleteUserByIdUserId)) return;
+
+    if (!confirm("Delete your account permanently?")) return;
     try {
         await sendApiRequest();
 
@@ -659,6 +668,22 @@ function guardEmptyInputs(inputs) {
         setGuardResponse(400,[
             "Input fields cannot be empty",
             "Please fill in all fields"
+        ]);
+        renderApiResponse();
+        return true;
+    }
+    return false;
+}
+
+
+
+function guardInputNotNumber(input) {
+    const value = Number(input.value.trim());
+
+    if (!Number.isInteger(value) || value <= 0){
+        setGuardResponse(400,[
+            "Input not valid",
+            "Enter only positive integer numbers"
         ]);
         renderApiResponse();
         return true;
