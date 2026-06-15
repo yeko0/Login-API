@@ -46,10 +46,7 @@ public class UserService {
     }
 
 
-    public boolean userNameExists(String userName ){
-        return ur.userNameExists(userName);
-    }
-
+    public boolean userNameExists(String userName ){ return urJpa.existsByUserName(userName); }
 
 
     public List<UserResponse> getAllUsers(){
