@@ -1,4 +1,7 @@
 package org.yeko.loginapi.dto;
 
-public record ApiMessage(String backendMessage) {
+import java.util.List;
+
+public record ApiMessage(List<String> backendMessage) {
+
 }

@@ -10,6 +10,7 @@ import org.yeko.loginapi.dto.UserResponse;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,7 +33,7 @@ public class AuthController {
         Optional<LoginResponse> response = authService.login(loginRequest);
 
         if (response.isEmpty()){
-            return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+            return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
         }
 
         return ResponseEntity.ok(response.get());
@@ -47,7 +48,7 @@ public class AuthController {
         if( user.isPresent() ){
             return ResponseEntity.status(200).body(user.get());
         }
-        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
     }
 
 

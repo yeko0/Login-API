@@ -12,6 +12,8 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.yeko.loginapi.dto.ApiMessage;
 
+import java.util.List;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -23,7 +25,9 @@ public class GlobalExceptionHandler {
                 .get(0)
                 .getDefaultMessage();
 
-        return ResponseEntity.badRequest().body(new ApiMessage(message));
+        if (message == null) { message = "Invalid request data"; }
+
+        return ResponseEntity.badRequest().body(new ApiMessage(List.of(message)));
     }
 
 
@@ -35,16 +39,19 @@ public class GlobalExceptionHandler {
         } else {
             requiredType = "valid type";
         }
-        return ResponseEntity.badRequest().body(new ApiMessage(
-                "Invalid parameter '"+ ex.getName() +"'. Expected type: "+ requiredType
-                                                               )
-        );
+        return ResponseEntity.badRequest().body(new ApiMessage(List.of(
+                "Invalid parameter: "+ ex.getName(),
+                "Expected type: "+ requiredType
+        )));
     }
 
 
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ApiMessage> handleValidationErrors(HandlerMethodValidationException ex) {
-        return ResponseEntity.badRequest().body(new ApiMessage("Invalid 0 or negative number. Only positive numbers accepted"));
+        return ResponseEntity.badRequest().body(new ApiMessage(List.of(
+                "Invalid 0 or negative number",
+                "Only positive numbers accepted"
+        )));
     }
 
 
@@ -52,7 +59,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiMessage> handleDataIntegrityErrors(DataIntegrityViolationException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ApiMessage("Database conflict. The data already exists or violates a database rule."));
+                .body(new ApiMessage(List.of(
+                        "Database conflict",
+                        "The data already exists or",
+                        "violates a database rule."
+                )));
     }
 
 
@@ -60,7 +71,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiMessage> handleDatabaseErrors(DataAccessException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiMessage("Database error. Please try again later."));
+                .body(new ApiMessage(List.of(
+                        "Database error",
+                        "Please try again later."
+                )));
     }
 
 }

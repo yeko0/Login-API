@@ -28,7 +28,7 @@ public class UserController {
     public ResponseEntity<?> debugGetAllUsers(){
         List<UserResponse> users = userService.getAllUsers();
         if(users.isEmpty()){
-            return ResponseEntity.status(200).body(new ApiMessage("Users Empty"));
+            return ResponseEntity.status(200).body(new ApiMessage(List.of("Users Empty")));
         }
         return ResponseEntity.ok(users);
     }
@@ -42,14 +42,14 @@ public class UserController {
 
             List<UserResponse> users = userService.getAllUsers();
             if (users.isEmpty()) {
-                return ResponseEntity.status(200).body(new ApiMessage("Users Empty"));
+                return ResponseEntity.status(200).body(new ApiMessage(List.of("Users Empty")));
             }
             return ResponseEntity.ok(users);
 
         }else if (authService.isUser(authorizationHeader) ){
-            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
+            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
-        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -65,13 +65,13 @@ public class UserController {
             if (ur.isPresent()) {
                 return ResponseEntity.ok(ur.get());
             }
-            return ResponseEntity.status(404).body(new ApiMessage("Not Found"));
+            return ResponseEntity.status(404).body(new ApiMessage(List.of("Not Found")));
 
         }else if (authService.isUser(authorizationHeader) ){
-            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
+            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -79,7 +79,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest user){
 
         if(userService.userNameExists(user.getUserName())){
-            return ResponseEntity.status(409).body(new ApiMessage("User data conflict. Try again"));
+            return ResponseEntity.status(409).body(new ApiMessage(List.of("User data conflict", "Try again")));
         }
 
         Optional<UserResponse> ur = userService.createUser(user);
@@ -87,7 +87,7 @@ public class UserController {
             return ResponseEntity.status(201).body(ur.get());
         }
 
-        return ResponseEntity.status(500).body(new ApiMessage("Error on user creation"));
+        return ResponseEntity.status(500).body(new ApiMessage(List.of("Error on user creation")));
     }
 
 
@@ -98,15 +98,15 @@ public class UserController {
         if(authService.isAdmin(authorizationHeader) ){
             if(userService.updateIfValidRole(id, update) ) {
 
-                return ResponseEntity.status(200).body(new ApiMessage("Role Updated"));
+                return ResponseEntity.status(200).body(new ApiMessage(List.of("Role Updated")));
             }
-            return ResponseEntity.status(400).body(new ApiMessage("Invalid request"));
+            return ResponseEntity.status(400).body(new ApiMessage(List.of("Invalid request")));
 
         } else if (authService.isUser(authorizationHeader)) {
-            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
+            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -118,12 +118,12 @@ public class UserController {
         if( authService.isAccountOwner(authorizationHeader, id) ){
 
             if( userService.updatePinIfAuthenticated(update, id) ){
-                return ResponseEntity.status(200).body(new ApiMessage("Password Updated"));
+                return ResponseEntity.status(200).body(new ApiMessage(List.of("Password Updated")));
             }
-            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
+            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -135,12 +135,12 @@ public class UserController {
         if( authService.isAccountOwner(authorizationHeader, id) ){
 
             if(userService.deleteUserIfAuthenticated(loginRequest, id) ){
-                return ResponseEntity.status(200).body(new ApiMessage("User Deleted"));
+                return ResponseEntity.status(200).body(new ApiMessage(List.of("User Deleted")));
             }
-            return ResponseEntity.status(403).body(new ApiMessage("Access Denied"));
+            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage("Access Denied"));
+        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
