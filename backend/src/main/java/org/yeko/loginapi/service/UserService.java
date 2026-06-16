@@ -8,9 +8,17 @@ import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
+    private static final String ROLE_USER = "USER";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final Set<String> VALID_ROLES = Set.of(
+            ROLE_USER,
+            ROLE_ADMIN
+    );
+
     private final UserRepository ur;
     private final PasswordService ps;
     private final AuthService as;
@@ -33,12 +41,12 @@ public class UserService {
 
 
     private boolean isValidRole(String role ){
-        return role.equals("USER") || role.equals("ADMIN");
+        return VALID_ROLES.contains(role);
     }
 
 
     private boolean isLastAdmin(){
-        return ur.countByUserRole("ADMIN") == 1;
+        return ur.countByUserRole(ROLE_ADMIN) == 1;
     }
 
 
@@ -55,7 +63,7 @@ public class UserService {
         User user = toUser(request);
 
         user.setUserPin(ps.hash(request.getUserPin()));
-        user.setUserRole("USER");
+        user.setUserRole(ROLE_USER);
 
         User createdUser = ur.save(user);
 

@@ -13,13 +13,15 @@ import java.util.Optional;
 
 @Service
 public class AuthService {
-    private final UserRepository urJpa;
+    private static final String ROLE_USER = "USER";
+    private static final String ROLE_ADMIN = "ADMIN";
+
+    private final UserRepository ur;
     private final PasswordService ps;
     private final JwtService jwtService;
 
-
     public AuthService(UserRepository userRepository, PasswordService ps, JwtService jwtService){
-        this.urJpa = userRepository;
+        this.ur = userRepository;
         this.ps = ps;
         this.jwtService = jwtService;
     }
@@ -35,7 +37,7 @@ public class AuthService {
 
 
     public Optional<LoginResponse> login(LoginRequest loginRequest){
-        Optional<User> userFound = urJpa.findByUserName(loginRequest.getUserName());
+        Optional<User> userFound = ur.findByUserName(loginRequest.getUserName());
 
         if(userFound.isPresent() ) {
             User user = userFound.get();
@@ -94,7 +96,7 @@ public class AuthService {
 
         if (token.isPresent() ){
             Long id = extractUserId(token.get());
-            return urJpa.findPublicUserById(id).map(UserResponse::getUserRole);
+            return ur.findPublicUserById(id).map(UserResponse::getUserRole);
         }
 
         return Optional.empty();
@@ -116,7 +118,7 @@ public class AuthService {
         Optional<String> role = getUserRole(authorizationHeader);
 
         if(role.isPresent()){
-            return Objects.equals(role.get(), "ADMIN");
+            return Objects.equals(role.get(), ROLE_ADMIN);
         }
         return false;
     }
@@ -126,7 +128,7 @@ public class AuthService {
         Optional<String> role = getUserRole(authorizationHeader);
 
         if(role.isPresent()){
-            return Objects.equals(role.get(), "USER");
+            return Objects.equals(role.get(), ROLE_USER);
         }
         return false;
     }
