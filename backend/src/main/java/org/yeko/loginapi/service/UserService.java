@@ -3,7 +3,6 @@ package org.yeko.loginapi.service;
 import org.springframework.stereotype.Service;
 import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
-import org.yeko.loginapi.repository.UserRepository;
 import org.yeko.loginapi.repository.UserJpaRepository;
 
 import java.util.ArrayList;
@@ -13,14 +12,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserJpaRepository urJpa;
-    private final UserRepository ur;
     private final PasswordService ps;
     private final AuthService as;
 
-    public UserService(UserJpaRepository userJpaRepository, UserRepository userRepository,
-                       PasswordService passwordService, AuthService authService) {
+    public UserService(UserJpaRepository userJpaRepository, PasswordService passwordService, AuthService authService) {
         this.urJpa = userJpaRepository;
-        this.ur = userRepository;
         this.ps = passwordService;
         this.as = authService;
     }
