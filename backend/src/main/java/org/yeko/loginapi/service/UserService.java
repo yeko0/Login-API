@@ -64,11 +64,11 @@ public class UserService {
         User user = toUser(request);
 
         user.setUserPin(ps.hash(request.getUserPin()));
+        user.setUserRole("USER");
 
-        Optional<User> userCreated = ur.createUser(user);
+        User createdUser = urJpa.save(user);
 
-        return userCreated.map(this::toUserResponse);
-
+        return Optional.of(toUserResponse(createdUser));
     }
 
 
@@ -112,7 +112,8 @@ public class UserService {
             User user = userFound.get();
 
             if(as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
-                return ur.deleteUserById(id);
+                urJpa.delete(user);
+                return true;
             }
         }
         return false;
