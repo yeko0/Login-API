@@ -82,12 +82,9 @@ public class UserController {
             return ResponseEntity.status(409).body(new ApiMessage(List.of("User data conflict", "Try again")));
         }
 
-        Optional<UserResponse> ur = userService.createUser(user);
-        if(ur.isPresent()){
-            return ResponseEntity.status(201).body(ur.get());
-        }
+        UserResponse ur = userService.createUser(user);
 
-        return ResponseEntity.status(500).body(new ApiMessage(List.of("Error on user creation")));
+        return ResponseEntity.status(201).body(ur);
     }
 
 

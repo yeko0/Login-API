@@ -55,7 +55,7 @@ public class UserService {
     }
 
 
-    public Optional<UserResponse> createUser(CreateUserRequest request ){
+    public UserResponse createUser(CreateUserRequest request ){
 
         User user = toUser(request);
 
@@ -64,7 +64,7 @@ public class UserService {
 
         User createdUser = urJpa.save(user);
 
-        return Optional.of(toUserResponse(createdUser));
+        return toUserResponse(createdUser);
     }
 
 
