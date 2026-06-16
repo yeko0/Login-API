@@ -80,7 +80,8 @@ public class UserService {
 
             if (as.authenticateUser(user, update.getUserName(), update.getUserPin())) {
                 user.setUserPin(ps.hash(update.getNewUserPin()));
-                return ur.updateUserPin(id, user.getUserPin());
+                urJpa.save(user);
+                return true;
             }
         }
         return false;
@@ -123,11 +124,14 @@ public class UserService {
         String role = update.getUserRole().trim().toUpperCase();
         if( isValidRole(role) ){
 
-            Optional<UserResponse> user = findPublicUserById(id);
+            Optional<User> foundUser = urJpa.findById(id);
 
-            if( user.isPresent() ){
-                if( !(isLastAdmin() && "ADMIN".equals(user.get().getUserRole()) && "USER".equals(role)) ){
-                    return ur.updateUserRole(id, role);
+            if( foundUser.isPresent() ){
+                User user = foundUser.get();
+                if( !(isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role)) ){
+                    user.setUserRole(role);
+                    urJpa.save(user);
+                    return true;
                 }
             }
         }
