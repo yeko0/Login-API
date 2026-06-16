@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.yeko.loginapi.dto.LoginRequest;
 import org.yeko.loginapi.dto.LoginResponse;
 import org.yeko.loginapi.entity.User;
-import org.yeko.loginapi.repository.UserJpaRepository;
+import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -12,13 +12,13 @@ import java.util.Optional;
 
 @Service
 public class AuthService {
-    private final UserJpaRepository urJpa;
+    private final UserRepository urJpa;
     private final PasswordService ps;
     private final JwtService jwtService;
 
 
-    public AuthService(UserJpaRepository userJpaRepository, PasswordService ps, JwtService jwtService){
-        this.urJpa = userJpaRepository;
+    public AuthService(UserRepository userRepository, PasswordService ps, JwtService jwtService){
+        this.urJpa = userRepository;
         this.ps = ps;
         this.jwtService = jwtService;
     }
