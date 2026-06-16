@@ -3,6 +3,7 @@ package org.yeko.loginapi.service;
 import org.springframework.stereotype.Service;
 import org.yeko.loginapi.dto.LoginRequest;
 import org.yeko.loginapi.dto.LoginResponse;
+import org.yeko.loginapi.dto.UserResponse;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.repository.UserRepository;
 
@@ -93,7 +94,7 @@ public class AuthService {
 
         if (token.isPresent() ){
             Long id = extractUserId(token.get());
-            return urJpa.findById(id).map(User::getUserRole);
+            return urJpa.findPublicUserById(id).map(UserResponse::getUserRole);
         }
 
         return Optional.empty();

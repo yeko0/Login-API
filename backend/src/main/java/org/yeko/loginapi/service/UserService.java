@@ -1,22 +1,22 @@
 package org.yeko.loginapi.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
-    private final UserRepository urJpa;
+    private final UserRepository ur;
     private final PasswordService ps;
     private final AuthService as;
 
     public UserService(UserRepository userRepository, PasswordService passwordService, AuthService authService) {
-        this.urJpa = userRepository;
+        this.ur = userRepository;
         this.ps = passwordService;
         this.as = authService;
     }
@@ -38,20 +38,15 @@ public class UserService {
 
 
     private boolean isLastAdmin(){
-        return urJpa.countByUserRole("ADMIN") == 1;
+        return ur.countByUserRole("ADMIN") == 1;
     }
 
 
-    public boolean userNameExists(String userName ){ return urJpa.existsByUserName(userName); }
+    public boolean userNameExists(String userName ){ return ur.existsByUserName(userName); }
 
 
     public List<UserResponse> getAllUsers(){
-        List<User> users = urJpa.findAll();
-        List<UserResponse> uRespList = new ArrayList<>();
-        for (User u : users){
-            uRespList.add(toUserResponse(u));
-        }
-        return uRespList;
+        return ur.findAllPublicUsers();
     }
 
 
@@ -62,21 +57,21 @@ public class UserService {
         user.setUserPin(ps.hash(request.getUserPin()));
         user.setUserRole("USER");
 
-        User createdUser = urJpa.save(user);
+        User createdUser = ur.save(user);
 
         return toUserResponse(createdUser);
     }
 
 
     public boolean updatePinIfAuthenticated(UpdatePinRequest update, Long id ){
-        Optional<User> userFound = urJpa.findById(id);
+        Optional<User> userFound = ur.findById(id);
 
         if( userFound.isPresent() ) {
             User user = userFound.get();
 
             if (as.authenticateUser(user, update.getUserName(), update.getUserPin())) {
                 user.setUserPin(ps.hash(update.getNewUserPin()));
-                urJpa.save(user);
+                ur.save(user);
                 return true;
             }
         }
@@ -84,12 +79,8 @@ public class UserService {
     }
 
 
-    public Optional<UserResponse> findPublicUserById(Long id ){
-        Optional<User> userFound = urJpa.findById(id);
+    public Optional<UserResponse> findPublicUserById(Long id ){ return ur.findPublicUserById(id); }
 
-        return userFound.map(this::toUserResponse);
-
-    }
 
     public Optional<UserResponse> getUserByToken(String authorizationHeader){
         Optional<String> token = as.getValidToken(authorizationHeader);
@@ -102,13 +93,13 @@ public class UserService {
 
 
     public boolean deleteUserIfAuthenticated(DeleteUserRequest deleteRequest, Long id ){
-        Optional<User> userFound = urJpa.findById(id);
+        Optional<User> userFound = ur.findById(id);
 
         if (userFound.isPresent() ){
             User user = userFound.get();
 
             if(as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
-                urJpa.delete(user);
+                ur.delete(user);
                 return true;
             }
         }
@@ -116,23 +107,20 @@ public class UserService {
     }
 
 
+    @Transactional
     public boolean updateIfValidRole(Long id, UpdateRoleRequest update ){
-
         String role = update.getUserRole().trim().toUpperCase();
         if( isValidRole(role) ){
 
-            Optional<User> foundUser = urJpa.findById(id);
+            Optional<UserResponse> foundUser = ur.findPublicUserById(id);
 
-            if( foundUser.isPresent() ){
-                User user = foundUser.get();
-                if( !(isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role)) ){
-                    user.setUserRole(role);
-                    urJpa.save(user);
-                    return true;
+            if( foundUser.isPresent() ) {
+                UserResponse user = foundUser.get();
+                if (!(isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role))) {
+                    return ur.updateUserRoleById(id, role) == 1;
                 }
             }
         }
-
         return false;
     }
 
