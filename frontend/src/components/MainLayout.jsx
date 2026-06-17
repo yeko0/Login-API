@@ -7,6 +7,7 @@ import ChangeUserRoleCard from "./ChangeUserRoleCard.jsx";
 import DeleteUserCard from "./DeleteUserCard.jsx";
 import CurrentSessionCard from "./CurrentSessionCard.jsx";
 import ShowAllUsersPublicCard from "./ShowAllUsersPublicCard.jsx";
+import ResponsePanel from "./ResponsePanel.jsx"
 
 export default function MainLayout() {
     return(
@@ -32,6 +33,7 @@ export default function MainLayout() {
             {/* Start Control Panel right side */}
             <div className="flex flex-col sticky top-4">
 
+                <ResponsePanel />
 
             </div>{/* End Control Panel right side */}
 
