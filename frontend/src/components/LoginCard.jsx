@@ -1,7 +1,7 @@
 
 export default function LoginCard(){
     return (
-        <div className="justify-self-start w-fit grid items-center p-4 border-t-3 border-t-cyan-300
+        <div className="shrink-0 w-fit grid items-center p-4 border-t-3 border-t-cyan-300
                             border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
 
             <div className="flex justify-between mb-5 font-bold">

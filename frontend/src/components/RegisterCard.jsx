@@ -1,14 +1,14 @@
 
 export default function RegisterCard() {
     return (
-        <div className="justify-self-start w-fit grid items-center p-4 border-t-3 border-t-cyan-300
+        <div className="shrink-0 w-fit grid items-center p-4 border-t-3 border-t-cyan-300
                             border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
 
             <div className="flex justify-between mb-5 font-bold">
-                <span
-                    className="bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-1">POST</span>
-                <span
-                    className="bg-teal-950 text-xs text-teal-400 border-2 border-teal-400 rounded-full px-3 py-1">Public</span>
+                <span className="bg-cyan-950 text-xs text-cyan-400
+                    border-2 border-cyan-400 rounded-full px-3 py-1">POST</span>
+                <span className="bg-teal-950 text-xs text-teal-400
+                    border-2 border-teal-400 rounded-full px-3 py-1">Public</span>
             </div>
 
             <div> {/* Card Header */}

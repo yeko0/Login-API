@@ -1,15 +1,17 @@
 import LoginCard from "./LoginCard.jsx";
 import RegisterCard from "./RegisterCard.jsx";
+import ChangePinCard from "./ChangePinCard.jsx";
 
 export default function MainLayout() {
     return(
-        <div className="flex items-start my-2 gap-2">
+        <div className="flex items-start my-2 gap-4">
 
             {/* Div= Start cards group */}
-            <div className="flex flex-1 flex-wrap items-start gap-2">
+            <div className="flex flex-1 flex-wrap items-start gap-4">
 
                 <LoginCard />
                 <RegisterCard />
+                <ChangePinCard />
 
             </div>{/* Div= End cards group */}
 
