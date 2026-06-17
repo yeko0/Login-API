@@ -31,10 +31,9 @@ export default function MainLayout() {
 
 
             {/* Start Control Panel right side */}
-            <div className="flex flex-col sticky top-4">
+            <div className="flex flex-col sticky top-4 mr-4">
 
                 <ResponsePanel />
-
             </div>{/* End Control Panel right side */}
 
 
