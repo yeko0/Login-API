@@ -1,5 +1,6 @@
 import Header from "./components/Header.jsx";
 import SubHeader from "./components/SubHeader.jsx";
+import MainLayout from "./components/MainLayout.jsx";
 
 export default function App() {
     return (
@@ -9,7 +10,8 @@ export default function App() {
             <SubHeader />
 
 
-            <main className="mt-6">
+            <main>
+                <MainLayout />
 
             </main>
         </div>
