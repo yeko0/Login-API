@@ -2,14 +2,14 @@
 export default function ShowAllUsersAdminCard() {
     return (
         <div className="shrink-0 w-fit grid items-center p-5 border-t-3 border-t-emerald-300
-                    border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
+                     border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
 
             <div className="flex justify-between font-bold">
                 <span className="bg-emerald-950 text-xs text-emerald-400
-                    border-2 border-emerald-400 rounded-full px-3 py-0.5">GET</span>
+                    border-2 border-emerald-400 rounded-full px-3 py-1">GET</span>
 
                 <span className="bg-orange-950 text-xs text-orange-400
-                    border-2 border-orange-400 rounded-full px-3 py-0.5">Admin</span>
+                    border-2 border-orange-400 rounded-full px-3 py-1">Admin</span>
             </div>
 
             <div className="mt-5"> {/* Card Header */}

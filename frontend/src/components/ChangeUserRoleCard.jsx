@@ -6,10 +6,10 @@ export default function ChangeUserRoleCard() {
 
             <div className="flex justify-between font-bold">
                 <span className="bg-yellow-950 text-xs text-yellow-400
-                    border-2 border-yellow-400 rounded-full px-3 py-0.5">PATCH</span>
+                    border-2 border-yellow-400 rounded-full px-3 py-1">PATCH</span>
 
                 <span className="bg-orange-950 text-xs text-orange-400
-                    border-2 border-orange-400 rounded-full px-3 py-0.5">Admin</span>
+                    border-2 border-orange-400 rounded-full px-3 py-1">Admin</span>
             </div>
 
             <div className="mt-5"> {/* Card Header */}

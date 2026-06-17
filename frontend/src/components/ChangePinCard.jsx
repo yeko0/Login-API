@@ -6,10 +6,10 @@ export default function ChangePinCard() {
 
             <div className="flex justify-between mb-5 font-bold">
                 <span className="bg-yellow-950 text-xs text-yellow-400
-                border-2 border-yellow-400 rounded-full px-3 py-0.5">PATCH</span>
+                border-2 border-yellow-400 rounded-full px-3 py-1">PATCH</span>
 
                 <span className="bg-sky-950 text-xs text-sky-400
-                border-2 border-sky-400 rounded-full px-3 py-0.5">Owner</span>
+                border-2 border-sky-400 rounded-full px-3 py-1">Owner</span>
             </div>
 
             <div> {/* Card Header */}

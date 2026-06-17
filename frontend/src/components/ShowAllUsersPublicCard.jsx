@@ -7,6 +7,7 @@ export default function ShowAllUsersPublicCard() {
             <div className="flex justify-between font-bold">
                 <span className="bg-emerald-950 text-xs text-emerald-400
                     border-2 border-emerald-400 rounded-full px-3 py-1">GET</span>
+
                 <span className="bg-teal-950 text-xs text-teal-400
                     border-2 border-teal-400 rounded-full px-3 py-1">Public</span>
             </div>

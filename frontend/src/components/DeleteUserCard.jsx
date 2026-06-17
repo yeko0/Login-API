@@ -5,11 +5,11 @@ export default function DeleteUserCard() {
                 border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
 
             <div className="flex justify-between font-bold">
-                <span className="bg-red-950 text-xs text-red-500 border-2
-                    border-red-500 rounded-full px-3 py-0.5 mr-5">DELETE</span>
+                <span className="bg-red-950 text-xs text-red-500
+                    border-2 border-red-500 rounded-full px-3 py-1">DELETE</span>
 
                 <span className="bg-sky-950 text-xs text-sky-400
-                    border-2 border-sky-400 rounded-full px-3 py-0.5">Owner</span>
+                    border-2 border-sky-400 rounded-full px-3 py-1">Owner</span>
             </div>
 
 

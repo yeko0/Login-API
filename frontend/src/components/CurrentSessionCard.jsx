@@ -6,10 +6,10 @@ export default function CurrentSessionCard() {
 
             <div className="flex justify-between font-bold">
                 <span className="bg-emerald-950 text-xs text-emerald-400
-                        border-2 border-emerald-400 rounded-full px-3 py-0.5">GET</span>
+                        border-2 border-emerald-400 rounded-full px-3 py-1">GET</span>
 
                 <span className="bg-violet-950 text-xs text-violet-400
-                        border-2 border-violet-400 rounded-full px-3 py-0.5">Token</span>
+                        border-2 border-violet-400 rounded-full px-3 py-1">Token</span>
             </div>
 
             <div className="mt-5"> {/* Card Header */}
