@@ -1,6 +1,7 @@
+
 export default function Header() {
     return (
-        <div className="relative border-3 border-[#263449] rounded-2xl p-6">
+        <div className="relative border-2 border-[#263449] rounded-2xl p-6">
 
             {/* Div=2. Header content row */}
             <div className="flex items-center justify-between gap-4">
