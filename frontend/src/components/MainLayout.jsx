@@ -2,6 +2,7 @@ import LoginCard from "./LoginCard.jsx";
 import RegisterCard from "./RegisterCard.jsx";
 import ChangePinCard from "./ChangePinCard.jsx";
 import ShowAllUsersAdminCard from "./ShowAllUsersAdminCard.jsx";
+import SearchUserByIdCard from "./SearchUserByIdCard.jsx";
 
 export default function MainLayout() {
     return(
@@ -14,6 +15,7 @@ export default function MainLayout() {
                 <RegisterCard />
                 <ChangePinCard />
                 <ShowAllUsersAdminCard />
+                <SearchUserByIdCard />
 
             </div>{/* Div= End cards group */}
 
