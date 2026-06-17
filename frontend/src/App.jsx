@@ -9,10 +9,8 @@ export default function App() {
             <Header />
             <SubHeader />
 
-
             <main>
                 <MainLayout />
-
             </main>
         </div>
     );
