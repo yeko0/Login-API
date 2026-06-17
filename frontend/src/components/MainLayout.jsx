@@ -5,6 +5,7 @@ import ShowAllUsersAdminCard from "./ShowAllUsersAdminCard.jsx";
 import SearchUserByIdCard from "./SearchUserByIdCard.jsx";
 import ChangeUserRoleCard from "./ChangeUserRoleCard.jsx";
 import DeleteUserCard from "./DeleteUserCard.jsx";
+import CurrentSessionCard from "./CurrentSessionCard.jsx";
 
 export default function MainLayout() {
     return(
@@ -20,6 +21,7 @@ export default function MainLayout() {
                 <SearchUserByIdCard />
                 <ChangeUserRoleCard />
                 <DeleteUserCard />
+                <CurrentSessionCard />
 
             </div>{/* Div= End cards group */}
 
