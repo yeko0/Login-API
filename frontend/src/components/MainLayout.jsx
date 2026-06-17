@@ -1,6 +1,7 @@
 import LoginCard from "./LoginCard.jsx";
 import RegisterCard from "./RegisterCard.jsx";
 import ChangePinCard from "./ChangePinCard.jsx";
+import ShowAllUsersAdminCard from "./ShowAllUsersAdminCard.jsx";
 
 export default function MainLayout() {
     return(
@@ -12,6 +13,7 @@ export default function MainLayout() {
                 <LoginCard />
                 <RegisterCard />
                 <ChangePinCard />
+                <ShowAllUsersAdminCard />
 
             </div>{/* Div= End cards group */}
 

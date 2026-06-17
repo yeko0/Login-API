@@ -2,7 +2,7 @@
 export default function LoginCard(){
     return (
         <div className="shrink-0 w-fit grid items-center p-4 border-t-3 border-t-cyan-300
-                            border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
+                   border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
 
             <div className="flex justify-between mb-5 font-bold">
                 <span className="bg-cyan-950 text-xs text-cyan-400
