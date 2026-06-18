@@ -1,6 +1,9 @@
+import { useState } from "react";
 
 export default function LoginCard(props){
     const setApiResPanelState = props.setApiResPanelState;
+    const [userName, setUserName] = useState("");
+    const [userPin, setUserPin] = useState("");
 
     function handleLoginClick() {
         setApiResPanelState((prevState) => ({
@@ -12,8 +15,8 @@ export default function LoginCard(props){
                 url: "http://localhost:8081/auth/login",
                 headers: "Content-Type: application/json",
                 body: {
-                    userName: "fakeUser",
-                    userPin: "1234"
+                    userName: userName,
+                    userPin: userPin
                 }
             },
 
@@ -60,6 +63,7 @@ export default function LoginCard(props){
             <div className="mt-5 w-70"> {/* input userName */}
                 <label htmlFor="login-userName">User name</label> <br/>
                 <input id="login-userName" autoComplete="off" placeholder="Enter user name"
+                       value={userName} onChange={(event) => setUserName(event.target.value)}
                        className="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
                          border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 w-full py-1 mt-2"/>
             </div>
@@ -68,6 +72,7 @@ export default function LoginCard(props){
             <div className="mt-5 w-70"> {/* input user pin */}
                 <label htmlFor="login-userPin">User Pin</label> <br/>
                 <input id="login-userPin" type="password" autoComplete="off" placeholder="Enter user pin"
+                       value={userPin} onChange={(event) => setUserPin(event.target.value)}
                        className="placeholder:text-slate-500 focus:outline-0 focus:border-cyan-400
                          border text-sm text-cyan-400 border-teal-400 rounded-lg pl-2 w-full py-1 mt-2"/>
             </div>
