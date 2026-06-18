@@ -6,7 +6,7 @@ import MainLayout from "./components/MainLayout.jsx";
 export default function App() {
     const [apiResPanelState, setApiResPanelState] = useState({
         request: {
-            method: "GET",
+            method: null,
             url: "http://localhost:8081/...",
             headers: "Empty",
             body: "Empty",
@@ -44,7 +44,10 @@ export default function App() {
             <SubHeader />
 
             <main>
-                <MainLayout apiResPanelState={apiResPanelState} />
+                <MainLayout
+                    apiResPanelState={apiResPanelState}
+                    setApiResPanelState={setApiResPanelState}
+                />
             </main>
         </div>
     );

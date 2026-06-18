@@ -11,6 +11,7 @@ import ResponsePanel from "./ResponsePanel.jsx"
 
 export default function MainLayout(props) {
     const apiResPanelState = props.apiResPanelState;
+    const setApiResPanelState = props.setApiResPanelState;
 
     return(
         <div className="flex items-start gap-4">
@@ -18,7 +19,10 @@ export default function MainLayout(props) {
             {/* Div= Start cards group */}
             <div className="flex flex-1 flex-wrap items-start gap-4">
 
-                <LoginCard />
+                <LoginCard
+                    setApiResPanelState={setApiResPanelState}
+                />
+
                 <RegisterCard />
                 <ShowAllUsersAdminCard />
                 <ShowAllUsersPublicCard />
@@ -35,7 +39,10 @@ export default function MainLayout(props) {
             {/* Start Control Panel right side */}
             <div className="flex flex-col sticky top-4">
 
-                <ResponsePanel apiResPanelState={apiResPanelState} />
+                <ResponsePanel
+                    apiResPanelState={apiResPanelState}
+                />
+
             </div>{/* End Control Panel right side */}
 
 

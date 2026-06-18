@@ -1,6 +1,19 @@
+const badgeClassesStyles = {
+    public : "bg-teal-950 text-xs text-teal-400 border-2 border-teal-400 rounded-full px-3 py-1",
+    owner : "bg-sky-950 text-xs text-sky-400 border-2 border-sky-400 rounded-full px-3 py-1",
+    admin : "bg-orange-950 text-xs text-orange-400 border-2 border-orange-400 rounded-full px-3 py-1",
+    token : "bg-violet-950 text-xs text-violet-400 border-2 border-violet-400 rounded-full px-3 py-1",
+    GET : "bg-emerald-950 text-xs text-emerald-400 border-2 border-emerald-400 rounded-full px-3 py-1",
+    POST : "bg-cyan-950 text-xs text-cyan-400 border-2 border-cyan-400 rounded-full px-3 py-1",
+    PATCH : "bg-yellow-950 text-xs text-yellow-400 border-2 border-yellow-400 rounded-full px-3 py-1",
+    DELETE : "bg-red-950 text-xs text-red-500 border-2 border-red-500 rounded-full px-3 py-1",
+    LOADING : "bg-cyan-950 text-xs text-cyan-300 border-2 border-cyan-300 rounded-full px-3 py-1",
+};
 
 export default function ResponsePanel(props) {
     const apiResPanelState = props.apiResPanelState;
+    const methodBadgeClass = badgeClassesStyles[apiResPanelState.request.method] ?? badgeClassesStyles.LOADING;
+
     return (
         <div className="shrink-0 flex flex-col p-4 w-120 h-[calc(90vh-180px)]
             border-2 border-x-[#263449] border-b-[#263449] border-t-cyan-300 rounded-xl">
@@ -13,10 +26,13 @@ export default function ResponsePanel(props) {
 
             {/* Api response box for method and url */}
             <div className="flex items-center gap-5 border-2 border-[#263449] rounded-lg mt-4 p-3">
-              <span id="api-response-method-badge"
-                    className="bg-cyan-950 text-xs text-cyan-300 border-2 border-cyan-300 rounded-full px-3 pt-1 pb-1.5">Loading...</span>
+                <span id="api-response-method-badge" className={methodBadgeClass}>
+                    {apiResPanelState.request.method ?? "Loading..."}
+                </span>
 
-                <p id="api-response-url" className="text-base text-cyan-400">{apiResPanelState.request.url}</p>
+                <p id="api-response-url" className="text-base text-cyan-400">
+                    {apiResPanelState.request.url}
+                </p>
             </div>
 
 
@@ -32,13 +48,17 @@ export default function ResponsePanel(props) {
                 <div>
                     <h5>Time</h5>
                     <span id="api-response-info-tag-time" className="text-cyan-300">
-                              {apiResPanelState.fetchSpeed.responseTime ?? "Loading..."}</span>
+                              {apiResPanelState.fetchSpeed.responseTime !== null
+                                  ? `${apiResPanelState.fetchSpeed.responseTime} ms`
+                                  : "Loading..."}
+                    </span>
                 </div>
 
                 <div>
                     <h5>Access-level</h5>
                     <span id="api-response-info-tag-access-level" className="text-cyan-300">
-                              {apiResPanelState.session.userRole ?? "Loading..."}</span>
+                        Loading...
+                    </span>
                 </div>
             </div>
             {/* END Api response info tags */}
@@ -68,9 +88,10 @@ export default function ResponsePanel(props) {
 
             <div className="flex-1 overflow-auto custom-scrollbar border-2 border-[#263449] rounded-lg
                                     mt-4 p-2 text-xs text-slate-500">
-              <pre id="api-response-show-text-area" className="text-base">
-                  {JSON.stringify(apiResPanelState.response.body, null, 2)}
-              </pre>
+
+                <pre id="api-response-show-text-area" className="text-base">
+                    {JSON.stringify(apiResPanelState.response.body, null, 2)}
+                </pre>
             </div>
 
 
