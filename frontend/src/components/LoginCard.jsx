@@ -34,7 +34,7 @@ export default function LoginCard(props){
                 responseTime: 25
             },
 
-            selectedView: "body"
+            selectedButton: "body"
         }));
     }
 

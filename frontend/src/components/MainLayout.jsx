@@ -41,6 +41,7 @@ export default function MainLayout(props) {
 
                 <ResponsePanel
                     apiResPanelState={apiResPanelState}
+                    setApiResPanelState={setApiResPanelState}
                 />
 
             </div>{/* End Control Panel right side */}

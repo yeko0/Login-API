@@ -34,7 +34,7 @@ export default function App() {
             responseTime: null
         },
 
-        selectedView: "body"
+        selectedButton: "body"
     });
 
     return (

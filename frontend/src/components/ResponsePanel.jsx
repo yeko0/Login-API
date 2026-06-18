@@ -13,6 +13,42 @@ const badgeClassesStyles = {
 export default function ResponsePanel(props) {
     const apiResPanelState = props.apiResPanelState;
     const methodBadgeClass = badgeClassesStyles[apiResPanelState.request.method] ?? badgeClassesStyles.LOADING;
+    const setApiResPanelState = props.setApiResPanelState;
+    let panelContent = apiResPanelState.response.body;
+
+    if (apiResPanelState.selectedButton === "headers") {
+        panelContent = {
+            request: apiResPanelState.request.headers,
+            response: apiResPanelState.response.headers
+        };
+    }
+
+    if (apiResPanelState.selectedButton === "payload") {
+        panelContent = apiResPanelState.request.body;
+    }
+
+    const panelText = stringifyPanelContent(panelContent);
+
+    function stringifyPanelContent(content) {
+        if (typeof content === "string") {
+            return content;
+        }
+
+        return JSON.stringify(content, null, 2);
+    }
+
+    function handleSelectedView(button) {
+        setApiResPanelState((prevState) => ({
+            ...prevState,
+            selectedButton: button
+        }));
+    }
+
+    function paintSelectedButton(button) {
+        return apiResPanelState.selectedButton === button
+            ? "border-cyan-300 text-cyan-300"
+            : "border-[#263449] text-slate-500";
+    }
 
     return (
         <div className="shrink-0 flex flex-col p-4 w-120 h-[calc(90vh-180px)]
@@ -71,9 +107,17 @@ export default function ResponsePanel(props) {
                 {/* Left group */}
                 <div className="gap-3 *:border-2 *:rounded-full *:px-3 *:pt-1 *:pb-1.5
                                *:cursor-pointer *:hover:text-cyan-300 *:hover:border-cyan-300">
-                    <button id="api-response-body-btn" className="border-[#263449] text-slate-500">Body</button>
-                    <button id="api-response-headers-btn" className="border-[#263449] text-slate-500">Headers</button>
-                    <button id="api-response-payload-btn" className="border-[#263449] text-slate-500">Payload</button>
+                    <button id="api-response-body-btn" className={paintSelectedButton('body')}
+                            onClick={() => handleSelectedView("body")} >Body
+                    </button>
+
+                    <button id="api-response-headers-btn" className={paintSelectedButton('headers')}
+                            onClick={() => handleSelectedView("headers")} >Headers
+                    </button>
+
+                    <button id="api-response-payload-btn" className={paintSelectedButton('payload')}
+                            onClick={() => handleSelectedView("payload")}>Payload
+                    </button>
                 </div>
 
                 {/* right group */}
@@ -90,7 +134,7 @@ export default function ResponsePanel(props) {
                                     mt-4 p-2 text-xs text-slate-500">
 
                 <pre id="api-response-show-text-area" className="text-base">
-                    {JSON.stringify(apiResPanelState.response.body, null, 2)}
+                    {panelText}
                 </pre>
             </div>
 
