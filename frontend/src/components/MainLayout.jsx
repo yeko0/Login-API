@@ -9,7 +9,9 @@ import CurrentSessionCard from "./CurrentSessionCard.jsx";
 import ShowAllUsersPublicCard from "./ShowAllUsersPublicCard.jsx";
 import ResponsePanel from "./ResponsePanel.jsx"
 
-export default function MainLayout() {
+export default function MainLayout(props) {
+    const apiResPanelState = props.apiResPanelState;
+
     return(
         <div className="flex items-start gap-4">
 
@@ -33,7 +35,7 @@ export default function MainLayout() {
             {/* Start Control Panel right side */}
             <div className="flex flex-col sticky top-4">
 
-                <ResponsePanel />
+                <ResponsePanel apiResPanelState={apiResPanelState} />
             </div>{/* End Control Panel right side */}
 
 

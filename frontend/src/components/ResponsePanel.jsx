@@ -1,5 +1,6 @@
 
-export default function ResponsePanel() {
+export default function ResponsePanel(props) {
+    const apiResPanelState = props.apiResPanelState;
     return (
         <div className="shrink-0 flex flex-col p-4 w-120 h-[calc(90vh-180px)]
             border-2 border-x-[#263449] border-b-[#263449] border-t-cyan-300 rounded-xl">
@@ -15,7 +16,7 @@ export default function ResponsePanel() {
               <span id="api-response-method-badge"
                     className="bg-cyan-950 text-xs text-cyan-300 border-2 border-cyan-300 rounded-full px-3 pt-1 pb-1.5">Loading...</span>
 
-                <p id="api-response-url" className="text-base text-cyan-400">http://localhost:8081/...</p>
+                <p id="api-response-url" className="text-base text-cyan-400">{apiResPanelState.request.url}</p>
             </div>
 
 
@@ -25,19 +26,19 @@ export default function ResponsePanel() {
                 <div>
                     <h5>Status</h5>
                     <span id="api-response-info-tag-status" className="text-cyan-300">
-                              Loading...</span>
+                              {apiResPanelState.response.status ?? "Loading..."}</span>
                 </div>
 
                 <div>
                     <h5>Time</h5>
                     <span id="api-response-info-tag-time" className="text-cyan-300">
-                              Loading...</span>
+                              {apiResPanelState.fetchSpeed.responseTime ?? "Loading..."}</span>
                 </div>
 
                 <div>
                     <h5>Access-level</h5>
                     <span id="api-response-info-tag-access-level" className="text-cyan-300">
-                              Loading...</span>
+                              {apiResPanelState.session.userRole ?? "Loading..."}</span>
                 </div>
             </div>
             {/* END Api response info tags */}
@@ -68,19 +69,7 @@ export default function ResponsePanel() {
             <div className="flex-1 overflow-auto custom-scrollbar border-2 border-[#263449] rounded-lg
                                     mt-4 p-2 text-xs text-slate-500">
               <pre id="api-response-show-text-area" className="text-base">
-{`Example response:
-[
-  {
-    "userId": 10,
-    "userName": "yeko33",
-    "userRole": "USER"
-  },
-  {
-    "userId": 9,
-    "userName": "yeko45",
-    "userRole": "USER"
-  }
-]`}
+                  {JSON.stringify(apiResPanelState.response.body, null, 2)}
               </pre>
             </div>
 
