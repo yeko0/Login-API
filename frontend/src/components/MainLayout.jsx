@@ -12,6 +12,8 @@ import ResponsePanel from "./ResponsePanel.jsx"
 export default function MainLayout(props) {
     const apiResPanelState = props.apiResPanelState;
     const setApiResPanelState = props.setApiResPanelState;
+    const authSession = props.authSession;
+    const setAuthSession = props.setAuthSession;
 
     return(
         <div className="flex items-start gap-4">
@@ -21,6 +23,7 @@ export default function MainLayout(props) {
 
                 <LoginCard
                     setApiResPanelState={setApiResPanelState}
+                    setAuthSession ={setAuthSession}
                 />
 
                 <RegisterCard />
@@ -42,6 +45,7 @@ export default function MainLayout(props) {
                 <ResponsePanel
                     apiResPanelState={apiResPanelState}
                     setApiResPanelState={setApiResPanelState}
+                    authSession={authSession}
                 />
 
             </div>{/* End Control Panel right side */}

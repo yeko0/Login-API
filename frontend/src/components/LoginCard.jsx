@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function LoginCard(props){
     const setApiResPanelState = props.setApiResPanelState;
+    const setAuthSession = props.setAuthSession;
     const [userName, setUserName] = useState("");
     const [userPin, setUserPin] = useState("");
 
@@ -22,6 +23,12 @@ export default function LoginCard(props){
         const responseBody = await response.json();
         const endTime = performance.now();
 
+        setAuthSession({
+            token: response.ok ? responseBody.token ?? null : null,
+            userId: response.ok ? responseBody.userId ?? null : null,
+            userRole: response.ok ? responseBody.userRole ?? null : null
+        });
+
         setApiResPanelState((prevState) => ({
             ...prevState,
 
@@ -39,12 +46,6 @@ export default function LoginCard(props){
                 status: response.status,
                 headers: Object.fromEntries(response.headers.entries()),
                 body: responseBody
-            },
-
-            session: {
-                token: responseBody.token ?? null,
-                userId: responseBody.userId ?? null,
-                userRole: responseBody.userRole ?? null,
             },
 
             fetchSpeed: {

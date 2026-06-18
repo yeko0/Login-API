@@ -25,6 +25,7 @@ const badgeClassesStyles = {
 
 export default function ResponsePanel(props) {
     const apiResPanelState = props.apiResPanelState;
+    const authSession = props.authSession;
     const methodBadgeClass = badgeClassesStyles[apiResPanelState.request.method] ?? badgeClassesStyles.LOADING;
     const setApiResPanelState = props.setApiResPanelState;
     const statusStyle = getStatusStyle(apiResPanelState.response.status);
@@ -36,7 +37,7 @@ export default function ResponsePanel(props) {
             : apiResPanelState.fetchSpeed.responseTime !== null
                 ? `${apiResPanelState.fetchSpeed.responseTime} ms` : "--";
 
-    const userRole = apiResPanelState.session.userRole;
+    const userRole = authSession.userRole;
 
     const userRoleText = apiResPanelState.response.status === null
         ? "Loading..." : userRole ?? "Login to get"

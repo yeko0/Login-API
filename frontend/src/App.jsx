@@ -4,6 +4,12 @@ import SubHeader from "./components/SubHeader.jsx";
 import MainLayout from "./components/MainLayout.jsx";
 
 export default function App() {
+    const [authSession, setAuthSession] = useState({
+        token: null,
+        userId: null,
+        userRole: null
+    });
+
     const [apiResPanelState, setApiResPanelState] = useState({
         request: {
             method: null,
@@ -20,12 +26,6 @@ export default function App() {
             body: {
                 backendMessage: "Empty"
             }
-        },
-
-        session: {
-            userId: null,
-            userName: null,
-            userRole: null
         },
 
         fetchSpeed: {
@@ -47,6 +47,8 @@ export default function App() {
                 <MainLayout
                     apiResPanelState={apiResPanelState}
                     setApiResPanelState={setApiResPanelState}
+                    authSession={authSession}
+                    setAuthSession={setAuthSession}
                 />
             </main>
         </div>
