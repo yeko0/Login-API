@@ -5,7 +5,23 @@ export default function LoginCard(props){
     const [userName, setUserName] = useState("");
     const [userPin, setUserPin] = useState("");
 
-    function handleLoginClick() {
+    async function handleLoginClick() {
+        const loginPayload = {
+            userName: userName,
+            userPin: userPin
+        }
+
+        const startTime = performance.now();
+
+        const response = await fetch("http://localhost:8081/auth/login",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(loginPayload)
+            });
+        const responseBody = await response.json();
+        const endTime = performance.now();
+
         setApiResPanelState((prevState) => ({
             ...prevState,
 
@@ -13,28 +29,28 @@ export default function LoginCard(props){
                 ...prevState.request,
                 method: "POST",
                 url: "http://localhost:8081/auth/login",
-                headers: "Content-Type: application/json",
-                body: {
-                    userName: userName,
-                    userPin: userPin
-                }
+                headers: { "Content-Type": "application/json" },
+                body: loginPayload
             },
 
             response: {
                 ...prevState.response,
-                status: 200,
-                headers: "Fake headers from React",
-                body: {
-                    backendMessage: "Fake login response from React",
-                    token: "fake-token-123",
-                    userRole: "ADMIN"
-                }
+                raw: response,
+                status: response.status,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: responseBody
+            },
+
+            session: {
+                token: responseBody.token ?? null,
+                userId: responseBody.userId ?? null,
+                userRole: responseBody.userRole ?? null,
             },
 
             fetchSpeed: {
-                startTime: 0,
-                endTime: 0,
-                responseTime: 25
+                startTime: startTime,
+                endTime: endTime,
+                responseTime: Math.round(endTime - startTime)
             },
 
             selectedButton: "body"
