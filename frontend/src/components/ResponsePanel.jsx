@@ -33,7 +33,7 @@ export default function ResponsePanel(props) {
     const statusText = apiResPanelState.response.status !== null
         ? `${apiResPanelState.response.status} ${statusStyle.text}` : "Loading...";
 
-    const timeText = apiResPanelState.response.status === null ? "Loading."
+    const timeText = apiResPanelState.response.status === null ? "Loading..."
             : apiResPanelState.fetchSpeed.responseTime !== null
                 ? `${apiResPanelState.fetchSpeed.responseTime} ms` : "--";
 

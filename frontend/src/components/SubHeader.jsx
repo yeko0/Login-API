@@ -1,5 +1,38 @@
+const statusStyles = {
+    0:   { text: "fetch-fail",   classes: "text-red-400 border-red-400" },
+    200: { text: "OK",           classes: "text-green-400 border-green-400" },
+    201: { text: "Created",      classes: "text-green-400 border-green-400" },
+    204: { text: "No Content",   classes: "text-green-400 border-green-400" },
+    400: { text: "Bad Request",  classes: "text-yellow-400 border-yellow-400" },
+    401: { text: "Unauthorized", classes: "text-orange-400 border-orange-400" },
+    403: { text: "Forbidden",    classes: "text-red-400 border-red-400" },
+    404: { text: "Not Found",    classes: "text-slate-400 border-slate-400" },
+    409: { text: "Invalid data", classes: "text-yellow-400 border-yellow-400" },
+    500: { text: "Server Error", classes: "text-red-400 border-red-400" }
+};
 
-export default function SubHeader() {
+export default function SubHeader(props) {
+    const authSession = props.authSession;
+    const apiResPanelState = props.apiResPanelState;
+
+    const status = apiResPanelState.response.status;
+    const statusStyle = statusStyles[status] ?? {
+        text: "?-Status",
+        classes: "text-cyan-400 border-cyan-400"
+    };
+
+    const tokenText = status === null
+        ? "loading..."
+        : authSession.token
+            ? "valid"
+            : "Login to get";
+
+    const tokenStyle = status === null
+        ? "text-cyan-300"
+        : authSession.token
+            ? "text-green-400"
+            : statusStyle.classes;
+
     return (
         <div className="relative flex items-center justify-between text-sm text-slate-500 border border-[#263449] rounded-xl p-2">
 
@@ -39,8 +72,8 @@ export default function SubHeader() {
             {/* Start Div=4 right Group */}
             <div className="flex items-center gap-1 text-sm border-2 border-[#263449] rounded-full pt-1 pb-2 px-5">
                 <span>Current token:</span>
-                <span id="sub-header-token-dot" className="text-cyan-300">●</span>
-                <span id="sub-header-token-text" className="text-cyan-300">loading...</span>
+                <span id="sub-header-token-dot" className={tokenStyle}>●</span>
+                <span id="sub-header-token-text" className={tokenStyle}>{tokenText}</span>
                 <button id="sub-header-token-btn"
                         className="bg-violet-950 text-xs text-violet-400 border-2 border-violet-400
                          hover:text-violet-600 hover:border-violet-600
