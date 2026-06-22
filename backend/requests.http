@@ -10,7 +10,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvQWRtaW4iLCJ1c2VySWQiO
 #####################################################################
 
 ### Admin Get user by id
-GET http://localhost:8081/users/
+GET http://localhost:8081/users/5
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ5ZWtvdGVzdCIsInVzZXJJZCI6MTUsInVzZXJOYW1lIjoieWVrb3Rlc3QiLCJpYXQiOjE3ODA4MzA4NzksImV4cCI6MTc4MDgzMjY3OX0.LNXDexoYd2MIwrHAfHPryVmQrXfEjoM-Ry6HqBkNQmE1lHeGiY4Bc9-DSOERp3-X
 
 #####################################################################
