@@ -1,5 +1,7 @@
 
-export default function Header() {
+export default function Header(props) {
+    const backendStatus = props.backendStatus;
+
     return (
         <div className="relative border-2 border-[#263449] rounded-2xl p-6">
 
@@ -33,8 +35,8 @@ export default function Header() {
                             id="backend-status"
                             className="flex items-center justify-center gap-2 mt-2 rounded-full border-2 border-[#263449] px-2 pt-1 pb-2"
                         >
-                            <span id="backend-status-dot" className="text-yellow-400">●</span>
-                            <span id="backend-status-text">localhost:8081 checking...</span>
+                            <span id="backend-status-dot" className={backendStatus.dotClass}>●</span>
+                            <span id="backend-status-text">{backendStatus.text}</span>
                         </div>
                     </div>
 

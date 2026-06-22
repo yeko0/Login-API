@@ -21,17 +21,11 @@ export default function SubHeader(props) {
         classes: "text-cyan-400 border-cyan-400"
     };
 
-    const tokenText = status === null
-        ? "loading..."
-        : authSession.token
-            ? "valid"
-            : "Login to get";
+    const tokenText = status === null ? "loading..."
+        : authSession.token ? "valid" : "Login to get";
 
-    const tokenStyle = status === null
-        ? "text-cyan-300"
-        : authSession.token
-            ? "text-green-400"
-            : statusStyle.classes;
+    const tokenStyle = status === null ? "text-cyan-300"
+        : authSession.token ? "text-green-400" : statusStyle.classes;
 
     return (
         <div className="relative flex items-center justify-between text-sm text-slate-500 border border-[#263449] rounded-xl p-2">
@@ -70,14 +64,14 @@ export default function SubHeader(props) {
 
 
             {/* Start Div=4 right Group */}
-            <div className="flex items-center gap-1 text-sm border-2 border-[#263449] rounded-full pt-1 pb-2 px-5">
+            <div className="flex items-center gap-2 text-sm border-2 border-[#263449] rounded-full px-5 py-2">
                 <span>Current token:</span>
                 <span id="sub-header-token-dot" className={tokenStyle}>●</span>
                 <span id="sub-header-token-text" className={tokenStyle}>{tokenText}</span>
                 <button id="sub-header-token-btn"
                         className="bg-violet-950 text-xs text-violet-400 border-2 border-violet-400
                          hover:text-violet-600 hover:border-violet-600
-                          rounded-full px-2 pb-0.5 mt-0.5 cursor-pointer">Token
+                          rounded-full px-3 py-1 cursor-pointer">Token
                 </button>
             </div>{/* End Div=4 right Group */}
 
