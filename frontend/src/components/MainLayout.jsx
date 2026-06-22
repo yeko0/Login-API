@@ -27,12 +27,22 @@ export default function MainLayout(props) {
                 />
 
                 <RegisterCard />
+
                 <ShowAllUsersAdminCard />
+
                 <ShowAllUsersPublicCard />
+
                 <ChangePinCard />
+
                 <SearchUserByIdCard />
-                <CurrentSessionCard />
+
+                <CurrentSessionCard
+                    setApiResPanelState={setApiResPanelState}
+                    authSession ={authSession}
+                />
+
                 <DeleteUserCard />
+
                 <ChangeUserRoleCard />
 
             </div>{/* Div= End cards group */}
