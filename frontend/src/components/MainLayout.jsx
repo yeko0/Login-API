@@ -28,7 +28,10 @@ export default function MainLayout(props) {
 
                 <RegisterCard />
 
-                <ShowAllUsersAdminCard />
+                <ShowAllUsersAdminCard
+                    setApiResPanelState={setApiResPanelState}
+                    authSession ={authSession}
+                />
 
                 <ShowAllUsersPublicCard
                     setApiResPanelState={setApiResPanelState}

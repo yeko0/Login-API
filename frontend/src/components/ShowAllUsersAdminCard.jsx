@@ -1,5 +1,53 @@
 
-export default function ShowAllUsersAdminCard() {
+export default function ShowAllUsersAdminCard(props) {
+    const authSession = props.authSession;
+    const setApiResPanelState = props.setApiResPanelState;
+
+    async function handleShowUsersAdminClick() {
+        const startTime = performance.now();
+
+        const response = await fetch("http://localhost:8081/admin/users", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer "+ authSession.token
+            }
+        });
+
+        const responseBody = await response.json();
+        const endTime = performance.now();
+
+        setApiResPanelState((prevState) => ({
+            ...prevState,
+
+            request: {
+                ...prevState.request,
+                method: "GET",
+                url: "http://localhost:8081/admin/users",
+                headers: {
+                    "Authorization": "Bearer "+ authSession.token
+                },
+                body: "Empty"
+            },
+
+            response: {
+                ...prevState.response,
+                raw: response,
+                status: response.status,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: responseBody
+            },
+
+            fetchSpeed: {
+                startTime: startTime,
+                endTime: endTime,
+                responseTime: Math.round(endTime - startTime)
+            },
+
+            selectedButton: "body"
+        }))
+
+    }
+
     return (
         <div className="shrink-0 w-fit grid items-center p-5 border-t-3 border-t-emerald-300
                      border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
@@ -24,8 +72,8 @@ export default function ShowAllUsersAdminCard() {
 
             <div className="flex mt-6 gap-5">
 
-                <button id="show-users-admin-btn" className="transition-colors hover:bg-emerald-900 cursor-pointer
-                                 text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Show
+                <button id="show-users-admin-btn" onClick={handleShowUsersAdminClick} className="transition-colors
+                    hover:bg-emerald-900 cursor-pointer text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Show
                 </button>
 
                 <p className="text-sm text-slate-500 pt-1">Returns public user profiles in database</p>

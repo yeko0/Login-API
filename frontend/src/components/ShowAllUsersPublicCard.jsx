@@ -2,7 +2,7 @@
 export default function ShowAllUsersPublicCard(props) {
     const setApiResPanelState = props.setApiResPanelState;
 
-    async function handleShowAllUsersClick() {
+    async function handleShowUsersPublicClick() {
         const startTime = performance.now();
 
         const response = await fetch("http://localhost:8081/users", {
@@ -66,7 +66,7 @@ export default function ShowAllUsersPublicCard(props) {
 
             <div className="flex mt-6 gap-5">
 
-                <button id="show-all-users-public-btn" onClick={handleShowAllUsersClick} className="transition-colors
+                <button id="show-all-users-public-btn" onClick={handleShowUsersPublicClick} className="transition-colors
                     hover:bg-emerald-900 cursor-pointer text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Show
                 </button>
 
