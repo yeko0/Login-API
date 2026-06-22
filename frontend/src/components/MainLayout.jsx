@@ -32,7 +32,10 @@ export default function MainLayout(props) {
 
                 <ShowAllUsersPublicCard />
 
-                <ChangePinCard />
+                <ChangePinCard
+                    setApiResPanelState={setApiResPanelState}
+                    authSession ={authSession}
+                />
 
                 <SearchUserByIdCard />
 
