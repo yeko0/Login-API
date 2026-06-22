@@ -8,8 +8,6 @@ export default function ChangePinCard(props) {
     const [newUserPin, setNewUserPin] = useState("");
 
     async function handleChangePinClick(){
-        console.log("authSession en ChangePinCard:", authSession);
-        console.log("authSession.userId:", authSession.userId);
         const userId = authSession.userId ?? 0;
 
         const payload = {
@@ -18,8 +16,6 @@ export default function ChangePinCard(props) {
             newUserPin: newUserPin
         }
 
-        console.log("authSession en ChangePinCard:", authSession);
-        console.log("authSession.userId:", authSession.userId);
         const startTime = performance.now();
 
         const response = await fetch("http://localhost:8081/users/"+ userId +"/pin",{

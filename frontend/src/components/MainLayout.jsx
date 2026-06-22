@@ -30,7 +30,9 @@ export default function MainLayout(props) {
 
                 <ShowAllUsersAdminCard />
 
-                <ShowAllUsersPublicCard />
+                <ShowAllUsersPublicCard
+                    setApiResPanelState={setApiResPanelState}
+                />
 
                 <ChangePinCard
                     setApiResPanelState={setApiResPanelState}

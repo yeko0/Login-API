@@ -1,5 +1,47 @@
 
-export default function ShowAllUsersPublicCard() {
+export default function ShowAllUsersPublicCard(props) {
+    const setApiResPanelState = props.setApiResPanelState;
+
+    async function handleShowAllUsersClick() {
+        const startTime = performance.now();
+
+        const response = await fetch("http://localhost:8081/users", {
+            method: "GET"
+        });
+
+        const responseBody = await response.json();
+        const endTime = performance.now();
+
+        setApiResPanelState((prevState) => ({
+            ...prevState,
+
+            request: {
+                ...prevState.request,
+                method: "GET",
+                url: "http://localhost:8081/users",
+                headers: "Empty",
+                body: "Empty"
+            },
+
+            response: {
+                ...prevState.response,
+                raw: response,
+                status: response.status,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: responseBody
+            },
+
+            fetchSpeed: {
+                startTime: startTime,
+                endTime: endTime,
+                responseTime: Math.round(endTime - startTime)
+            },
+
+            selectedButton: "body"
+        }))
+
+    }
+
     return (
         <div className="shrink-0 w-fit grid items-center p-5 border-t-3 border-t-emerald-500
                      border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
@@ -24,8 +66,8 @@ export default function ShowAllUsersPublicCard() {
 
             <div className="flex mt-6 gap-5">
 
-                <button id="show-all-users-public-btn" className="transition-colors hover:bg-emerald-900 cursor-pointer
-                                 text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Show
+                <button id="show-all-users-public-btn" onClick={handleShowAllUsersClick} className="transition-colors
+                    hover:bg-emerald-900 cursor-pointer text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Show
                 </button>
 
                 <p className="text-sm text-slate-500 pt-1">Returns public user profiles in database</p>
