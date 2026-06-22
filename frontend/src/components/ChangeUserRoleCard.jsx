@@ -1,5 +1,59 @@
+import { useState } from "react";
 
-export default function ChangeUserRoleCard() {
+export default function ChangeUserRoleCard(props) {
+    const authSession = props.authSession;
+    const setApiResPanelState = props.setApiResPanelState;
+    const [userId, setUserId] = useState("");
+    const [userRole, setUserRole] = useState("");
+
+    async function handleChangeUserRoleClick() {
+        const payload = {userRole : userRole}
+        const startTime = performance.now();
+
+        const response = await fetch("http://localhost:8081/admin/users/"+ userId +"/role", {
+            method: "PATCH",
+            headers: {
+                "Authorization": "Bearer "+ authSession.token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const responseBody = await response.json();
+        const endTime = performance.now();
+
+
+        setApiResPanelState((prevState) => ({
+            ...prevState,
+            request: {
+                ...prevState.request,
+                method: "PATCH",
+                url: "http://localhost:8081/admin/users/"+ userId +"/role",
+                headers: {
+                    "Authorization": "Bearer "+ authSession.token,
+                    "Content-Type": "application/json"
+                },
+                body: payload
+            },
+
+            response:{
+                ...prevState.response,
+                raw: response,
+                status: response.status,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: responseBody
+            },
+
+            fetchSpeed: {
+                startTime: startTime,
+                endTime: endTime,
+                responseTime: Math.round(endTime - startTime)
+            },
+
+            selectedButton: "body"
+        }));
+    }
+
     return (
         <div className="shrink-0 w-fit grid items-center p-5 border-t-3 border-t-yellow-300
                      border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
@@ -23,6 +77,7 @@ export default function ChangeUserRoleCard() {
                 <div className="w-60"> {/* Card input user id */}
                     <label htmlFor="change-user-role-userId">User ID</label> <br/>
                     <input id="change-user-role-userId" autoComplete="off" placeholder="Enter user id (only integer number)"
+                           value={userId} onChange={(event) => setUserId(event.target.value)}
                            inputMode="numeric" className="placeholder:text-slate-500 focus:outline-0 focus:border-yellow-400
                             border text-sm text-yellow-400 border-orange-400 rounded-lg w-full px-2 py-1 mt-2"/>
                 </div>
@@ -31,7 +86,8 @@ export default function ChangeUserRoleCard() {
                 <div className="w-25"> {/* Card scroll-down role selection */}
                     <label htmlFor="change-user-role-userRole">User Role</label> <br/>
 
-                    <select id="change-user-role-userRole"  autoComplete="off" defaultValue=""
+                    <select id="change-user-role-userRole"  autoComplete="off"
+                            value={userRole} onChange={(event) => setUserRole(event.target.value)}
                             className="bg-[#111827] focus:outline-0 focus:border-yellow-400 focus:text-yellow-400
                             border text-sm text-orange-400 border-orange-400 rounded-lg px-2 w-full py-1 mt-2">
 
@@ -45,8 +101,8 @@ export default function ChangeUserRoleCard() {
 
             <div className="flex mt-6 gap-5">
 
-                <button id="change-user-role-btn" className="transition-colors hover:bg-yellow-900 cursor-pointer
-                                 text-sm font-bold bg-yellow-600 rounded-lg px-5 pb-2 pt-1">Change
+                <button id="change-user-role-btn" onClick={handleChangeUserRoleClick} className="transition-colors
+                    hover:bg-yellow-900 cursor-pointer text-sm font-bold bg-yellow-600 rounded-lg px-5 pb-2 pt-1">Change
                 </button>
 
                 <p className="text-sm text-slate-500 pt-1">Change role of the user</p>

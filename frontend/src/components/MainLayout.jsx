@@ -1,5 +1,5 @@
 import LoginCard from "./LoginCard.jsx";
-import RegisterCard from "./RegisterCard.jsx";
+import RegisterUserCard from "./RegisterUserCard.jsx";
 import ChangePinCard from "./ChangePinCard.jsx";
 import ShowAllUsersAdminCard from "./ShowAllUsersAdminCard.jsx";
 import SearchUserByIdCard from "./SearchUserByIdCard.jsx";
@@ -26,7 +26,7 @@ export default function MainLayout(props) {
                     setAuthSession={setAuthSession}
                 />
 
-                <RegisterCard
+                <RegisterUserCard
                     setApiResPanelState={setApiResPanelState}
                 />
 
@@ -56,7 +56,10 @@ export default function MainLayout(props) {
 
                 <DeleteUserCard />
 
-                <ChangeUserRoleCard />
+                <ChangeUserRoleCard
+                    setApiResPanelState={setApiResPanelState}
+                    authSession={authSession}
+                />
 
             </div>{/* Div= End cards group */}
 

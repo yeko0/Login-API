@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function RegisterCard(props) {
+export default function RegisterUserCard(props) {
     const setApiResPanelState = props.setApiResPanelState;
     const [userName, setUserName] = useState("");
     const [userPin, setUserPin] = useState("");
