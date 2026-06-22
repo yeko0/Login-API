@@ -23,14 +23,14 @@ export default function MainLayout(props) {
 
                 <LoginCard
                     setApiResPanelState={setApiResPanelState}
-                    setAuthSession ={setAuthSession}
+                    setAuthSession={setAuthSession}
                 />
 
                 <RegisterCard />
 
                 <ShowAllUsersAdminCard
                     setApiResPanelState={setApiResPanelState}
-                    authSession ={authSession}
+                    authSession={authSession}
                 />
 
                 <ShowAllUsersPublicCard
@@ -39,14 +39,17 @@ export default function MainLayout(props) {
 
                 <ChangePinCard
                     setApiResPanelState={setApiResPanelState}
-                    authSession ={authSession}
+                    authSession={authSession}
                 />
 
-                <SearchUserByIdCard />
+                <SearchUserByIdCard
+                    setApiResPanelState={setApiResPanelState}
+                    authSession={authSession}
+                />
 
                 <CurrentSessionCard
                     setApiResPanelState={setApiResPanelState}
-                    authSession ={authSession}
+                    authSession={authSession}
                 />
 
                 <DeleteUserCard />

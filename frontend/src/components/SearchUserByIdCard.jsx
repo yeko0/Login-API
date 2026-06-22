@@ -1,5 +1,50 @@
+import { useState } from "react";
 
-export default function SearchUserByIdCard() {
+export default function SearchUserByIdCard(props) {
+    const setApiResPanelState = props.setApiResPanelState;
+    const authSession = props.authSession;
+    const [searchId, setSearchId] = useState("");
+
+    async function handleSearchUserByIdClick() {
+        const startTime = performance.now();
+
+        const response = await fetch("http://localhost:8081/users/"+ searchId, {
+            method: "GET",
+            headers: { "Authorization": "Bearer "+ authSession.token }
+        });
+
+        const responseBody = await response.json();
+        const endTime = performance.now();
+
+        setApiResPanelState((prevState) => ({
+            ...prevState,
+
+            request: {
+                ...prevState.request,
+                method: "GET",
+                url: "http://localhost:8081/users/"+ searchId,
+                headers: { "Authorization": "Bearer "+ authSession.token },
+                body: "Empty"
+            },
+
+            response: {
+                ...prevState.response,
+                raw: response,
+                status: response.status,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: responseBody
+            },
+
+            fetchSpeed: {
+                startTime: startTime,
+                endTime: endTime,
+                responseTime: Math.round(endTime - startTime)
+            },
+
+            selectedButton: "body"
+        }))
+    }
+
     return (
         <div className="shrink-0 w-fit grid items-center p-5 border-t-3 border-t-emerald-300
                     border-x-2 border-b-2 border-x-[#263449] border-b-[#263449] rounded-xl">
@@ -20,14 +65,15 @@ export default function SearchUserByIdCard() {
             <div className="mt-5 w-70"> {/* Card input userId */}
                 <label htmlFor="search-user-by-id-userId">User ID</label> <br/>
                 <input id="search-user-by-id-userId" autoComplete="off" placeholder="Enter user id (only integer number)"
+                       value={searchId} onChange={(event) => setSearchId(event.target.value)}
                        inputMode="numeric" className="placeholder:text-slate-500 focus:outline-0 focus:border-emerald-400
                          border text-sm text-emerald-400 border-orange-400 rounded-lg pl-2 w-full pr-2 py-1 mt-2"/>
             </div>
 
-            <div className="flex mt-6 gap-5">
+            <div className="flex mt-5 gap-5">
 
-                <button id="search-user-by-id-btn" className="transition-colors hover:bg-emerald-900 cursor-pointer
-                                 text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Search
+                <button id="search-user-by-id-btn" onClick={handleSearchUserByIdClick} className="transition-colors
+                    hover:bg-emerald-900 cursor-pointer text-sm font-bold bg-emerald-600 rounded-lg px-5 pb-2 pt-1">Search
                 </button>
 
                 <p className="text-sm text-slate-500 pt-1">Returns public user profile in database</p>
