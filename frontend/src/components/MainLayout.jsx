@@ -54,7 +54,11 @@ export default function MainLayout(props) {
                     authSession={authSession}
                 />
 
-                <DeleteUserCard />
+                <DeleteUserCard
+                    setApiResPanelState={setApiResPanelState}
+                    authSession={authSession}
+                    setAuthSession={setAuthSession}
+                />
 
                 <ChangeUserRoleCard
                     setApiResPanelState={setApiResPanelState}
