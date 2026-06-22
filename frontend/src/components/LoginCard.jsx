@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { guardEmptyInputs } from "../utils/guards.js";
 
 export default function LoginCard(props){
     const setApiResPanelState = props.setApiResPanelState;
@@ -7,6 +8,8 @@ export default function LoginCard(props){
     const [userPin, setUserPin] = useState("");
 
     async function handleLoginClick() {
+        if (guardEmptyInputs(setApiResPanelState, userName, userPin)) {return};
+
         const loginPayload = {
             userName: userName,
             userPin: userPin
