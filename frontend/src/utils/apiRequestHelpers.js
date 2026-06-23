@@ -1,4 +1,39 @@
 
+function maskRequestBody(body) {
+    if (!body) {
+        return "Empty";
+    }
+
+    const safeBody = { ...body };
+
+    if (safeBody.userPin) {
+        safeBody.userPin = "********";
+    }
+
+    if (safeBody.newUserPin) {
+        safeBody.newUserPin = "********";
+    }
+
+    return safeBody;
+}
+
+
+function maskRequestHeaders(headers) {
+    if (!headers || Object.keys(headers).length === 0) {
+        return "Empty";
+    }
+
+    const safeHeaders = { ...headers };
+
+    if (safeHeaders.Authorization) {
+        safeHeaders.Authorization = "Bearer ********"
+    }
+
+    return safeHeaders;
+}
+
+
+
 export function prepareApiRequest(setApiResPanelState, apiRequest) {
     const preparedRequest = {
         method: apiRequest.method,
@@ -14,8 +49,8 @@ export function prepareApiRequest(setApiResPanelState, apiRequest) {
             ...prevState.request,
             method: preparedRequest.method,
             url: preparedRequest.url,
-            headers: preparedRequest.headers,
-            body: preparedRequest.body
+            headers: maskRequestHeaders(preparedRequest.headers),
+            body: maskRequestBody(preparedRequest.body)
         }
     }));
 
