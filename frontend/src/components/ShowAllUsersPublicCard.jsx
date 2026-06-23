@@ -1,45 +1,15 @@
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
 
 export default function ShowAllUsersPublicCard(props) {
     const setApiResPanelState = props.setApiResPanelState;
 
     async function handleShowUsersPublicClick() {
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/users", {
-            method: "GET"
+        const request = prepareApiRequest(setApiResPanelState, {
+            method: "GET",
+            url: "http://localhost:8081/users",
         });
 
-        const responseBody = await response.json();
-        const endTime = performance.now();
-
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-
-            request: {
-                ...prevState.request,
-                method: "GET",
-                url: "http://localhost:8081/users",
-                headers: "Empty",
-                body: "Empty"
-            },
-
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }))
-
+        await sendApiRequest(setApiResPanelState, request);
     }
 
     return (
