@@ -33,6 +33,21 @@ function maskRequestHeaders(headers) {
 }
 
 
+function maskResponseBody(body) {
+    if (!body) {
+        return "Empty";
+    }
+
+    const safeBody = { ...body };
+
+    if (safeBody.token) {
+        safeBody.token = "Bearer ********";
+    }
+
+    return safeBody;
+}
+
+
 
 export function prepareApiRequest(setApiResPanelState, apiRequest) {
     const preparedRequest = {
@@ -80,7 +95,7 @@ export async function sendApiRequest(setApiResPanelState, apiRequest) {
                 raw: response,
                 status: response.status,
                 headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
+                body: maskResponseBody(responseBody)
             },
 
             fetchSpeed: {
