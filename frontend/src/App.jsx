@@ -21,7 +21,6 @@ export default function App() {
             url: "http://localhost:8081/...",
             headers: "Empty",
             body: "Empty",
-            bodyResponse: "Empty"
         },
 
         response: {

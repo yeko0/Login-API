@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { guardEmptyInputs } from "../utils/guards.js";
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js"
 
 export default function LoginCard(props){
     const setApiResPanelState = props.setApiResPanelState;
@@ -8,57 +9,27 @@ export default function LoginCard(props){
     const [userPin, setUserPin] = useState("");
 
     async function handleLoginClick() {
-        if (guardEmptyInputs(setApiResPanelState, userName, userPin)) {return};
-
-        const loginPayload = {
-            userName: userName,
-            userPin: userPin
-        }
-
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/auth/login",
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(loginPayload)
-            });
-        const responseBody = await response.json();
-        const endTime = performance.now();
-
-        setAuthSession({
-            token: response.ok ? responseBody.token ?? null : null,
-            userId: response.ok ? responseBody.userId ?? null : null,
-            userRole: response.ok ? responseBody.userRole ?? null : null
+        const request = prepareApiRequest(setApiResPanelState, {
+            method: "POST",
+            url: "http://localhost:8081/auth/login",
+            headers: {"Content-Type": "application/json"},
+            body: {
+                userName: userName,
+                userPin: userPin
+            }
         });
 
-        setApiResPanelState((prevState) => ({
-            ...prevState,
+        if (guardEmptyInputs(setApiResPanelState, userName, userPin)) {return};
 
-            request: {
-                ...prevState.request,
-                method: "POST",
-                url: "http://localhost:8081/auth/login",
-                headers: { "Content-Type": "application/json" },
-                body: loginPayload
-            },
+       const {response, responseBody} = await sendApiRequest(setApiResPanelState, request);
 
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }));
+       if (response.ok) {
+           setAuthSession({
+               token: responseBody.token ?? null,
+               userId: responseBody.userId ?? null,
+               userRole: responseBody.userRole ?? null
+           });
+       }
     }
 
     return (
