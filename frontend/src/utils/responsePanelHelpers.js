@@ -9,7 +9,7 @@ export function setGuardResponse(setApiResPanelState, status, message) {
             status: status,
             headers: "Empty",
             body: {
-                backendMessage: "Empty",
+                backendMessage: ["Empty"],
                 frontendMessage: message
             }
         },
@@ -27,7 +27,7 @@ export function setGuardResponse(setApiResPanelState, status, message) {
 
 export function addFrontendMessages(setApiResPanelState, ...messages) {
     setApiResPanelState((prevState) => {
-        const backendMessage = prevState.response.body?.backendMessage ?? "Empty";
+        const backendMessage = prevState.response.body?.backendMessage ?? ["Empty"];
 
         return {
             ...prevState,

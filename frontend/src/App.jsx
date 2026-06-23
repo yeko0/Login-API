@@ -28,7 +28,7 @@ export default function App() {
             status: null,
             headers: "Empty",
             body: {
-                backendMessage: "Empty"
+                backendMessage: ["Empty"]
             }
         },
 
