@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { guardEmptyInputs } from "../utils/guards.js";
-import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js"
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
+import { setSession } from "../utils/sessionHelpers.js";
 
 export default function LoginCard(props){
     const setApiResPanelState = props.setApiResPanelState;
@@ -24,11 +25,7 @@ export default function LoginCard(props){
        const {response, responseBody} = await sendApiRequest(setApiResPanelState, request);
 
        if (response.ok) {
-           setAuthSession({
-               token: responseBody.token ?? null,
-               userId: responseBody.userId ?? null,
-               userRole: responseBody.userRole ?? null
-           });
+           setSession(setAuthSession, responseBody);
        }
     }
 

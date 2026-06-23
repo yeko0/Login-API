@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { guardEmptyInputs, guardNotAdmin, guardInputNotNumber } from "../utils/guards.js";
 import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
-import { addFrontendMessages } from "../utils/responsePanelHelpers.js"
+import { addFrontendMessages } from "../utils/responsePanelHelpers.js";
+import { resetSession } from "../utils/sessionHelpers.js";
 
 export default function ChangeUserRoleCard(props) {
     const authSession = props.authSession;
@@ -33,11 +34,7 @@ export default function ChangeUserRoleCard(props) {
                 "Own Access-lvl was changed",
                 "Login again is required"
             );
-            setAuthSession({
-                token: null,
-                userId: null,
-                userRole: null
-            });
+            resetSession(setAuthSession);
         }
     }
 

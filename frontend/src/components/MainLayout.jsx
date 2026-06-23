@@ -7,7 +7,7 @@ import ChangeUserRoleCard from "./ChangeUserRoleCard.jsx";
 import DeleteUserCard from "./DeleteUserCard.jsx";
 import CurrentSessionCard from "./CurrentSessionCard.jsx";
 import ShowAllUsersPublicCard from "./ShowAllUsersPublicCard.jsx";
-import ResponsePanel from "./ResponsePanel.jsx"
+import ResponsePanel from "./ResponsePanel.jsx";
 
 export default function MainLayout(props) {
     const apiResPanelState = props.apiResPanelState;
