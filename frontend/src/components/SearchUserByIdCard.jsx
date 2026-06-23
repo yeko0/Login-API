@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { guardEmptyInputs, guardInputNotNumber, guardNotAdmin } from "../utils/guards.js";
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
 
 export default function SearchUserByIdCard(props) {
     const setApiResPanelState = props.setApiResPanelState;
@@ -6,43 +8,15 @@ export default function SearchUserByIdCard(props) {
     const [searchId, setSearchId] = useState("");
 
     async function handleSearchUserByIdClick() {
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/users/"+ searchId, {
+        const request = prepareApiRequest(setApiResPanelState, {
             method: "GET",
+            url: "http://localhost:8081/users/"+ searchId,
             headers: { "Authorization": "Bearer "+ authSession.token }
         });
-
-        const responseBody = await response.json();
-        const endTime = performance.now();
-
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-
-            request: {
-                ...prevState.request,
-                method: "GET",
-                url: "http://localhost:8081/users/"+ searchId,
-                headers: { "Authorization": "Bearer "+ authSession.token },
-                body: "Empty"
-            },
-
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }))
+        if(guardNotAdmin(setApiResPanelState, authSession)) { return; }
+        if(guardEmptyInputs(setApiResPanelState, searchId)) { return; }
+        if(guardInputNotNumber(setApiResPanelState, searchId)) { return; }
+        await sendApiRequest(setApiResPanelState, request);
     }
 
     return (
