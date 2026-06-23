@@ -1,10 +1,10 @@
 
 export function prepareApiRequest(setApiResPanelState, apiRequest) {
     const preparedRequest = {
-        method: apiRequest.method ?? "Error",
-        url: apiRequest.url ?? "Error",
-        headers: apiRequest.headers ?? "Empty",
-        body: apiRequest.body ?? "Empty"
+        method: apiRequest.method,
+        url: apiRequest.url,
+        headers: apiRequest.headers ?? {},
+        body: apiRequest.body ?? undefined
     };
 
     setApiResPanelState((prevState) => ({

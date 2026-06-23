@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { guardEmptyInputs, guardNotLoggedIn } from "../utils/guards.js";
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js"
+import { addFrontendMessages } from "../utils/responsePanelHelpers.js"
 
 export default function ChangePinCard(props) {
     const authSession = props.authSession;
+    const setAuthSession = props.setAuthSession;
     const setApiResPanelState = props.setApiResPanelState;
     const [userName, setUserName] = useState("");
     const [userPin, setUserPin] = useState("");
@@ -9,57 +13,36 @@ export default function ChangePinCard(props) {
 
     async function handleChangePinClick(){
         const userId = authSession.userId ?? 0;
-
-        const payload = {
-            userName: userName,
-            userPin: userPin,
-            newUserPin: newUserPin
-        }
-
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/users/"+ userId +"/pin",{
-                method : "PATCH",
-                headers: {
-                    "Authorization": "Bearer "+ authSession.token,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+        const request = prepareApiRequest(setApiResPanelState, {
+            method: "PATCH",
+            url: "http://localhost:8081/users/"+ userId +"/pin",
+            headers: {
+                "Authorization": "Bearer " + authSession.token,
+                "Content-Type": "application/json"
+            },
+            body: {
+                userName: userName,
+                userPin: userPin,
+                newUserPin: newUserPin
+            }
         });
 
-        const responseBody = await response.json();
-        const endTime = performance.now();
+        if(guardNotLoggedIn(setApiResPanelState, authSession)) { return; }
+        if(guardEmptyInputs(setApiResPanelState,userName, userPin, newUserPin)) { return; }
+        const {response} = await sendApiRequest(setApiResPanelState, request);
 
-        setApiResPanelState((prevState) => ({
-            ...prevState,
+        if(response.ok){
+            setAuthSession({
+                token: null,
+                userId: null,
+                userRole: null
+            });
 
-            request: {
-                ...prevState.request,
-                method: "PATCH",
-                url: "http://localhost:8081/users/"+ userId +"/pin",
-                headers: {
-                    "Authorization": "Bearer "+ authSession.token,
-                    "Content-Type": "application/json"
-                },
-                body: payload
-            },
-
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }));
+            addFrontendMessages(setApiResPanelState,
+                "Login is required",
+                "please login again with new PIN"
+            )
+        }
     }
 
     return(

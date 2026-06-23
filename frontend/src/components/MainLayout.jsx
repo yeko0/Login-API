@@ -42,6 +42,7 @@ export default function MainLayout(props) {
                 <ChangePinCard
                     setApiResPanelState={setApiResPanelState}
                     authSession={authSession}
+                    setAuthSession={setAuthSession}
                 />
 
                 <SearchUserByIdCard
