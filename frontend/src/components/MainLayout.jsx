@@ -64,6 +64,7 @@ export default function MainLayout(props) {
                 <ChangeUserRoleCard
                     setApiResPanelState={setApiResPanelState}
                     authSession={authSession}
+                    setAuthSession={setAuthSession}
                 />
 
             </div>{/* Div= End cards group */}

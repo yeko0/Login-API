@@ -52,7 +52,7 @@ export function guardInputNotNumber(setApiResPanelState, ...inputs){
     if (hasInvalidNumber) {
         setGuardResponse(setApiResPanelState, 400, [
             "Input not valid",
-            "On numbers fields is",
+            "On numbers fields",
             "only positive integers allowed"
         ]);
 

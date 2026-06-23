@@ -1,57 +1,44 @@
 import { useState } from "react";
+import { guardEmptyInputs, guardNotAdmin, guardInputNotNumber } from "../utils/guards.js";
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
+import { addFrontendMessages } from "../utils/responsePanelHelpers.js"
 
 export default function ChangeUserRoleCard(props) {
     const authSession = props.authSession;
+    const setAuthSession = props.setAuthSession;
     const setApiResPanelState = props.setApiResPanelState;
     const [userId, setUserId] = useState("");
     const [userRole, setUserRole] = useState("");
 
     async function handleChangeUserRoleClick() {
-        const payload = {userRole : userRole}
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/admin/users/"+ userId +"/role", {
+        const request = prepareApiRequest(setApiResPanelState, {
             method: "PATCH",
+            url: "http://localhost:8081/admin/users/"+ userId +"/role",
             headers: {
-                "Authorization": "Bearer "+ authSession.token,
+                "Authorization": "Bearer " + authSession.token,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
+            body: {
+                userRole: userRole
+            }
         });
 
-        const responseBody = await response.json();
-        const endTime = performance.now();
+        if(guardNotAdmin(setApiResPanelState, authSession)) { return; }
+        if(guardEmptyInputs(setApiResPanelState, userId, userRole)) { return; }
+        if(guardInputNotNumber(setApiResPanelState, userId)) { return; }
+        const {response} = await sendApiRequest(setApiResPanelState, request);
 
-
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-            request: {
-                ...prevState.request,
-                method: "PATCH",
-                url: "http://localhost:8081/admin/users/"+ userId +"/role",
-                headers: {
-                    "Authorization": "Bearer "+ authSession.token,
-                    "Content-Type": "application/json"
-                },
-                body: payload
-            },
-
-            response:{
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }));
+        if(response.ok && Number(userId) === Number(authSession.userId)) {
+            addFrontendMessages(setApiResPanelState,
+                "Own Access-lvl was changed",
+                "Login again is required"
+            );
+            setAuthSession({
+                token: null,
+                userId: null,
+                userRole: null
+            });
+        }
     }
 
     return (
