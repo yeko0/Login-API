@@ -34,8 +34,12 @@ function maskRequestHeaders(headers) {
 
 
 function maskResponseBody(body) {
-    if (!body) {
+    if (body === null || body === undefined) {
         return "Empty";
+    }
+
+    if (Array.isArray(body)) {
+        return body;
     }
 
     const safeBody = { ...body };
