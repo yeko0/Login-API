@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { guardNotLoggedIn, guardEmptyInputs, guardInputNotNumber } from "../utils/guards.js";
+import { prepareApiRequest, sendApiRequest} from "../utils/apiRequestHelpers.js";
+import { resetSession } from "../utils/sessionHelpers.js";
 
 export default function DeleteUserCard(props) {
     const setApiResPanelState = props.setApiResPanelState;
@@ -9,60 +12,28 @@ export default function DeleteUserCard(props) {
     const [userPin, setUserPin] = useState("");
 
     async function handleDeleteUserClick() {
-        if (!confirm("Delete your account permanently?")) return;
-
-        const payload = {
-            userName: userName,
-            userPin: userPin
-        }
-        const startTime = performance.now();
-        const response = await fetch("http://localhost:8081/users/"+ userId, {
+        const request = prepareApiRequest(setApiResPanelState,{
             method: "DELETE",
+            url: "http://localhost:8081/users/"+ userId,
             headers: {
                 "Authorization": "Bearer "+ authSession.token,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
-        });
-        const responseBody = await response.json();
-        const endTime = performance.now();
+            body: {
+                userName: userName,
+                userPin: userPin
+            }
+        })
 
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-            request: {
-                ...prevState.request,
-                method: "DELETE",
-                url: "http://localhost:8081/users/"+ userId,
-                headers: {
-                    "Authorization": "Bearer "+ authSession.token,
-                    "Content-Type": "application/json"
-                },
-                body: payload
-            },
+        if(guardNotLoggedIn(setApiResPanelState, authSession)) { return; }
+        if(guardEmptyInputs(setApiResPanelState, userId, userName, userPin)) { return; }
+        if(guardInputNotNumber(setApiResPanelState, userId)) { return; }
+        if(!confirm("Delete your account permanently?")) { return; }
 
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }));
+        const {response} = await sendApiRequest(setApiResPanelState, request);
 
         if(response.ok) {
-            setAuthSession({
-                token: null,
-                userId: null,
-                userRole: null
-            });
+            resetSession(setAuthSession);
         }
     }
 
