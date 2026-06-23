@@ -1,84 +1,21 @@
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
+import { guardNotLoggedIn } from "../utils/guards.js";
 
 export default function CurrentSessionCard(props) {
     const authSession = props.authSession;
     const setApiResPanelState = props.setApiResPanelState;
 
     async function handleCurrentSessionClick() {
-        if (!authSession.token) {
-            setApiResPanelState((prevState) => ({
-                ...prevState,
-
-                request: {
-                    ...prevState.request,
-                    method: "GET",
-                    url: "http://localhost:8081/auth/session",
-                    headers: "Authorization token missing",
-                    body: "Empty"
-                },
-
-                response: {
-                    ...prevState.response,
-                    raw: null,
-                    status: 401,
-                    headers: "Empty",
-                    body: {
-                        backendMessage: "Login to get current session"
-                    }
-                },
-
-                fetchSpeed: {
-                    startTime: 0,
-                    endTime: 0,
-                    responseTime: null
-                },
-
-                selectedButton: "body"
-            }));
-
-            return;
-        }
-
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/auth/session", {
+        const request = prepareApiRequest(setApiResPanelState,{
             method: "GET",
+            url: "http://localhost:8081/auth/session",
             headers: {
                 "Authorization": "Bearer "+ authSession.token
             }
         });
 
-        const responseBody = await response.json();
-        const endTime = performance.now();
-
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-
-            request: {
-                ...prevState.request,
-                method: "GET",
-                url: "http://localhost:8081/auth/session",
-                headers: {
-                    "Authorization": "Bearer "+ authSession.token
-                },
-                body: "Empty"
-            },
-
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }));
+        if(guardNotLoggedIn(setApiResPanelState, authSession)) { return; }
+        await sendApiRequest(setApiResPanelState, request);
     }
 
     return (
