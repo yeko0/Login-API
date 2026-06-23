@@ -41,7 +41,7 @@ function maskResponseBody(body) {
     const safeBody = { ...body };
 
     if (safeBody.token) {
-        safeBody.token = "Bearer ********";
+        safeBody.token = "********";
     }
 
     return safeBody;

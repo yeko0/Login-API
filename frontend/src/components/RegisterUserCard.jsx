@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { prepareApiRequest, sendApiRequest} from "../utils/apiRequestHelpers.js";
+import { guardEmptyInputs } from "../utils/guards.js";
+import { addFrontendMessages } from "../utils/responsePanelHelpers.js";
 
 export default function RegisterUserCard(props) {
     const setApiResPanelState = props.setApiResPanelState;
@@ -6,49 +9,25 @@ export default function RegisterUserCard(props) {
     const [userPin, setUserPin] = useState("");
 
     async function handleRegisterUserClick() {
-        const payload = {
-            userName: userName,
-            userPin: userPin
-        }
-
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/users", {
+        const request = prepareApiRequest(setApiResPanelState, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            url: "http://localhost:8081/users",
+            headers: {"Content-Type": "application/json"},
+            body: {
+                userName: userName,
+                userPin: userPin
+            }
         })
 
-        const responseBody = await response.json();
-        const endTime = performance.now();
+        if(guardEmptyInputs(setApiResPanelState, userName, userPin)) { return; }
+        const { response } = await sendApiRequest(setApiResPanelState, request);
 
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-
-            request: {
-                ...prevState.request,
-                method: "POST",
-                url: "http://localhost:8081/users",
-                headers: { "Content-Type": "application/json" },
-                body: payload
-            },
-
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }));
+        if(response.ok) {
+            addFrontendMessages(setApiResPanelState,
+                "User registered successfully",
+                "Login with new user if you wish"
+            );
+        }
     }
 
     return (
