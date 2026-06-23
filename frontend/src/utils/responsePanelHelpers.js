@@ -17,7 +17,7 @@ export function setGuardResponse(setApiResPanelState, status, message) {
         fetchSpeed: {
             startTime: 0,
             endTime: 0,
-            responseTime: 0
+            responseTime: "--"
         },
 
         selectedButton: "body"
