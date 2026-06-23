@@ -1,51 +1,21 @@
+import { guardNotAdmin } from "../utils/guards.js";
+import { prepareApiRequest, sendApiRequest } from "../utils/apiRequestHelpers.js";
 
 export default function ShowAllUsersAdminCard(props) {
     const authSession = props.authSession;
     const setApiResPanelState = props.setApiResPanelState;
 
     async function handleShowUsersAdminClick() {
-        const startTime = performance.now();
-
-        const response = await fetch("http://localhost:8081/admin/users", {
+        const request = prepareApiRequest(setApiResPanelState, {
             method: "GET",
+            url: "http://localhost:8081/admin/users",
             headers: {
                 "Authorization": "Bearer "+ authSession.token
             }
         });
 
-        const responseBody = await response.json();
-        const endTime = performance.now();
-
-        setApiResPanelState((prevState) => ({
-            ...prevState,
-
-            request: {
-                ...prevState.request,
-                method: "GET",
-                url: "http://localhost:8081/admin/users",
-                headers: {
-                    "Authorization": "Bearer "+ authSession.token
-                },
-                body: "Empty"
-            },
-
-            response: {
-                ...prevState.response,
-                raw: response,
-                status: response.status,
-                headers: Object.fromEntries(response.headers.entries()),
-                body: responseBody
-            },
-
-            fetchSpeed: {
-                startTime: startTime,
-                endTime: endTime,
-                responseTime: Math.round(endTime - startTime)
-            },
-
-            selectedButton: "body"
-        }))
-
+        if(guardNotAdmin(setApiResPanelState, authSession)) { return; }
+        await sendApiRequest(setApiResPanelState, request);
     }
 
     return (
