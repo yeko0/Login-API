@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const statusStyles = {
     0:   { text: "fetch-fail",   classes: "text-red-400 border-red-400" },
     200: { text: "OK",           classes: "text-green-400 border-green-400" },
@@ -15,6 +17,9 @@ export default function SubHeader(props) {
     const authSession = props.authSession;
     const apiResPanelState = props.apiResPanelState;
 
+    const [copyMessage, setCopyMessage] = useState(null);
+    const [copyMessagePosition, setCopyMessagePosition] = useState({ x: 0, y: 0 });
+
     const status = apiResPanelState.response.status;
     const statusStyle = statusStyles[status] ?? {
         text: "?-Status",
@@ -26,6 +31,24 @@ export default function SubHeader(props) {
 
     const tokenStyle = status === null ? "text-cyan-300"
         : authSession.token ? "text-green-400" : statusStyle.classes;
+
+    async function handleCopyTokenClick(event) {
+        setCopyMessagePosition({
+            x: event.clientX,
+            y: event.clientY
+        });
+
+        if (!authSession.token) {
+            setCopyMessage("No token");
+        } else {
+            await navigator.clipboard.writeText(authSession.token);
+            setCopyMessage("Token copied");
+        }
+
+        setTimeout(() => {
+            setCopyMessage(null);
+        }, 1500);
+    }
 
     return (
         <div className="relative flex items-center justify-between text-sm text-slate-500 border border-[#263449] rounded-xl p-2">
@@ -68,12 +91,22 @@ export default function SubHeader(props) {
                 <span>Current token:</span>
                 <span id="sub-header-token-dot" className={tokenStyle}>●</span>
                 <span id="sub-header-token-text" className={tokenStyle}>{tokenText}</span>
-                <button id="sub-header-token-btn"
-                        className="bg-violet-950 text-xs text-violet-400 border-2 border-violet-400
-                         hover:text-violet-600 hover:border-violet-600
-                          rounded-full px-3 py-1 cursor-pointer">Token
+                <button id="sub-header-token-btn" onClick={handleCopyTokenClick} className="bg-violet-950
+                    text-xs text-violet-400 border-2 border-violet-400 hover:text-violet-600 hover:border-violet-600
+                    rounded-full px-3 py-1 cursor-pointer">Token
                 </button>
             </div>{/* End Div=4 right Group */}
+
+
+            {copyMessage && (
+                <span className="fixed z-50 rounded-full border border-cyan-400 bg-slate-950 px-2 py-1
+                    text-xs text-cyan-300" style={{
+                        left: copyMessagePosition.x - 30,
+                        top: copyMessagePosition.y - 30
+                    }}>
+                    {copyMessage}
+                </span>
+            )}
 
         </div>/* End Sub-Header Container */
     );

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 const statusStyles = {
     0:   { text: "fetch-fail",   classes: "text-red-400 border-red-400" },
     200: { text: "OK",           classes: "text-green-400 border-green-400" },
@@ -57,6 +59,42 @@ export default function ResponsePanel(props) {
 
     const panelText = stringifyPanelContent(panelContent);
 
+    const [isPanelCleared, setIsPanelCleared] = useState(false);
+    const [panelActionMessage, setPanelActionMessage] = useState(null);
+    const [panelActionPosition, setPanelActionPosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+        setIsPanelCleared(false);
+    }, [apiResPanelState]);
+
+    const visiblePanelText = isPanelCleared ? "" : panelText;
+
+    async function handleCopyPanel(event) {
+        await navigator.clipboard.writeText(visiblePanelText);
+        setPanelActionPosition({
+            x: event.clientX,
+            y: event.clientY
+        });
+        showPanelActionMessage("Copied");
+    }
+
+    function handleClearPanel(event) {
+        setIsPanelCleared(true);
+        setPanelActionPosition({
+            x: event.clientX,
+            y: event.clientY
+        });
+        showPanelActionMessage("Cleared");
+    }
+
+    function showPanelActionMessage(message) {
+        setPanelActionMessage(message);
+
+        setTimeout(() => {
+            setPanelActionMessage(null);
+        }, 500);
+    }
+
     function stringifyPanelContent(content) {
         if (typeof content === "string") {
             return content;
@@ -66,6 +104,8 @@ export default function ResponsePanel(props) {
     }
 
     function handleSelectedView(button) {
+        setIsPanelCleared(false);
+
         setApiResPanelState((prevState) => ({
             ...prevState,
             selectedButton: button
@@ -192,8 +232,13 @@ export default function ResponsePanel(props) {
                 {/* right group */}
                 <div className="gap-3 *:border-2 *:rounded-full *:px-3 *:pt-1 *:pb-1.5
                                *:cursor-pointer *:hover:text-cyan-300 *:hover:border-cyan-300">
-                    <button id="api-response-copy-btn" className="border-[#263449] text-slate-500">Copy</button>
-                    <button id="api-response-clear-btn" className="border-[#263449] text-slate-500">Clear</button>
+                    <button id="api-response-copy-btn" onClick={handleCopyPanel} className="border-[#263449]
+                        text-slate-500">Copy
+                    </button>
+
+                    <button id="api-response-clear-btn" onClick={handleClearPanel} className="border-[#263449]
+                        text-slate-500">Clear
+                    </button>
                 </div>
             </div>
             {/* END Api response panel-control-pill with buttons */}
@@ -203,10 +248,19 @@ export default function ResponsePanel(props) {
                                     mt-4 p-2 text-xs text-slate-500">
 
                 <pre id="api-response-show-text-area" className={"text-base "+statusStyle.classes}>
-                    {panelText}
+                    {visiblePanelText}
                 </pre>
             </div>
 
+            {panelActionMessage && (
+                <span className="fixed z-50 rounded-full border border-cyan-400 bg-slate-950 px-2 py-1
+                            text-xs text-cyan-300" style={{
+                    left: panelActionPosition.x - 30,
+                    top: panelActionPosition.y - 30
+                }}>
+                            {panelActionMessage}
+                        </span>
+            )}
 
         </div>
     );
