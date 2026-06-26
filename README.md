@@ -1,10 +1,64 @@
-# Login API v2.8 — Fullstack API Console
+# Login API v3.0 — Fullstack Authentication Console
 
-A learning-focused fullstack authentication project built with **Java 17**, **Spring Boot 4**, **Spring Data JPA / Hibernate**, **JWT**, **BCrypt**, **PostgreSQL / MariaDB**, **Vite**, **Tailwind CSS**, and **Vanilla JavaScript**.
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.6-brightgreen)
+![React](https://img.shields.io/badge/React-19-blue)
+![Vite](https://img.shields.io/badge/Vite-8-purple)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38bdf8)
+![JPA](https://img.shields.io/badge/JPA-Hibernate-59666C)
+![JWT](https://img.shields.io/badge/Auth-JWT-black)
+![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20MariaDB-blue)
 
-The project combines a REST API backend with a browser-based console for testing every endpoint, inspecting requests and responses, and understanding authentication, authorization, database persistence, and frontend request flows.
+A learning-focused fullstack authentication project built with **Java 17**, **Spring Boot 4**, **Spring Data JPA / Hibernate**, **JWT**, **BCrypt**, **React**, **Vite**, **Tailwind CSS**, and **SQL databases**.
 
-> Current branch: `v2.8-jpa-polish`
+The project combines a Spring Boot REST API with a React-based API console for testing authentication, authorization, role-based access, request/response flows, frontend validation, and database persistence.
+
+> Current branch: `v3.0-frontend-react-migration`
+
+---
+
+## Table of contents
+
+- [Project overview](#project-overview)
+- [Frontend preview](#frontend-preview)
+- [What this project demonstrates](#what-this-project-demonstrates)
+- [Main features](#main-features)
+- [Tech stack](#tech-stack)
+- [Architecture overview](#architecture-overview)
+- [Project structure](#project-structure)
+- [Database](#database)
+- [Local setup](#local-setup)
+- [Run the project](#run-the-project)
+- [Authentication and authorization flow](#authentication-and-authorization-flow)
+- [Endpoint overview](#endpoint-overview)
+- [Response format](#response-format)
+- [Manual test flow](#manual-test-flow)
+- [Security notes](#security-notes)
+- [Version history](#version-history)
+- [Current status](#current-status)
+- [Possible future improvements](#possible-future-improvements)
+- [Learning purpose](#learning-purpose)
+
+---
+
+## Project overview
+
+**Login API v3.0** is a fullstack learning project focused on building and understanding an authentication system from backend to frontend.
+
+The backend provides a REST API for:
+
+- user registration
+- login with JWT
+- current-session validation
+- owner-only actions
+- administrator-only actions
+- role updates
+- PIN updates
+- account deletion
+
+The frontend is a React API console that allows testing every endpoint through visual cards. It shows the outgoing request, response body, headers, payload, HTTP status, response time, access level, token status, and frontend validation feedback.
+
+This project is not meant to be a production authentication system. It is meant to document a practical learning path through backend development, frontend state management, API communication, security basics, and fullstack architecture.
 
 ---
 
@@ -13,63 +67,40 @@ The project combines a REST API backend with a browser-based console for testing
 The interface contains endpoint cards on the left and a live API response inspector on the right.
 
 <p align="center">
-  <img src="docs/screenshots/login-api-top.png" alt="Auth API Console top section" width="100%">
+  <img src="docs/screenshots/login-api-top.png" alt="Login API React frontend top section" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/login-api-bottom.png" alt="Auth API Console lower section" width="100%">
+  <img src="docs/screenshots/login-api-bottom.png" alt="Login API React frontend lower section" width="100%">
 </p>
 
-The frontend provides cards for:
+The React frontend provides cards for:
 
 - Login
 - Register user
+- Current session
 - Change PIN
+- Show all users as public/debug endpoint
 - Show all users as admin
 - Search user by ID as admin
 - Change user role as admin
 - Delete own account
-- Current session
-- Public user-list debug endpoint
 
 ---
 
-## Version history
+## What this project demonstrates
 
-### v2.6 — Project structure
+This repository shows more than a single finished result. It documents an incremental fullstack learning process:
 
-Version 2.6 reorganized the repository into a clearer fullstack structure.
+- backend persistence migrated from earlier manual approaches to **Spring Data JPA**
+- API responses cleaned up through DTOs and projections
+- frontend migrated from **Vanilla JavaScript** to **React**
+- fetch logic centralized into reusable request helpers
+- repeated frontend checks extracted into reusable guards
+- authentication state extracted into session helpers
+- response panel improved with masking, copy, clear, and token feedback
 
-- Moved the Spring Boot application into `backend/`
-- Kept the Vite frontend inside `frontend/`
-- Centralized shared repository files in the project root
-- Updated the project layout to better represent a fullstack monorepo
-- Kept backend and frontend as independent runnable projects
-
-### v2.7 — JPA migration
-
-Version 2.7 migrated the backend persistence layer from `JdbcTemplate` to **Spring Data JPA**.
-
-- Added `spring-boot-starter-data-jpa`
-- Converted `User` into a JPA entity with `@Entity`, `@Table`, `@Id`, and `@Column`
-- Replaced manual repository methods with `JpaRepository`
-- Migrated common CRUD operations to JPA methods such as `findAll`, `findById`, `save`, and `delete`
-- Added Spring Data query methods such as `findByUserName`, `existsByUserName`, and `countByUserRole`
-- Removed the old `JdbcTemplate` repository after the migration was complete
-
-### v2.8 — JPA polish
-
-Version 2.8 cleaned up and improved the new JPA backend.
-
-- Renamed the JPA repository back to `UserRepository` after removing the old JDBC implementation
-- Removed the unused direct JDBC starter dependency
-- Disabled `spring.jpa.open-in-view`
-- Added database exception handling through `GlobalExceptionHandler`
-- Changed `ApiMessage` to support multiple backend message lines with `List<String>`
-- Simplified user creation by returning `UserResponse` directly instead of wrapping it in `Optional`
-- Added DTO projections for public user reads so public responses do not load `userPin`
-- Added a specific role-update query with `@Modifying` so role changes do not touch the PIN hash
-- Added role constants and a set of valid roles for cleaner role validation
+For a junior fullstack / FIAE internship context, the project demonstrates that I can work through a real application step by step, refactor working code, and explain decisions across backend, frontend, database, and UI behavior.
 
 ---
 
@@ -78,36 +109,52 @@ Version 2.8 cleaned up and improved the new JPA backend.
 ### Backend
 
 - User registration
-- JWT login and current-session validation
+- JWT login
+- Current-session validation
 - BCrypt PIN hashing
 - `USER` and `ADMIN` roles
 - Administrator-only endpoints
-- Account-owner-only actions
-- Runtime role checks against the database
+- Account-owner-only endpoints
+- Runtime authorization checks against the current database role
 - DTO validation with Jakarta Validation
-- Global validation, parameter, and database error handling
+- Global validation and database exception handling
 - Spring Data JPA persistence
-- DTO projections for public user responses
+- Public DTO projections that avoid exposing PIN hashes
 - PostgreSQL support
-- MariaDB compatibility for local testing
+- MariaDB / MySQL compatibility for local testing
+- Protection against downgrading the last remaining administrator
 
 ### Frontend
 
-- Vite + Tailwind CSS interface
+- React + Vite + Tailwind CSS interface
+- Endpoint cards grouped by access type: Public, Owner, Admin, and Token
+- In-memory authentication session
+- Current token indicator
+- Current access-level indicator
 - Live backend online/offline indicator
-- Current token and access-level indicators
-- Endpoint cards grouped as Public, Owner, Admin, and Token
-- Request and response inspector
-- HTTP method, URL, status, and response-time display
-- Body, Headers, and Payload tabs
+- Centralized request preparation
+- Centralized fetch execution
+- Centralized fetch error handling
+- Reusable frontend guards
+- Reusable session helpers
+- Response panel with:
+  - Body view
+  - Headers view
+  - Payload view
+  - HTTP method badge
+  - URL display
+  - HTTP status display
+  - response time display
+  - access-level display
 - Copy and clear controls
-- Masked PIN values in request previews
-- Frontend validation before requests are sent
-- In-memory login session for learning and testing
+- Token copy button
+- Temporary UI feedback popups such as `Copied`, `Cleared`, `Token copied`, and `No token`
+- Masked PIN values in request payload previews
+- Masked JWT values in request/response previews
 
 ---
 
-## Technologies
+## Tech stack
 
 ### Backend
 
@@ -116,36 +163,89 @@ Version 2.8 cleaned up and improved the new JPA backend.
 - Spring Web MVC
 - Spring Data JPA
 - Hibernate
-- PostgreSQL
-- MariaDB JDBC driver
+- Jakarta Validation
+- PostgreSQL driver
+- MariaDB Java client
 - BCrypt through `spring-security-crypto`
 - JJWT 0.12.6
 - Maven
 
 ### Frontend
 
-- HTML
-- Vanilla JavaScript
+- React 19
+- JavaScript
 - Vite 8
 - Tailwind CSS 4
+- Fetch API
+- React `useState`
+- React `useEffect`
+- Clipboard API
+
+### Database
+
+- PostgreSQL
+- MariaDB / MySQL
+
+---
+
+## Architecture overview
+
+```text
+React API Console
+        │
+        │ Fetch API
+        ▼
+Spring Boot REST API
+        │
+        │ Service layer
+        ▼
+Spring Data JPA / Hibernate
+        │
+        ▼
+PostgreSQL / MariaDB / MySQL
+```
+
+### Backend layers
+
+```text
+controller/   → REST endpoints and HTTP responses
+service/      → authentication, authorization, user logic
+repository/   → Spring Data JPA repository methods and custom queries
+entity/       → JPA entity mapping
+dto/          → request and response objects
+exception/    → global exception handling
+```
+
+### Frontend layers
+
+```text
+components/   → UI cards, layout, header, response panel
+utils/        → request helpers, guards, response helpers, session helpers
+App.jsx       → global frontend state and backend status check
+main.jsx      → React entry point
+style.css     → Tailwind import and global styles
+```
 
 ---
 
 ## Project structure
 
 ```text
-Login-API-v1/
+Login-API/
 ├── backend/
 │   ├── .mvn/
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/org/yeko/loginapi/
 │   │   │   │   ├── controller/
+│   │   │   │   │   ├── AuthController.java
+│   │   │   │   │   └── UserController.java
 │   │   │   │   ├── dto/
 │   │   │   │   ├── entity/
 │   │   │   │   ├── exception/
 │   │   │   │   ├── repository/
-│   │   │   │   └── service/
+│   │   │   │   ├── service/
+│   │   │   │   └── LoginApiApplication.java
 │   │   │   └── resources/
 │   │   │       └── application-example.properties
 │   │   └── test/
@@ -159,10 +259,33 @@ Login-API-v1/
 │   │   ├── background.png
 │   │   └── ux-ui-prototype/
 │   ├── src/
-│   │   ├── main.js
+│   │   ├── components/
+│   │   │   ├── ChangePinCard.jsx
+│   │   │   ├── ChangeUserRoleCard.jsx
+│   │   │   ├── CurrentSessionCard.jsx
+│   │   │   ├── DeleteUserCard.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── LoginCard.jsx
+│   │   │   ├── MainLayout.jsx
+│   │   │   ├── RegisterUserCard.jsx
+│   │   │   ├── ResponsePanel.jsx
+│   │   │   ├── SearchUserByIdCard.jsx
+│   │   │   ├── ShowAllUsersAdminCard.jsx
+│   │   │   ├── ShowAllUsersPublicCard.jsx
+│   │   │   └── SubHeader.jsx
+│   │   ├── utils/
+│   │   │   ├── apiRequestHelpers.js
+│   │   │   ├── guards.js
+│   │   │   ├── responsePanelHelpers.js
+│   │   │   └── sessionHelpers.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   ├── legacy-main.js
 │   │   └── style.css
 │   ├── index.html
+│   ├── legacy-index.html
 │   ├── package.json
+│   ├── package-lock.json
 │   └── vite.config.js
 │
 ├── docs/
@@ -200,11 +323,28 @@ CREATE TABLE users
 );
 ```
 
-The API never returns the stored PIN hash in public user responses. Public user reads use DTO projections that only select `userId`, `userName`, and `userRole`.
+The API does not return the stored PIN hash in public user responses. Public user reads use DTO projections that select only:
+
+```text
+userId
+userName
+userRole
+```
 
 ---
 
-## Local configuration
+## Local setup
+
+### Requirements
+
+- Java 17
+- Maven or the included Maven Wrapper
+- Node.js and npm
+- PostgreSQL, MariaDB, or MySQL
+- IntelliJ IDEA or another Java IDE
+- A local database named for example `login_app_db`
+
+### Backend configuration
 
 The real `application.properties` file is ignored by Git because it contains database credentials and the JWT secret.
 
@@ -246,7 +386,7 @@ jwt.secret=replace-with-a-secret-of-at-least-32-bytes
 jwt.duration-millis=1800000
 ```
 
-Do not commit the real JWT secret or database credentials.
+Do not commit real database credentials or the real JWT secret.
 
 ---
 
@@ -254,14 +394,14 @@ Do not commit the real JWT secret or database credentials.
 
 ### 1. Start the backend
 
-Run the Spring Boot application from IntelliJ IDEA or from the backend folder:
+From the backend folder:
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-On Windows:
+On Windows PowerShell:
 
 ```powershell
 cd backend
@@ -276,6 +416,8 @@ http://localhost:8081
 
 ### 2. Start the frontend
 
+From the frontend folder:
+
 ```bash
 cd frontend
 npm install
@@ -288,30 +430,35 @@ Frontend URL:
 http://localhost:5173
 ```
 
-The backend currently allows the Vite development origin through CORS.
+The backend currently allows the Vite development origin through CORS:
+
+```text
+http://localhost:5173
+```
 
 ---
 
-## Authentication flow
+## Authentication and authorization flow
 
 1. A user registers with a username and PIN.
 2. The backend hashes the PIN with BCrypt.
 3. A successful login returns a signed JWT.
-4. Protected requests send:
+4. The React frontend stores the token, user ID, and role in memory.
+5. Protected requests send:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-5. The token identifies the user.
-6. Authorization checks use the current role stored in the database.
-7. Public user responses never include the stored PIN hash.
-
-The frontend stores the current token, user ID, and role only in JavaScript memory. Refreshing the page clears the session.
+6. The token identifies the authenticated user.
+7. Authorization checks compare the token user with the current database role.
+8. Owner endpoints require the authenticated user to match the target account ID.
+9. Admin endpoints require the current database role to be `ADMIN`.
+10. Refreshing the page clears the frontend session because the token is not persisted in local storage.
 
 ---
 
-## Endpoints
+## Endpoint overview
 
 | Access         | Method   | Endpoint                 | Purpose                                        |
 |----------------|----------|--------------------------|------------------------------------------------|
@@ -319,7 +466,7 @@ The frontend stores the current token, user ID, and role only in JavaScript memo
 | Public         | `POST`   | `/auth/login`            | Login and receive a JWT                        |
 | Public / Debug | `GET`    | `/users`                 | List public user profiles                      |
 | Token          | `GET`    | `/auth/session`          | Validate the token and return the current user |
-| Admin          | `GET`    | `/admin/users`           | List all public user profiles                  |
+| Admin          | `GET`    | `/admin/users`           | List all public user profiles as admin         |
 | Admin          | `GET`    | `/users/{id}`            | Find a public user profile by ID               |
 | Admin          | `PATCH`  | `/admin/users/{id}/role` | Change a user's role                           |
 | Owner          | `PATCH`  | `/users/{id}/pin`        | Change the authenticated owner's PIN           |
@@ -374,9 +521,103 @@ Successful response:
 }
 ```
 
-### Backend message response
+### Current session
 
-Operations that return a text message use a consistent field with a list of message lines:
+```http
+GET /auth/session
+Authorization: Bearer <token>
+```
+
+Successful response:
+
+```json
+{
+  "userId": 1,
+  "userName": "yeko",
+  "userRole": "USER"
+}
+```
+
+### Change PIN
+
+```http
+PATCH /users/{id}/pin
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+```json
+{
+  "userName": "yeko",
+  "userPin": "1234",
+  "newUserPin": "5678"
+}
+```
+
+Successful response:
+
+```json
+{
+  "backendMessage": [
+    "Password Updated"
+  ]
+}
+```
+
+### Change role
+
+```http
+PATCH /admin/users/{id}/role
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+```
+
+```json
+{
+  "userRole": "ADMIN"
+}
+```
+
+Successful response:
+
+```json
+{
+  "backendMessage": [
+    "Role Updated"
+  ]
+}
+```
+
+### Delete own account
+
+```http
+DELETE /users/{id}
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+```json
+{
+  "userName": "yeko",
+  "userPin": "1234"
+}
+```
+
+Successful response:
+
+```json
+{
+  "backendMessage": [
+    "User Deleted"
+  ]
+}
+```
+
+---
+
+## Response format
+
+Operations that return text messages use a consistent field with a list of message lines:
 
 ```json
 {
@@ -397,7 +638,7 @@ Some responses may include multiple backend message lines:
 }
 ```
 
-The frontend may extend a successful or blocked response with its own UI feedback:
+The frontend can extend a successful or blocked response with its own UI feedback:
 
 ```json
 {
@@ -411,13 +652,15 @@ The frontend may extend a successful or blocked response with its own UI feedbac
 }
 ```
 
+Frontend-only blocked requests use the same response panel structure, for example when a user is not logged in, is not an admin, submits empty fields, or enters an invalid ID.
+
 ---
 
 ## Response status codes
 
 | Status                      | Meaning                                               |
 |----------------------------:|-------------------------------------------------------|
-|                         `0` | Frontend Fetch/network failure                        |
+|                         `0` | Frontend fetch/network failure                        |
 |                    `200 OK` | Successful request                                    |
 |               `201 Created` | User created successfully                             |
 |           `400 Bad Request` | Invalid request, validation error, or invalid user ID |
@@ -429,6 +672,29 @@ The frontend may extend a successful or blocked response with its own UI feedbac
 
 ---
 
+## Manual test flow
+
+A basic manual smoke test can be done from the React frontend:
+
+1. Start backend and frontend.
+2. Check that the backend indicator changes to online.
+3. Register a new user.
+4. Login with the new user.
+5. Copy the token from the SubHeader token button.
+6. Validate the current session.
+7. Try admin-only actions as normal `USER` and confirm `403`.
+8. Login as an admin user.
+9. Show all users as admin.
+10. Search user by ID.
+11. Change another user's role.
+12. Change the current user's own role and verify the session reset.
+13. Change the current user's PIN and verify the session reset.
+14. Login again with the new PIN.
+15. Delete the current user's own account and verify the session reset.
+16. Stop the backend and confirm the frontend shows fetch failure feedback.
+
+---
+
 ## Security notes
 
 - PINs are hashed with BCrypt and are never stored as plain text.
@@ -436,51 +702,133 @@ The frontend may extend a successful or blocked response with its own UI feedbac
 - Public user read queries use DTO projections and do not select `userPin`.
 - JWT secrets and database credentials belong only in the ignored local configuration file.
 - Administrator permissions are checked against the current database role.
+- Owner actions verify that the authenticated user matches the target account.
 - The last remaining administrator cannot be downgraded to `USER`.
-- PINs are masked in the frontend Payload preview.
-- The public `GET /users` endpoint exists for development and should be protected or removed before a production deployment.
+- PINs are masked in the frontend payload preview.
+- JWT values are masked in the response panel and request header preview.
+- The real JWT can only be copied from the token button after login.
+- The frontend stores the session only in memory, not in local storage.
+- The public `GET /users` endpoint exists for development/debugging and should be protected or removed before production.
 - This project uses custom JWT authorization logic for learning purposes and is not presented as production-ready authentication infrastructure.
+
+---
+
+## Version history
+
+### v2.6 — Project structure
+
+Version 2.6 reorganized the repository into a clearer fullstack structure.
+
+- Moved the Spring Boot application into `backend/`
+- Kept the Vite frontend inside `frontend/`
+- Centralized shared repository files in the project root
+- Updated the project layout to better represent a fullstack monorepo
+- Kept backend and frontend as independent runnable projects
+
+### v2.7 — JPA migration
+
+Version 2.7 migrated the backend persistence layer from `JdbcTemplate` to **Spring Data JPA**.
+
+- Added `spring-boot-starter-data-jpa`
+- Converted `User` into a JPA entity with `@Entity`, `@Table`, `@Id`, and `@Column`
+- Replaced manual repository methods with `JpaRepository`
+- Migrated common CRUD operations to JPA methods such as `findAll`, `findById`, `save`, and `delete`
+- Added Spring Data query methods such as `findByUserName` and `countByUserRole`
+- Removed the old `JdbcTemplate` repository after the migration was complete
+
+### v2.8 — JPA polish
+
+Version 2.8 cleaned up and improved the new JPA backend.
+
+- Renamed the JPA repository back to `UserRepository` after removing the old JDBC implementation
+- Removed the unused direct JDBC starter dependency
+- Disabled `spring.jpa.open-in-view`
+- Added database exception handling through `GlobalExceptionHandler`
+- Changed `ApiMessage` to support multiple backend message lines with `List<String>`
+- Simplified user creation by returning `UserResponse` directly
+- Added DTO projections for public user reads so public responses do not load `userPin`
+- Added a specific role-update query with `@Modifying`
+- Added role constants and valid-role handling for cleaner role validation
+
+### v3.0 — React frontend migration
+
+Version 3.0 migrated the frontend from **Vanilla JavaScript** to **React** while keeping the same API testing workflow.
+
+- Rebuilt the frontend using React components
+- Migrated endpoint cards into component-based UI modules
+- Added `App.jsx` state for backend status, authentication session, and response panel state
+- Added `MainLayout.jsx` to organize endpoint cards and the response panel
+- Added reusable request helpers for preparing requests and executing fetch calls
+- Added centralized fetch error handling
+- Added reusable frontend guards for empty inputs, login checks, admin checks, and positive integer validation
+- Added session helpers for login and session reset behavior
+- Added response panel helpers for frontend messages and blocked requests
+- Added request/response masking for PINs and JWT values
+- Added Copy, Clear, and Token copy feedback in the UI
+- Kept Body, Headers, and Payload views in the response inspector
 
 ---
 
 ## Current status
 
-### Completed by v2.8
+### Completed in v3.0
 
 - Backend authentication and authorization flow
 - BCrypt PIN protection
 - JWT login and session validation
-- Full migration from `JdbcTemplate` to Spring Data JPA
-- JPA entity mapping for `User`
-- Spring Data repository methods and custom JPQL queries
+- Spring Data JPA persistence layer
 - DTO projections for public user responses
 - Public, owner, administrator, and token endpoints
-- Full frontend API console
-- Centralized frontend request/response architecture
-- Reusable authentication and input guards
-- Consistent backend/frontend messages
-- Global validation, parameter, and database exception handling
+- React frontend migration
+- Component-based endpoint cards
+- Centralized frontend request helpers
+- Centralized fetch error handling
+- Reusable frontend guards
+- Reusable session helpers
 - Live request and response inspection
+- Response panel Body, Headers, and Payload views
+- PIN and token masking in the UI
+- Copy, Clear, and Token feedback controls
 - Fullstack repository structure with separate `backend/` and `frontend/` folders
 
-### Possible future improvements
+---
 
-- React migration for the frontend
-- Logged-in / logout mode inside the Login card
-- Responsive layout for smaller screens
-- Persistent session storage when appropriate
-- Loading and disabled-button states during requests
-- Unit and integration tests
-- Docker configuration
-- Deployment configuration
-- Spring Security filter-chain integration
-- Optional role enum instead of string-based roles
+## Possible future improvements
+
+- Move the API base URL into a frontend config or environment variable
+- Extract repeated UI elements into reusable components such as `Card`, `Input`, `Button`, and `Badge`
+- Improve responsive layout for smaller screens
+- Add loading and disabled-button states during requests
+- Add automated backend tests
+- Add frontend component or integration tests
+- Add Docker configuration
+- Add deployment configuration
+- Add a production profile and environment-based CORS settings
+- Consider Spring Security filter-chain integration
+- Consider a role enum instead of string-based roles
 - Protect or remove the public debug `/users` endpoint before production
 
 ---
 
-## Purpose
+## Learning purpose
 
-This repository documents my progress while learning backend and fullstack development. The goal is to understand each layer directly: database access, authentication, authorization, API design, frontend state, Fetch requests, validation, and UI feedback.
+This repository documents my progress while learning backend and fullstack development.
 
-The persistence layer intentionally evolved step by step from manual approaches to `JdbcTemplate` and finally to Spring Data JPA, so the project shows both learning progress and a cleaner modern backend structure.
+The goal is to understand each layer directly:
+
+- database design
+- JPA persistence
+- REST API design
+- DTO validation
+- authentication with JWT
+- authorization rules
+- frontend state management
+- Fetch API requests
+- frontend validation
+- UI feedback
+- request/response inspection
+- incremental refactoring
+
+The project intentionally evolved through multiple stages. It started with simpler approaches, moved through JDBC-based persistence, then migrated to Spring Data JPA, and finally migrated the frontend from Vanilla JavaScript to React.
+
+That evolution is part of the purpose of the repository: it shows both the working application and the learning process behind it.
