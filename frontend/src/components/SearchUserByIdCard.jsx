@@ -10,7 +10,7 @@ export default function SearchUserByIdCard(props) {
     async function handleSearchUserByIdClick() {
         const request = prepareApiRequest(setApiResPanelState, {
             method: "GET",
-            url: "http://localhost:8081/users/"+ searchId,
+            url: "http://localhost:8081/admin/users/"+ searchId,
             headers: { "Authorization": "Bearer "+ authSession.token }
         });
         if(guardNotAdmin(setApiResPanelState, authSession)) { return; }

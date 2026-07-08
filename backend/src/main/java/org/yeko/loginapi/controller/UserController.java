@@ -8,6 +8,7 @@ import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.exception.BadRequestException;
 import org.yeko.loginapi.exception.DataConflictException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
+import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
@@ -43,18 +44,17 @@ public class UserController {
 
             List<UserResponse> users = userService.getAllUsers();
             if (users.isEmpty()) {
-                return ResponseEntity.status(200).body(new ApiMessage(List.of("Users Empty")));
+                return ResponseEntity.ok(new ApiMessage(List.of("Users Empty")));
             }
             return ResponseEntity.ok(users);
-
-        }else if (authService.isUser(authorizationHeader) ){
-            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
-        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
+
+        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+
     }
 
 
-    @GetMapping("/users/{id}") //agregar /admin al inicio de la url cuando modifique este código
+    @GetMapping("/admin/users/{id}")
     public ResponseEntity<?> adminGetUserById(@PathVariable @Positive Long id,
                                               @RequestHeader(value="Authorization", required=false)
                                               String authorizationHeader){
@@ -65,12 +65,9 @@ public class UserController {
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
             return ResponseEntity.ok(user);
-
-        }else if (authService.isUser(authorizationHeader) ){
-            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
+        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -91,17 +88,15 @@ public class UserController {
     public ResponseEntity<?> updateUserRole(@PathVariable @Positive Long id,
                                             @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                             @Valid @RequestBody UpdateRoleRequest roleUpdate){
+
         if(authService.isAdmin(authorizationHeader) ){
             if(userService.updateIfValidRole(id, roleUpdate) ) {
-                return ResponseEntity.status(200).body(new ApiMessage(List.of("Role Updated")));
+                return ResponseEntity.ok(new ApiMessage(List.of("Role Updated")));
             }
-            throw new BadRequestException("Bad request");
-
-        } else if (authService.isUser(authorizationHeader)) {
-            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+            throw new BadRequestException("Invalid role or last admin protection");
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
+        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -110,15 +105,12 @@ public class UserController {
                                        @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                        @Valid @RequestBody UpdatePinRequest update){
 
-        if( authService.isAccountOwner(authorizationHeader, id) ){
-
-            if( userService.updatePinIfAuthenticated(update, id) ){
-                return ResponseEntity.status(200).body(new ApiMessage(List.of("Password Updated")));
-            }
-            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+        if( authService.isAccountOwner(authorizationHeader, id)
+                && userService.updatePinIfAuthenticated(update, id)){
+            return ResponseEntity.ok(new ApiMessage(List.of("Pin Updated")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
+        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
     }
 
 
@@ -127,15 +119,13 @@ public class UserController {
                                             @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                             @Valid @RequestBody DeleteUserRequest loginRequest){
 
-        if( authService.isAccountOwner(authorizationHeader, id) ){
+        if( authService.isAccountOwner(authorizationHeader, id)
+                && userService.deleteUserIfAuthenticated(loginRequest, id)) {
 
-            if(userService.deleteUserIfAuthenticated(loginRequest, id) ){
-                return ResponseEntity.status(200).body(new ApiMessage(List.of("User Deleted")));
-            }
-            return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+            return ResponseEntity.ok(new ApiMessage(List.of("User Deleted")));
         }
 
-        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
+        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
     }
 
 

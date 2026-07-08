@@ -7,6 +7,7 @@ import org.yeko.loginapi.dto.ApiMessage;
 import org.yeko.loginapi.dto.LoginRequest;
 import org.yeko.loginapi.dto.LoginResponse;
 import org.yeko.loginapi.dto.UserResponse;
+import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
@@ -40,14 +41,13 @@ public class AuthController {
 
 
     @GetMapping("/auth/session")
-    public ResponseEntity<?> getValidSession(@RequestHeader(value="Authorization", required = false)
+    public ResponseEntity<UserResponse> getValidSession(@RequestHeader(value="Authorization", required = false)
                                              String authorizationHeader){
 
-        Optional<UserResponse> user = userService.getUserByToken(authorizationHeader);
-        if( user.isPresent() ){
-            return ResponseEntity.status(200).body(user.get());
-        }
-        return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
+        UserResponse user = userService.getUserByToken(authorizationHeader)
+                .orElseThrow(() -> new UnauthorizedException("Access Denied"));
+
+        return ResponseEntity.ok(user);
     }
 
 

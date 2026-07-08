@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
+import org.yeko.loginapi.exception.ResourceNotFoundException;
 import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.List;
@@ -120,13 +121,11 @@ public class UserService {
         String role = update.getUserRole().trim().toUpperCase();
         if( isValidRole(role) ){
 
-            Optional<UserResponse> foundUser = ur.findPublicUserById(id);
+            UserResponse user = ur.findPublicUserById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            if( foundUser.isPresent() ) {
-                UserResponse user = foundUser.get();
-                if (!(isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role))) {
-                    return ur.updateUserRoleById(id, role) == 1;
-                }
+            if (!(isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role))) {
+                return ur.updateUserRoleById(id, role) == 1;
             }
         }
         return false;
