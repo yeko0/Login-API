@@ -5,11 +5,13 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yeko.loginapi.dto.*;
+import org.yeko.loginapi.exception.BadRequestException;
+import org.yeko.loginapi.exception.DataConflictException;
+import org.yeko.loginapi.exception.ResourceNotFoundException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -55,16 +57,14 @@ public class UserController {
     @GetMapping("/users/{id}")
     public ResponseEntity<?> adminGetUserById(@PathVariable @Positive Long id,
                                               @RequestHeader(value="Authorization", required=false)
-                                                                    String authorizationHeader){
+                                              String authorizationHeader){
 
         if( authService.isAdmin(authorizationHeader) ){
 
-            Optional<UserResponse> ur = userService.findPublicUserById(id);
+            UserResponse user = userService.findPublicUserById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            if (ur.isPresent()) {
-                return ResponseEntity.ok(ur.get());
-            }
-            return ResponseEntity.status(404).body(new ApiMessage(List.of("Not Found")));
+            return ResponseEntity.ok(user);
 
         }else if (authService.isUser(authorizationHeader) ){
             return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
@@ -75,10 +75,10 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest user){
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest user){
 
-        if(userService.userNameExists(user.getUserName())){
-            return ResponseEntity.status(409).body(new ApiMessage(List.of("User data conflict", "Try again")));
+        if (userService.userNameExists(user.getUserName())) {
+            throw new DataConflictException("User data conflict");
         }
 
         UserResponse ur = userService.createUser(user);
@@ -95,7 +95,7 @@ public class UserController {
             if(userService.updateIfValidRole(id, roleUpdate) ) {
                 return ResponseEntity.status(200).body(new ApiMessage(List.of("Role Updated")));
             }
-            return ResponseEntity.status(400).body(new ApiMessage(List.of("Invalid request")));
+            throw new BadRequestException("Bad request");
 
         } else if (authService.isUser(authorizationHeader)) {
             return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));

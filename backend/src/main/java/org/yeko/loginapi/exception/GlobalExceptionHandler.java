@@ -77,4 +77,28 @@ public class GlobalExceptionHandler {
                 )));
     }
 
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiMessage> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ApiMessage(List.of(ex.getMessage())));
+    }
+
+
+    @ExceptionHandler(DataConflictException.class)
+    public ResponseEntity<ApiMessage> handleDataConflict(DataConflictException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiMessage(List.of(ex.getMessage())));
+    }
+
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiMessage> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiMessage(List.of(ex.getMessage())));
+    }
+
 }
