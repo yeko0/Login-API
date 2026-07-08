@@ -112,4 +112,12 @@ public class GlobalExceptionHandler {
                 .body(new ApiMessage(List.of(ex.getMessage())));
     }
 
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiMessage> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiMessage(List.of(ex.getMessage())));
+    }
+
 }

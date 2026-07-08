@@ -54,7 +54,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{id}") //agregar /admin al inicio de la url cuando modifique este código
     public ResponseEntity<?> adminGetUserById(@PathVariable @Positive Long id,
                                               @RequestHeader(value="Authorization", required=false)
                                               String authorizationHeader){
