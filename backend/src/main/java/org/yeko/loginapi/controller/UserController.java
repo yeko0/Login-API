@@ -8,7 +8,6 @@ import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.exception.BadRequestException;
 import org.yeko.loginapi.exception.DataConflictException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
-import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
