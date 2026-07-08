@@ -20,14 +20,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiMessage> handleArgumentValidationErrors(MethodArgumentNotValidException ex) {
 
-        String message = ex.getBindingResult()
+        List<String> messages = ex.getBindingResult()
                 .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+                .stream()
+                .map(error -> {
+                    String message = error.getDefaultMessage();
 
-        if (message == null) { message = "Invalid request data"; }
+                    if (message == null) {
+                        return "Invalid value for field: " + error.getField();
+                    }
 
-        return ResponseEntity.badRequest().body(new ApiMessage(List.of(message)));
+                    return message;
+                })
+                .toList();
+
+        if (messages.isEmpty()) {
+            messages = List.of("Invalid request data");
+        }
+
+        return ResponseEntity.badRequest().body(new ApiMessage(messages));
     }
 
 
