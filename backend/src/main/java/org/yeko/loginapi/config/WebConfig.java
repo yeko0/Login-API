@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.yeko.loginapi.interceptor.AdminInterceptor;
 import org.yeko.loginapi.interceptor.AuthInterceptor;
 import org.yeko.loginapi.interceptor.LogInterceptor;
 
@@ -13,11 +14,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LogInterceptor logInterceptor;
     private final AuthInterceptor authInterceptor;
+    private final AdminInterceptor adminInterceptor;
 
-    public WebConfig(LogInterceptor logInterceptor, AuthInterceptor authInterceptor) {
+    public WebConfig(LogInterceptor logInterceptor,
+                     AuthInterceptor authInterceptor,
+                     AdminInterceptor adminInterceptor) {
 
         this.logInterceptor = logInterceptor;
         this.authInterceptor = authInterceptor;
+        this.adminInterceptor = adminInterceptor;
     }
 
 
@@ -33,6 +38,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/users/*",
                         "/auth/session"
                 );
+
+        registry.addInterceptor(adminInterceptor)
+                .addPathPatterns("/admin/**");
     }
 
 

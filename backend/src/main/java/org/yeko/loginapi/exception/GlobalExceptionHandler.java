@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiMessage> handleDataIntegrityErrors(DataIntegrityViolationException ex) {
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.CONFLICT) //status code 409
                 .body(new ApiMessage(List.of(
                         "Database conflict",
                         "The data already exists or",
@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiMessage> handleDatabaseErrors(DataAccessException ex) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR) //status code 500
                 .body(new ApiMessage(List.of(
                         "Database error",
                         "Please try again later."
@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiMessage> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.NOT_FOUND) //status code 404
                 .body(new ApiMessage(List.of(ex.getMessage())));
     }
 
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataConflictException.class)
     public ResponseEntity<ApiMessage> handleDataConflict(DataConflictException ex) {
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.CONFLICT) //status code 409
                 .body(new ApiMessage(List.of(ex.getMessage())));
     }
 
@@ -108,7 +108,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiMessage> handleBadRequest(BadRequestException ex) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.BAD_REQUEST) //status code 400
                 .body(new ApiMessage(List.of(ex.getMessage())));
     }
 
@@ -116,7 +116,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ApiMessage> handleUnauthorizedException(UnauthorizedException ex) {
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.UNAUTHORIZED) //status code 401
+                .body(new ApiMessage(List.of(ex.getMessage())));
+    }
+
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiMessage> handleForbiddenException(ForbiddenException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN) //status code 403
                 .body(new ApiMessage(List.of(ex.getMessage())));
     }
 
