@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.exception.BadRequestException;
 import org.yeko.loginapi.exception.DataConflictException;
+import org.yeko.loginapi.exception.ForbiddenException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
@@ -36,37 +37,24 @@ public class UserController {
 
 
     @GetMapping("/admin/users")
-    public ResponseEntity<?> adminGetAllUsers(@RequestHeader(value="Authorization", required=false)
-                                                                  String authorizationHeader){
+    public ResponseEntity<?> adminGetAllUsers(){
 
-        if(authService.isAdmin(authorizationHeader) ) {
-
-            List<UserResponse> users = userService.getAllUsers();
-            if (users.isEmpty()) {
-                return ResponseEntity.ok(new ApiMessage(List.of("Users Empty")));
-            }
-            return ResponseEntity.ok(users);
+        List<UserResponse> users = userService.getAllUsers();
+        if (users.isEmpty()) {
+            return ResponseEntity.ok(new ApiMessage(List.of("Users Empty")));
         }
 
-        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
-
+        return ResponseEntity.ok(users);
     }
 
 
     @GetMapping("/admin/users/{id}")
-    public ResponseEntity<?> adminGetUserById(@PathVariable @Positive Long id,
-                                              @RequestHeader(value="Authorization", required=false)
-                                              String authorizationHeader){
+    public ResponseEntity<?> adminGetUserById(@PathVariable @Positive Long id){
 
-        if( authService.isAdmin(authorizationHeader) ){
+        UserResponse user = userService.findPublicUserById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            UserResponse user = userService.findPublicUserById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-            return ResponseEntity.ok(user);
-        }
-
-        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+        return ResponseEntity.ok(user);
     }
 
 
@@ -85,17 +73,12 @@ public class UserController {
 
     @PatchMapping("/admin/users/{id}/role")
     public ResponseEntity<?> updateUserRole(@PathVariable @Positive Long id,
-                                            @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                             @Valid @RequestBody UpdateRoleRequest roleUpdate){
 
-        if(authService.isAdmin(authorizationHeader) ){
             if(userService.updateIfValidRole(id, roleUpdate) ) {
                 return ResponseEntity.ok(new ApiMessage(List.of("Role Updated")));
             }
-            throw new BadRequestException("Invalid role or last admin protection");
-        }
-
-        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+            throw new BadRequestException("Invalid role or protected last admin");
     }
 
 
@@ -109,7 +92,7 @@ public class UserController {
             return ResponseEntity.ok(new ApiMessage(List.of("Pin Updated")));
         }
 
-        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+        throw new ForbiddenException("Access Denied");
     }
 
 
@@ -124,7 +107,7 @@ public class UserController {
             return ResponseEntity.ok(new ApiMessage(List.of("User Deleted")));
         }
 
-        return ResponseEntity.status(403).body(new ApiMessage(List.of("Access Denied")));
+        throw new ForbiddenException("Access Denied");
     }
 
 
