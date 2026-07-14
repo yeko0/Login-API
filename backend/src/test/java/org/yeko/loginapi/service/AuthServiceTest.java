@@ -9,10 +9,8 @@ import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class AuthServiceTest {
 
@@ -23,7 +21,7 @@ public class AuthServiceTest {
 
 
     @Test
-    void loginShouldReturnResponse() {
+    void loginSucceedsWithValidCredentials() {
 
         String userName = "yeko";
         String rawPin = "1234";
@@ -48,12 +46,58 @@ public class AuthServiceTest {
         assertTrue(result.isPresent());
 
         LoginResponse loginResponse = result.get();
+
         assertEquals(token, loginResponse.getToken());
         assertEquals(userName, loginResponse.getUserName());
         assertEquals(userTest.getUserId(), loginResponse.getUserId());
         assertEquals(userTest.getUserRole(), loginResponse.getUserRole());
         verify(jwtService).generateToken(userTest);
 
+    }
+
+
+    @Test
+    void loginFailsWithWrongPin() {
+
+        String userName = "yeko";
+        String wrongPin = "1234";
+        String storedHash = "stored-hash";
+        String userRole = "USER";
+
+        LoginRequest loginRequest = new LoginRequest(userName, wrongPin);
+
+        User userTest = new User(1L, userName, storedHash, userRole);
+
+        when(userRepo.findByUserName(userName))
+                .thenReturn(Optional.of(userTest));
+
+        when(passService.matches(wrongPin, storedHash))
+                .thenReturn(false);
+
+
+        Optional<LoginResponse> result = authService.login(loginRequest);
+
+        assertTrue(result.isEmpty());
+        verify(jwtService, never()).generateToken(userTest);
+
+    }
+
+
+    @Test
+    void loginFailsWhenUserNotFound() {
+        String wrongUserName = "yyyeko";
+        String rawPin = "1234";
+
+        LoginRequest loginRequest = new LoginRequest(wrongUserName, rawPin);
+
+        when(userRepo.findByUserName(wrongUserName))
+                .thenReturn(Optional.empty());
+
+        Optional<LoginResponse> result = authService.login(loginRequest);
+
+        verify(passService, never()).matches(any(), any());
+        verify(jwtService, never()).generateToken(any());
+        assertTrue(result.isEmpty());
     }
 
 
