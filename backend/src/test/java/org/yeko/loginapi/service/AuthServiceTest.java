@@ -357,4 +357,62 @@ public class AuthServiceTest {
     }
 
 
+    @Test
+    void returnsTrueForValidAuthentication() {
+        User user = new User("testName", "hashedPin");
+        String requestName = "testName";
+        String requestPin = "correctPin";
+
+        when(passService.matches(requestPin, user.getUserPin()))
+                .thenReturn(true);
+
+        boolean result = authService.authenticateUser(user, requestName, requestPin);
+
+        assertTrue(result);
+        verify(passService).matches(requestPin, user.getUserPin());
+    }
+
+
+    @Test
+    void authenticateUserFailsWhenUserIsNull() {
+        User user = null;
+        String requestName = "testName";
+        String requestPin = "testPin";
+
+        boolean result = authService.authenticateUser(user, requestName, requestPin);
+
+        assertFalse(result);
+        verifyNoInteractions(passService);
+    }
+
+
+    @Test
+    void authenticateUserFailsWhenUsersNameDontMatch() {
+        User user = new User("testName", "hashedPin");
+        String requestName = "differentName";
+        String requestPin = "testPin";
+
+        boolean result = authService.authenticateUser(user, requestName, requestPin);
+
+        assertFalse(result);
+        verifyNoInteractions(passService);
+    }
+
+
+    @Test
+    void authenticateUserFailsWithWrongPin() {
+        User user = new User("testName", "hashedPin");
+        String requestName = "testName";
+        String requestPin = "wrongPin";
+
+        when(passService.matches(requestPin, user.getUserPin()))
+                .thenReturn(false);
+
+        boolean result = authService.authenticateUser(user, requestName, requestPin);
+
+        assertFalse(result);
+        verify(passService).matches(requestPin, user.getUserPin());
+    }
+
+
 }
