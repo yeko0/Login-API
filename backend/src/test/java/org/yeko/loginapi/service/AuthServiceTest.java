@@ -101,4 +101,50 @@ public class AuthServiceTest {
     }
 
 
+    @Test
+    void returnsTokenWhenHeaderIsValid() {
+
+        String fakeToken = "fake-token-123";
+        String authorizationHeader = "Bearer "+ fakeToken;
+
+        when(jwtService.isTokenValid(fakeToken))
+                .thenReturn(true);
+
+        Optional<String> result = authService.getValidToken(authorizationHeader);
+
+        assertTrue(result.isPresent());
+        assertEquals(fakeToken, result.get());
+
+    }
+
+
+    @Test
+    void returnsEmptyWhenHeaderNotValid() {
+
+        String fakeToken = "fake-token-123";
+        String authorizationHeader = "header "+ fakeToken;
+
+        Optional<String> result = authService.getValidToken(authorizationHeader);
+
+        assertTrue(result.isEmpty());
+        verify(jwtService, never()).isTokenValid(anyString());
+
+    }
+
+
+    @Test
+    void returnsEmptyWhenTokenNotValid() {
+        String wrongToken = "fake-token-123";
+        String authorizationHeader = "Bearer "+ wrongToken;
+
+        when(jwtService.isTokenValid(wrongToken))
+                .thenReturn(false);
+
+        Optional<String> result = authService.getValidToken(authorizationHeader);
+
+        assertTrue(result.isEmpty());
+        verify(jwtService).isTokenValid(wrongToken);
+    }
+
+
 }
