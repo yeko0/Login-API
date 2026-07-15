@@ -170,4 +170,24 @@ public class AuthServiceTest {
     }
 
 
+    @Test
+    void returnsTrueForAccountOwner() {
+        Long userId = 1L;
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(true);
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(userId);
+
+        boolean result = authService.isAccountOwner(authorizationHeader, userId);
+
+        assertTrue(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService).extractUserId(token);
+    }
+
+
 }
