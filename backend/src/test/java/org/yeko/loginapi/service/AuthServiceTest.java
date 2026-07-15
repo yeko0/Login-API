@@ -25,7 +25,7 @@ public class AuthServiceTest {
     void loginSucceedsWithValidCredentials() {
 
         String userName = "yeko";
-        String rawPin = "1234";
+        String rawPin = "correct pin";
         String storedHash = "stored-hash";
         String userRole = "USER";
         String token = "fake-token-123";
@@ -61,7 +61,7 @@ public class AuthServiceTest {
     void loginFailsWithWrongPin() {
 
         String userName = "yeko";
-        String wrongPin = "1234";
+        String wrongPin = "wrong pin";
         String storedHash = "stored-hash";
         String userRole = "USER";
 
@@ -79,7 +79,7 @@ public class AuthServiceTest {
         Optional<LoginResponse> result = authService.login(loginRequest);
 
         assertTrue(result.isEmpty());
-        verify(jwtService, never()).generateToken(userTest);
+        verify(jwtService, never()).generateToken(any());
 
     }
 
@@ -243,7 +243,7 @@ public class AuthServiceTest {
         String token = "fake-token-123";
         String authorizationHeader = "Bearer "+ token;
         Long tokenId = 1L;
-        String userRole = "USER";
+        String userRole = "OTHER_ROLE";
         UserResponse userResponse = new UserResponse(tokenId, "testName", userRole);
 
         when(jwtService.isTokenValid(token))
@@ -302,6 +302,58 @@ public class AuthServiceTest {
         verify(jwtService).isTokenValid(token);
         verify(jwtService, never()).extractUserId(anyString());
         verify(userRepo, never()).findPublicUserById(anyLong());
+    }
+
+
+    @Test
+    void userCheckReturnsTrueForUser() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long tokenId = 1L;
+        String userRole = "USER";
+        UserResponse userResponse = new UserResponse(tokenId, "testName", userRole);
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(true);
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(tokenId);
+
+        when(userRepo.findPublicUserById(tokenId))
+                .thenReturn(Optional.of(userResponse));
+
+        boolean result = authService.isUser(authorizationHeader);
+
+        assertTrue(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).findPublicUserById(tokenId);
+    }
+
+
+    @Test
+    void userCheckReturnsFalseForNonUser() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long tokenId = 1L;
+        String userRole = "OTHER_ROLE";
+        UserResponse userResponse = new UserResponse(tokenId, "testName", userRole);
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(true);
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(tokenId);
+
+        when(userRepo.findPublicUserById(tokenId))
+                .thenReturn(Optional.of(userResponse));
+
+        boolean result = authService.isUser(authorizationHeader);
+
+        assertFalse(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).findPublicUserById(tokenId);
     }
 
 
