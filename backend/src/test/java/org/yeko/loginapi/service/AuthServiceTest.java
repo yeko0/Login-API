@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.yeko.loginapi.dto.LoginRequest;
 import org.yeko.loginapi.dto.LoginResponse;
+import org.yeko.loginapi.dto.UserResponse;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.repository.UserRepository;
 
@@ -208,6 +209,32 @@ public class AuthServiceTest {
         assertFalse(result);
         verify(jwtService).isTokenValid(token);
         verify(jwtService).extractUserId(token);
+    }
+
+
+    @Test
+    void returnsTrueForAdmin() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long tokenId = 1L;
+        String userRole = "ADMIN";
+        UserResponse userResponse = new UserResponse(tokenId, "testName", userRole);
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(true);
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(tokenId);
+
+        when(userRepo.findPublicUserById(tokenId))
+                .thenReturn(Optional.of(userResponse));
+
+        boolean result = authService.isAdmin(authorizationHeader);
+
+        assertTrue(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).findPublicUserById(tokenId);
     }
 
 
