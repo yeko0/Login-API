@@ -213,7 +213,7 @@ public class AuthServiceTest {
 
 
     @Test
-    void returnsTrueForAdmin() {
+    void adminCheckReturnsTrueForAdmin() {
         String token = "fake-token-123";
         String authorizationHeader = "Bearer "+ token;
         Long tokenId = 1L;
@@ -239,7 +239,7 @@ public class AuthServiceTest {
 
 
     @Test
-    void returnsFalseForNonAdmin() {
+    void adminCheckReturnsFalseForNonAdmin() {
         String token = "fake-token-123";
         String authorizationHeader = "Bearer "+ token;
         Long tokenId = 1L;
@@ -261,6 +261,47 @@ public class AuthServiceTest {
         verify(jwtService).isTokenValid(token);
         verify(jwtService).extractUserId(token);
         verify(userRepo).findPublicUserById(tokenId);
+    }
+
+
+    @Test
+    void adminCheckFailsWhenUserNotFound() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long tokenId = 1L;
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(true);
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(tokenId);
+
+        when(userRepo.findPublicUserById(tokenId))
+                .thenReturn(Optional.empty());
+
+        boolean result = authService.isAdmin(authorizationHeader);
+
+        assertFalse(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).findPublicUserById(tokenId);
+    }
+
+
+    @Test
+    void adminCheckFailsWhenTokenNotValid() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(false);
+
+        boolean result = authService.isAdmin(authorizationHeader);
+
+        assertFalse(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService, never()).extractUserId(anyString());
+        verify(userRepo, never()).findPublicUserById(anyLong());
     }
 
 
