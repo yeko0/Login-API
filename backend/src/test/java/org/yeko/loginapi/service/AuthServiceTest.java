@@ -238,4 +238,30 @@ public class AuthServiceTest {
     }
 
 
+    @Test
+    void returnsFalseForNonAdmin() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long tokenId = 1L;
+        String userRole = "USER";
+        UserResponse userResponse = new UserResponse(tokenId, "testName", userRole);
+
+        when(jwtService.isTokenValid(token))
+                .thenReturn(true);
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(tokenId);
+
+        when(userRepo.findPublicUserById(tokenId))
+                .thenReturn(Optional.of(userResponse));
+
+        boolean result = authService.isAdmin(authorizationHeader);
+
+        assertFalse(result);
+        verify(jwtService).isTokenValid(token);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).findPublicUserById(tokenId);
+    }
+
+
 }
