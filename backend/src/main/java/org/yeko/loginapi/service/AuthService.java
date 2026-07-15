@@ -67,7 +67,7 @@ public class AuthService {
         if( isRequestHeaderValid(authorizationHeader) ){
             String token = authorizationHeader.substring(7).trim();
 
-            if(isTokenValid(token)){
+            if(!token.isBlank() && isTokenValid(token)){
                 return Optional.of(token);
             }
         }

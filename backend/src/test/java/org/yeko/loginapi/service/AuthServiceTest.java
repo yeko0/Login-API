@@ -147,4 +147,27 @@ public class AuthServiceTest {
     }
 
 
+    @Test
+    void returnsEmptyWhenHeaderNotPresent() {
+
+        Optional<String> result = authService.getValidToken(null);
+
+        assertTrue(result.isEmpty());
+        verify(jwtService, never()).isTokenValid(anyString());
+    }
+
+
+    @Test
+    void returnsEmptyWhenTokenIsBlank() {
+
+        String authorizationHeader = "Bearer ";
+
+        Optional<String> result =
+                authService.getValidToken(authorizationHeader);
+
+        assertTrue(result.isEmpty());
+        verify(jwtService, never()).isTokenValid(anyString());
+    }
+
+
 }
