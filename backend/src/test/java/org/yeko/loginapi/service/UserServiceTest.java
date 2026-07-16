@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.yeko.loginapi.dto.CreateUserRequest;
+import org.yeko.loginapi.dto.DeleteUserRequest;
 import org.yeko.loginapi.dto.UpdatePinRequest;
 import org.yeko.loginapi.dto.UserResponse;
 import org.yeko.loginapi.entity.User;
@@ -137,6 +138,68 @@ public class UserServiceTest {
         verify(authService).authenticateUser(user, userName, userPin);
         verifyNoInteractions(passService);
         verify(userRepo, never()).save(any(User.class));
+    }
+
+
+    @Test
+    void deleteUserWithValidData() {
+        Long userId = 1L;
+        String userName = "testName";
+        String userPin = "testPin";
+        DeleteUserRequest request = new DeleteUserRequest(userName, userPin);
+        User userFound = new User(userId, userName, "hashedPin", "USER");
+
+        when(userRepo.findById(userId))
+                .thenReturn(Optional.of(userFound));
+
+        when(authService.authenticateUser(userFound, userName, userPin))
+                .thenReturn(true);
+
+        userService.deleteUserWithValidCreademtial(request, userId);
+
+        verify(userRepo).findById(userId);
+        verify(authService).authenticateUser(userFound, userName, userPin);
+        verify(userRepo).delete(userFound);
+    }
+
+
+    @Test
+    void deleteUserThrowsUserNotFoundException() {
+        Long userId = 1L;
+        DeleteUserRequest request = new DeleteUserRequest("testName", "testPin");
+
+        when(userRepo.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.deleteUserWithValidCreademtial(request, userId));
+
+        verify(userRepo).findById(userId);
+        verifyNoInteractions(authService);
+        verify(userRepo, never()).delete(any(User.class));
+    }
+
+
+    @Test
+    void deleteUserThrowsForbiddenException() {
+        Long userId = 1L;
+        String userName = "wrongName";
+        String userPin = "wrongPin";
+        DeleteUserRequest request = new DeleteUserRequest(userName, userPin);
+        User userFound = new User(userId, "realName", "hashedPin", "USER");
+
+        when(userRepo.findById(userId))
+                .thenReturn(Optional.of(userFound));
+
+        when(authService.authenticateUser(userFound, userName, userPin))
+                .thenReturn(false);
+
+        assertThrows(ForbiddenException.class,
+                () -> userService.deleteUserWithValidCreademtial(request, userId));
+
+        verify(userRepo).findById(userId);
+        verify(authService).authenticateUser(userFound, userName, userPin);
+        verify(userRepo, never()).delete(any(User.class));
     }
 
 }

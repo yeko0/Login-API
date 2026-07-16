@@ -101,12 +101,11 @@ public class UserController {
                                             @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                             @Valid @RequestBody DeleteUserRequest loginRequest){
 
-        if( authService.isAccountOwner(authorizationHeader, id)
-                && userService.deleteUserIfAuthenticated(loginRequest, id)) {
+        if( authService.isAccountOwner(authorizationHeader, id) ){
 
+            userService.deleteUserWithValidCreademtial(loginRequest, id);
             return ResponseEntity.ok(new ApiMessage(List.of("User Deleted")));
         }
-
         throw new ForbiddenException("Access Denied");
     }
 

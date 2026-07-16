@@ -99,18 +99,15 @@ public class UserService {
     }
 
 
-    public boolean deleteUserIfAuthenticated(DeleteUserRequest deleteRequest, Long id ){
-        Optional<User> userFound = ur.findById(id);
+    public void deleteUserWithValidCreademtial(DeleteUserRequest deleteRequest, Long id ){
+        User userFound = ur.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (userFound.isPresent() ){
-            User user = userFound.get();
-
-            if(as.authenticateUser(user, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
-                ur.delete(user);
-                return true;
+            if(as.authenticateUser(userFound, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
+                ur.delete(userFound);
+                return;
             }
-        }
-        return false;
+
+        throw new ForbiddenException("Access Denied");
     }
 
 
