@@ -3,7 +3,7 @@ package org.yeko.loginapi.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class UpdateRoleRequest {
-    @NotBlank
+    @NotBlank(message = "User role is required")
     private String userRole;
 
     public UpdateRoleRequest(){}
