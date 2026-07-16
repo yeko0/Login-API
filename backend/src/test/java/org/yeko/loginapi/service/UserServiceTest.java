@@ -7,6 +7,7 @@ import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.exception.ForbiddenException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
+import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.Optional;
@@ -292,6 +293,77 @@ public class UserServiceTest {
         verify(userRepo).findPublicUserById(userId);
         verify(userRepo).countByUserRole("ADMIN");
         verify(userRepo).updateUserRoleById(userId, userRoleFormatted);
+    }
+
+
+    @Test
+    void getUserByTokenWithValidToken() {
+
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long userIdFromToken = 1L;
+        String userRole = "USER";
+        UserResponse publicUser = new UserResponse(userIdFromToken, "testName", userRole);
+
+        when(authService.getValidToken(authorizationHeader))
+                .thenReturn(Optional.of(token));
+
+        when(authService.extractUserId(token))
+                .thenReturn(userIdFromToken);
+
+        when(userRepo.findPublicUserById(userIdFromToken))
+                .thenReturn(Optional.of(publicUser));
+
+        UserResponse result = userService.getUserByToken(authorizationHeader);
+
+        assertEquals(userIdFromToken, result.getUserId());
+        assertEquals("testName", result.getUserName());
+        assertEquals(userRole, result.getUserRole());
+        verify(authService).getValidToken(authorizationHeader);
+        verify(authService).extractUserId(token);
+        verify(userRepo).findPublicUserById(userIdFromToken);
+
+    }
+
+
+    @Test
+    void getUserByTokenWithInvalidToken() {
+        String token = "invalid-token-123";
+        String authorizationHeader = "Bearer "+ token;
+
+        when(authService.getValidToken(authorizationHeader))
+                .thenReturn(Optional.empty());
+
+        assertThrows(UnauthorizedException.class,
+                () -> userService.getUserByToken(authorizationHeader));
+
+        verify(authService).getValidToken(authorizationHeader);
+        verify(authService, never()).extractUserId(anyString());
+        verifyNoInteractions(userRepo);
+    }
+
+
+    @Test
+    void getUserByTokenFailsWhenUserDontExist() {
+        String token = "fake-token-123";
+        String authorizationHeader = "Bearer "+ token;
+        Long userIdFromToken = 1L;
+
+        when(authService.getValidToken(authorizationHeader))
+                .thenReturn(Optional.of(token));
+
+        when(authService.extractUserId(token))
+                .thenReturn(userIdFromToken);
+
+        when(userRepo.findPublicUserById(userIdFromToken))
+                .thenReturn(Optional.empty());
+
+        assertThrows(UnauthorizedException.class,
+                () -> userService.getUserByToken(authorizationHeader));
+
+        verify(authService).getValidToken(authorizationHeader);
+        verify(authService).extractUserId(token);
+        verify(userRepo).findPublicUserById(userIdFromToken);
     }
 
 }

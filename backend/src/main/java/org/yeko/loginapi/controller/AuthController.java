@@ -7,7 +7,6 @@ import org.yeko.loginapi.dto.ApiMessage;
 import org.yeko.loginapi.dto.LoginRequest;
 import org.yeko.loginapi.dto.LoginResponse;
 import org.yeko.loginapi.dto.UserResponse;
-import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
 
@@ -44,8 +43,7 @@ public class AuthController {
     public ResponseEntity<UserResponse> getValidSession(@RequestHeader(value="Authorization", required = false)
                                              String authorizationHeader){
 
-        UserResponse user = userService.getUserByToken(authorizationHeader)
-                .orElseThrow(() -> new UnauthorizedException("Access Denied"));
+        UserResponse user = userService.getUserByToken(authorizationHeader);
 
         return ResponseEntity.ok(user);
     }

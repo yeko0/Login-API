@@ -76,19 +76,16 @@ public class AuthService {
     }
 
 
-    public boolean isTokenValid(String token){
-        return jwtService.isTokenValid(token);
-    }
+    public boolean isTokenValid(String token) { return jwtService.isTokenValid(token); }
 
 
-    public Long extractUserId(String token){
-        return jwtService.extractUserId(token);
-    }
+    public Long extractUserId(String token) { return jwtService.extractUserId(token); }
 
 
-    public String extractUserName(String token){
-        return jwtService.extractUserName(token);
-    }
+    public boolean tokenUserExists(String token) { return ur.existsById(extractUserId(token)); }
+
+
+    public String extractUserName(String token) { return jwtService.extractUserName(token); }
 
 
     public Optional<String> getUserRole(String authorizationHeader){

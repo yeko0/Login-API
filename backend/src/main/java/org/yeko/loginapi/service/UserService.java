@@ -6,6 +6,7 @@ import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.exception.ForbiddenException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
+import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.List;
@@ -89,13 +90,13 @@ public class UserService {
     public Optional<UserResponse> findPublicUserById(Long id ){ return ur.findPublicUserById(id); }
 
 
-    public Optional<UserResponse> getUserByToken(String authorizationHeader){
-        Optional<String> token = as.getValidToken(authorizationHeader);
+    public UserResponse getUserByToken(String authorizationHeader){
 
-        if( token.isPresent() ){
-            return findPublicUserById(as.extractUserId(token.get()));
-        }
-        return Optional.empty();
+        String token = as.getValidToken(authorizationHeader)
+                .orElseThrow(() -> new UnauthorizedException("Access Denied"));
+
+        return findPublicUserById(as.extractUserId(token))
+                .orElseThrow(() -> new UnauthorizedException("Access Denied"));
     }
 
 

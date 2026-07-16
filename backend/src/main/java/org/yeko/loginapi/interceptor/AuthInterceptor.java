@@ -21,16 +21,20 @@ public class AuthInterceptor implements HandlerInterceptor {
                              @NonNull HttpServletResponse response,
                              @NonNull Object handler) throws Exception {
 
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())){
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod()) ){
             return true;
         }
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        if (authService.getValidToken(authorizationHeader).isEmpty()) {
+        String token = authService.getValidToken(authorizationHeader)
+                .orElseThrow(() -> new UnauthorizedException("Access Denied"));
+
+        if (!authService.tokenUserExists(token)) {
             throw new UnauthorizedException("Access Denied");
         }
 
         return true;
     }
+
 }
