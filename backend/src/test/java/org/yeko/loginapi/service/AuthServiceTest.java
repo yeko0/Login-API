@@ -415,4 +415,41 @@ public class AuthServiceTest {
     }
 
 
+    @Test
+    void userInTokenExists() {
+        String token = "fake-token-123";
+        Long userIdFromToken = 1L;
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(userIdFromToken);
+
+        when(userRepo.existsById(userIdFromToken))
+                .thenReturn(true);
+
+        boolean result = authService.userInTokenExists(token);
+
+        assertTrue(result);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).existsById(userIdFromToken);
+    }
+
+
+    @Test
+    void userInTokenDontExists() {
+        String token = "fake-token-123";
+        Long userIdFromToken = 1L;
+
+        when(jwtService.extractUserId(token))
+                .thenReturn(userIdFromToken);
+
+        when(userRepo.existsById(userIdFromToken))
+                .thenReturn(false);
+
+        boolean result = authService.userInTokenExists(token);
+
+        assertFalse(result);
+        verify(jwtService).extractUserId(token);
+        verify(userRepo).existsById(userIdFromToken);
+    }
+
 }

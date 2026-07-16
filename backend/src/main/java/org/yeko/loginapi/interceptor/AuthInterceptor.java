@@ -30,7 +30,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         String token = authService.getValidToken(authorizationHeader)
                 .orElseThrow(() -> new UnauthorizedException("Access Denied"));
 
-        if (!authService.tokenUserExists(token)) {
+        if (!authService.userInTokenExists(token)) {
             throw new UnauthorizedException("Access Denied");
         }
 

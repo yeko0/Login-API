@@ -82,7 +82,7 @@ public class AuthService {
     public Long extractUserId(String token) { return jwtService.extractUserId(token); }
 
 
-    public boolean tokenUserExists(String token) { return ur.existsById(extractUserId(token)); }
+    public boolean userInTokenExists(String token) { return ur.existsById(extractUserId(token)); }
 
 
     public String extractUserName(String token) { return jwtService.extractUserName(token); }
