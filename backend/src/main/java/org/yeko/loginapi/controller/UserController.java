@@ -87,8 +87,8 @@ public class UserController {
                                        @RequestHeader(value="Authorization", required=false) String authorizationHeader,
                                        @Valid @RequestBody UpdatePinRequest update){
 
-        if( authService.isAccountOwner(authorizationHeader, id)
-                && userService.updatePinIfAuthenticated(update, id)){
+        if( authService.isAccountOwner(authorizationHeader, id) ){
+            userService.updatePinWithValidCredential(update, id);
             return ResponseEntity.ok(new ApiMessage(List.of("Pin Updated")));
         }
 

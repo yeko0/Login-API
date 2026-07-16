@@ -7,6 +7,8 @@ import org.yeko.loginapi.dto.CreateUserRequest;
 import org.yeko.loginapi.dto.UpdatePinRequest;
 import org.yeko.loginapi.dto.UserResponse;
 import org.yeko.loginapi.entity.User;
+import org.yeko.loginapi.exception.ForbiddenException;
+import org.yeko.loginapi.exception.ResourceNotFoundException;
 import org.yeko.loginapi.repository.UserRepository;
 
 import java.util.Optional;
@@ -79,7 +81,7 @@ public class UserServiceTest {
         when(userRepo.findById(userId))
                 .thenReturn(Optional.of(userFound));
 
-        boolean result = userService.updatePinIfAuthenticated(request, userId);
+        userService.updatePinWithValidCredential(request, userId);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
@@ -87,11 +89,54 @@ public class UserServiceTest {
 
         User capturedUser = userCaptor.getValue();
 
-        assertTrue(result);
         assertEquals(newHashedPin, capturedUser.getUserPin());
         verify(authService).authenticateUser(userFound, userName, userPin);
         verify(passService).hash(newUserPin);
+        verify(userRepo).findById(userId);
     }
 
+
+    @Test
+    void updatePinThrowsUserNotFoundException() {
+        Long userId = 1L;
+        UpdatePinRequest request = new UpdatePinRequest("testName", "testPin", "newPin");
+
+        when(userRepo.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.updatePinWithValidCredential(request, userId));
+
+        verify(userRepo).findById(userId);
+        verifyNoInteractions(authService, passService);
+        verify(userRepo, never()).save(any(User.class));
+    }
+
+
+    @Test
+    void updatePinThrowsForbiddenException() {
+        Long userId = 1L;
+        String userName = "wrongName";
+        String userPin = "wrongPin";
+        String newUserPin = "newPin";
+        String hashedPin = "hashedPin";
+
+        User user = new User(userId, "realName", hashedPin, "USER");
+        UpdatePinRequest request = new UpdatePinRequest(userName, userPin, newUserPin);
+
+        when(userRepo.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        when(authService.authenticateUser(user, userName, userPin))
+                .thenReturn(false);
+
+        assertThrows(ForbiddenException.class,
+                () -> userService.updatePinWithValidCredential(request, userId));
+
+        verify(userRepo).findById(userId);
+        verify(authService).authenticateUser(user, userName, userPin);
+        verifyNoInteractions(passService);
+        verify(userRepo, never()).save(any(User.class));
+    }
 
 }

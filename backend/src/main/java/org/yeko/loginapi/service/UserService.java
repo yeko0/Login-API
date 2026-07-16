@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
+import org.yeko.loginapi.exception.ForbiddenException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
 import org.yeko.loginapi.repository.UserRepository;
 
@@ -72,19 +73,16 @@ public class UserService {
     }
 
 
-    public boolean updatePinIfAuthenticated(UpdatePinRequest update, Long id ){
-        Optional<User> userFound = ur.findById(id);
-
-        if( userFound.isPresent() ) {
-            User user = userFound.get();
+    public void updatePinWithValidCredential(UpdatePinRequest update, Long id ){
+        User user = ur.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
             if (as.authenticateUser(user, update.getUserName(), update.getUserPin())) {
                 user.setUserPin(ps.hash(update.getNewUserPin()));
                 ur.save(user);
-                return true;
+                return;
             }
-        }
-        return false;
+
+        throw new ForbiddenException("Access Denied");
     }
 
 
