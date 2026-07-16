@@ -29,6 +29,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+
     private Claims extractAllClaims(String token){
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -36,7 +37,6 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
 
 
     public String generateToken(User user){
