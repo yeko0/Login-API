@@ -3,10 +3,7 @@ package org.yeko.loginapi.service;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.yeko.loginapi.dto.CreateUserRequest;
-import org.yeko.loginapi.dto.DeleteUserRequest;
-import org.yeko.loginapi.dto.UpdatePinRequest;
-import org.yeko.loginapi.dto.UserResponse;
+import org.yeko.loginapi.dto.*;
 import org.yeko.loginapi.entity.User;
 import org.yeko.loginapi.exception.ForbiddenException;
 import org.yeko.loginapi.exception.ResourceNotFoundException;
@@ -82,15 +79,10 @@ public class UserServiceTest {
         when(userRepo.findById(userId))
                 .thenReturn(Optional.of(userFound));
 
-        userService.updatePinWithValidCredential(request, userId);
+        userService.updatePinWithValidCredentials(request, userId);
 
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-
-        verify(userRepo).save(userCaptor.capture());
-
-        User capturedUser = userCaptor.getValue();
-
-        assertEquals(newHashedPin, capturedUser.getUserPin());
+        verify(userRepo).save(userFound);
+        assertEquals(newHashedPin, userFound.getUserPin());
         verify(authService).authenticateUser(userFound, userName, userPin);
         verify(passService).hash(newUserPin);
         verify(userRepo).findById(userId);
@@ -106,7 +98,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> userService.updatePinWithValidCredential(request, userId));
+                () -> userService.updatePinWithValidCredentials(request, userId));
 
         verify(userRepo).findById(userId);
         verifyNoInteractions(authService, passService);
@@ -132,7 +124,7 @@ public class UserServiceTest {
                 .thenReturn(false);
 
         assertThrows(ForbiddenException.class,
-                () -> userService.updatePinWithValidCredential(request, userId));
+                () -> userService.updatePinWithValidCredentials(request, userId));
 
         verify(userRepo).findById(userId);
         verify(authService).authenticateUser(user, userName, userPin);
@@ -155,7 +147,7 @@ public class UserServiceTest {
         when(authService.authenticateUser(userFound, userName, userPin))
                 .thenReturn(true);
 
-        userService.deleteUserWithValidCreademtial(request, userId);
+        userService.deleteUserWithValidCredentials(request, userId);
 
         verify(userRepo).findById(userId);
         verify(authService).authenticateUser(userFound, userName, userPin);
@@ -172,7 +164,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> userService.deleteUserWithValidCreademtial(request, userId));
+                () -> userService.deleteUserWithValidCredentials(request, userId));
 
         verify(userRepo).findById(userId);
         verifyNoInteractions(authService);
@@ -195,11 +187,111 @@ public class UserServiceTest {
                 .thenReturn(false);
 
         assertThrows(ForbiddenException.class,
-                () -> userService.deleteUserWithValidCreademtial(request, userId));
+                () -> userService.deleteUserWithValidCredentials(request, userId));
 
         verify(userRepo).findById(userId);
         verify(authService).authenticateUser(userFound, userName, userPin);
         verify(userRepo, never()).delete(any(User.class));
+    }
+
+
+    @Test
+    void updateRoleWithValidData() {
+        Long userId = 1L;
+        String userRoleFormatted = "USER";
+        UpdateRoleRequest request = new UpdateRoleRequest(" uSeR  ");
+        UserResponse userFound = new UserResponse(userId, "testName", "ADMIN");
+
+        when(userRepo.findPublicUserById(userId))
+                .thenReturn(Optional.of(userFound));
+
+        when(userRepo.countByUserRole("ADMIN"))
+                .thenReturn(2L);
+
+        when(userRepo.updateUserRoleById(userId, userRoleFormatted))
+                .thenReturn(1);
+
+        boolean result = userService.updateIfValidRole(userId, request);
+
+        assertTrue(result);
+        verify(userRepo).findPublicUserById(userId);
+        verify(userRepo).countByUserRole("ADMIN");
+        verify(userRepo).updateUserRoleById(userId, userRoleFormatted);
+    }
+
+
+    @Test
+    void updateRoleFailsWithLastAdmin() {
+        Long userId = 1L;
+        UpdateRoleRequest request = new UpdateRoleRequest(" uSeR  ");
+        UserResponse userFound = new UserResponse(userId, "testName", "ADMIN");
+
+        when(userRepo.findPublicUserById(userId))
+                .thenReturn(Optional.of(userFound));
+
+        when(userRepo.countByUserRole("ADMIN"))
+                .thenReturn(1L);
+
+        boolean result = userService.updateIfValidRole(userId, request);
+
+        assertFalse(result);
+        verify(userRepo).findPublicUserById(userId);
+        verify(userRepo).countByUserRole("ADMIN");
+        verify(userRepo, never()).updateUserRoleById(anyLong(), anyString());
+    }
+
+
+    @Test
+    void updateRoleFailsWithInvalidRole() {
+        Long userId = 1L;
+        UpdateRoleRequest request = new UpdateRoleRequest(" invalid_Role ");
+
+        boolean result = userService.updateIfValidRole(userId, request);
+
+        assertFalse(result);
+        verifyNoInteractions(userRepo);
+    }
+
+
+    @Test
+    void updateRoleThrowsUserNotFoundException() {
+        Long userId = 1L;
+        UpdateRoleRequest request = new UpdateRoleRequest(" uSeR  ");
+
+        when(userRepo.findPublicUserById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.updateIfValidRole(userId, request));
+
+        verify(userRepo).findPublicUserById(userId);
+        verify(userRepo, never()).countByUserRole(anyString());
+        verify(userRepo, never()).updateUserRoleById(anyLong(), anyString());
+    }
+
+
+    @Test
+    void updateRoleFailsWhenNoRowsAffected() {
+        Long userId = 1L;
+        String userRoleFormatted = "USER";
+        UpdateRoleRequest request = new UpdateRoleRequest(" uSeR  ");
+        UserResponse userFound = new UserResponse(userId, "testName", "ADMIN");
+
+        when(userRepo.findPublicUserById(userId))
+                .thenReturn(Optional.of(userFound));
+
+        when(userRepo.countByUserRole("ADMIN"))
+                .thenReturn(2L);
+
+        when(userRepo.updateUserRoleById(userId, userRoleFormatted))
+                .thenReturn(0);
+
+        boolean result = userService.updateIfValidRole(userId, request);
+
+        assertFalse(result);
+        verify(userRepo).findPublicUserById(userId);
+        verify(userRepo).countByUserRole("ADMIN");
+        verify(userRepo).updateUserRoleById(userId, userRoleFormatted);
     }
 
 }

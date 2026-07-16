@@ -73,14 +73,14 @@ public class UserService {
     }
 
 
-    public void updatePinWithValidCredential(UpdatePinRequest update, Long id ){
+    public void updatePinWithValidCredentials(UpdatePinRequest update, Long id ){
         User user = ur.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
-            if (as.authenticateUser(user, update.getUserName(), update.getUserPin())) {
-                user.setUserPin(ps.hash(update.getNewUserPin()));
-                ur.save(user);
-                return;
-            }
+        if (as.authenticateUser(user, update.getUserName(), update.getUserPin())) {
+            user.setUserPin(ps.hash(update.getNewUserPin()));
+            ur.save(user);
+            return;
+        }
 
         throw new ForbiddenException("Access Denied");
     }
@@ -99,13 +99,13 @@ public class UserService {
     }
 
 
-    public void deleteUserWithValidCreademtial(DeleteUserRequest deleteRequest, Long id ){
+    public void deleteUserWithValidCredentials(DeleteUserRequest deleteRequest, Long id ){
         User userFound = ur.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            if(as.authenticateUser(userFound, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
-                ur.delete(userFound);
-                return;
-            }
+        if(as.authenticateUser(userFound, deleteRequest.getUserName(), deleteRequest.getUserPin()) ){
+            ur.delete(userFound);
+            return;
+        }
 
         throw new ForbiddenException("Access Denied");
     }
@@ -119,7 +119,7 @@ public class UserService {
             UserResponse user = ur.findPublicUserById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            if (!(isLastAdmin() && "ADMIN".equals(user.getUserRole()) && "USER".equals(role))) {
+            if (!("ADMIN".equals(user.getUserRole()) && "USER".equals(role) && isLastAdmin())) {
                 return ur.updateUserRoleById(id, role) == 1;
             }
         }

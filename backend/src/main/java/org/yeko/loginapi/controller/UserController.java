@@ -88,7 +88,7 @@ public class UserController {
                                        @Valid @RequestBody UpdatePinRequest update){
 
         if( authService.isAccountOwner(authorizationHeader, id) ){
-            userService.updatePinWithValidCredential(update, id);
+            userService.updatePinWithValidCredentials(update, id);
             return ResponseEntity.ok(new ApiMessage(List.of("Pin Updated")));
         }
 
@@ -103,7 +103,7 @@ public class UserController {
 
         if( authService.isAccountOwner(authorizationHeader, id) ){
 
-            userService.deleteUserWithValidCreademtial(loginRequest, id);
+            userService.deleteUserWithValidCredentials(loginRequest, id);
             return ResponseEntity.ok(new ApiMessage(List.of("User Deleted")));
         }
         throw new ForbiddenException("Access Denied");
