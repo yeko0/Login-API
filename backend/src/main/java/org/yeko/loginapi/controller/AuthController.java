@@ -3,15 +3,12 @@ package org.yeko.loginapi.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.yeko.loginapi.dto.ApiMessage;
 import org.yeko.loginapi.dto.LoginRequest;
 import org.yeko.loginapi.dto.LoginResponse;
 import org.yeko.loginapi.dto.UserResponse;
+import org.yeko.loginapi.exception.UnauthorizedException;
 import org.yeko.loginapi.service.AuthService;
 import org.yeko.loginapi.service.UserService;
-
-import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -29,13 +26,10 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest){
 
-        Optional<LoginResponse> response = authService.login(loginRequest);
+        LoginResponse response = authService.login(loginRequest)
+                .orElseThrow(() -> new UnauthorizedException("Access Denied"));
 
-        if (response.isEmpty()){
-            return ResponseEntity.status(401).body(new ApiMessage(List.of("Access Denied")));
-        }
-
-        return ResponseEntity.ok(response.get());
+        return ResponseEntity.ok(response);
     }
 
 
