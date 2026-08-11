@@ -52,6 +52,55 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.token").value("fake-token-123"))
                 .andExpect(jsonPath("$.userId").value(1))
                 .andExpect(jsonPath("$.userName").value("testName"))
-                .andExpect(jsonPath("$.userRole").value("USER"));;
+                .andExpect(jsonPath("$.userRole").value("USER"));
+    }
+
+
+    @Test
+    void loginReturnsUnauthorizedWithInvalidCredentials() throws Exception {
+
+        when(authService.login(any(LoginRequest.class)))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userName": "testName",
+                                  "userPin": "1234"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.backendMessage[0]").value("Access Denied"));
+    }
+
+
+    @Test
+    void loginReturnsBadRequestWhenUserPinIsMissing() throws Exception {
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userName": "testName"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.backendMessage[0]").value("User pin is required"));
+    }
+
+
+    @Test
+    void loginReturnsBadRequestWhenUserNameIsMissing() throws Exception {
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userPin": "testPin"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.backendMessage[0]").value("User name is required"));
     }
 }
